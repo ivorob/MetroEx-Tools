@@ -1,0 +1,306 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="ui">
+      <UniqueIdentifier>{b12e587e-1638-43da-a5ad-0fbc36d014e1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="pch">
+      <UniqueIdentifier>{b5349eb3-fa64-452f-a88a-48b06418e6ff}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="metro">
+      <UniqueIdentifier>{ba396ea1-76c7-4f01-9a28-766355623981}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="libs">
+      <UniqueIdentifier>{4cc16d89-358a-470c-9488-07b85f0bdb4d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="libs\imgui">
+      <UniqueIdentifier>{2f7aad67-e9c0-4fbd-9fbb-c179a461a549}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="libs\bc7enc16">
+      <UniqueIdentifier>{1cda51b3-319c-47ed-ac6f-8381988a0b16}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="libs\lz4">
+      <UniqueIdentifier>{198a9805-048a-4fa7-aa8c-c70f94f43530}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="libs\xxhash">
+      <UniqueIdentifier>{d26454f0-041b-43ca-b862-de6cc840b541}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="metro\entities">
+      <UniqueIdentifier>{5fcbbe57-8115-42d7-b301-fb21d830d2eb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="metro\scripts">
+      <UniqueIdentifier>{a275ebd8-9084-411a-809d-0658b7cd78d6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="libs\imgui\win32">
+      <UniqueIdentifier>{654e6933-37c5-47d7-906f-6a8b939ea670}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Resource.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MetroExplorer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ui\ui.h">
+      <Filter>ui</Filter>
+    </ClInclude>
+    <ClInclude Include="pch\stdafx.h">
+      <Filter>pch</Filter>
+    </ClInclude>
+    <ClInclude Include="pch\targetver.h">
+      <Filter>pch</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libs\imgui\imconfig.h">
+      <Filter>libs\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libs\imgui\imgui.h">
+      <Filter>libs\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libs\imgui\imgui_internal.h">
+      <Filter>libs\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libs\imgui\imstb_rectpack.h">
+      <Filter>libs\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libs\imgui\imstb_textedit.h">
+      <Filter>libs\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libs\imgui\imstb_truetype.h">
+      <Filter>libs\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\metro\LevelSpawn.h">
+      <Filter>metro</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\metro\MetroConfigDatabase.h">
+      <Filter>metro</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\metro\MetroLevel.h">
+      <Filter>metro</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\metro\MetroModel.h">
+      <Filter>metro</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\metro\MetroMotion.h">
+      <Filter>metro</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\metro\MetroReflection.h">
+      <Filter>metro</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\metro\MetroSkeleton.h">
+      <Filter>metro</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\metro\MetroSound.h">
+      <Filter>metro</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\metro\MetroTexture.h">
+      <Filter>metro</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\metro\MetroTexturesDatabase.h">
+      <Filter>metro</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\metro\MetroTypes.h">
+      <Filter>metro</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\metro\VFXReader.h">
+      <Filter>metro</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libs\bc7enc16\bc7decomp.h">
+      <Filter>libs\bc7enc16</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libs\lz4\lz4.h">
+      <Filter>libs\lz4</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libs\xxhash\xxhash.h">
+      <Filter>libs\xxhash</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\dds_utils.h">
+      <Filter>metro</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\hashing.h">
+      <Filter>metro</Filter>
+    </ClInclude>
+    <ClInclude Include="Editor.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\metro\Config.h">
+      <Filter>metro</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\metro\entities\Entity.h">
+      <Filter>metro\entities</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\metro\entities\EntityFactory.h">
+      <Filter>metro\entities</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\log.h">
+      <Filter>metro</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\metro\MetroConfigNames.h">
+      <Filter>metro</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\metro\MetroBinArchive.h">
+      <Filter>metro</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\metro\MetroBinArrayArchive.h">
+      <Filter>metro</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\metro\MetroBinIArchive.h">
+      <Filter>metro</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\metro\scripts\Block.h">
+      <Filter>metro\scripts</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\metro\scripts\BlockFactory.h">
+      <Filter>metro\scripts</Filter>
+    </ClInclude>
+    <ClInclude Include="imgui\win32\imgui_impl_dx11.h">
+      <Filter>libs\imgui\win32</Filter>
+    </ClInclude>
+    <ClInclude Include="imgui\win32\imgui_impl_win32.h">
+      <Filter>libs\imgui\win32</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="MetroExplorer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ui\ui.cpp">
+      <Filter>ui</Filter>
+    </ClCompile>
+    <ClCompile Include="ui\ui_filesystem.cpp">
+      <Filter>ui</Filter>
+    </ClCompile>
+    <ClCompile Include="pch\stdafx.cpp">
+      <Filter>pch</Filter>
+    </ClCompile>
+    <ClCompile Include="ui\ui_mainmenu.cpp">
+      <Filter>ui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\libs\imgui\imgui.cpp">
+      <Filter>libs\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\libs\imgui\imgui_demo.cpp">
+      <Filter>libs\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\libs\imgui\imgui_draw.cpp">
+      <Filter>libs\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\libs\imgui\imgui_widgets.cpp">
+      <Filter>libs\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="ui\ui_fileviewer.cpp">
+      <Filter>ui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\metro\LevelSpawn.cpp">
+      <Filter>metro</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\metro\MetroConfigDatabase.cpp">
+      <Filter>metro</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\metro\MetroLevel.cpp">
+      <Filter>metro</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\metro\MetroModel.cpp">
+      <Filter>metro</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\metro\MetroMotion.cpp">
+      <Filter>metro</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\metro\MetroReflection.cpp">
+      <Filter>metro</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\metro\MetroSkeleton.cpp">
+      <Filter>metro</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\metro\MetroSound.cpp">
+      <Filter>metro</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\metro\MetroTexture.cpp">
+      <Filter>metro</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\metro\MetroTexturesDatabase.cpp">
+      <Filter>metro</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\metro\VFXReader.cpp">
+      <Filter>metro</Filter>
+    </ClCompile>
+    <ClCompile Include="..\libs\bc7enc16\bc7decomp.c">
+      <Filter>libs\bc7enc16</Filter>
+    </ClCompile>
+    <ClCompile Include="..\libs\lz4\lz4.c">
+      <Filter>libs\lz4</Filter>
+    </ClCompile>
+    <ClCompile Include="..\libs\xxhash\xxhash.c">
+      <Filter>libs\xxhash</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\dds_utils.cpp">
+      <Filter>metro</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\hashing.cpp">
+      <Filter>metro</Filter>
+    </ClCompile>
+    <ClCompile Include="Editor.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\metro\Config.cpp">
+      <Filter>metro</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\metro\entities\Entity.cpp">
+      <Filter>metro\entities</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\metro\entities\EntityFactory.cpp">
+      <Filter>metro\entities</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\log.cpp">
+      <Filter>metro</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\metro\MetroBinArchive.cpp">
+      <Filter>metro</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\metro\MetroBinArrayArchive.cpp">
+      <Filter>metro</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\metro\scripts\Block.cpp">
+      <Filter>metro\scripts</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\metro\scripts\BlockFactory.cpp">
+      <Filter>metro\scripts</Filter>
+    </ClCompile>
+    <ClCompile Include="imgui\win32\imgui_impl_dx11.cpp">
+      <Filter>libs\imgui\win32</Filter>
+    </ClCompile>
+    <ClCompile Include="imgui\win32\imgui_impl_win32.cpp">
+      <Filter>libs\imgui\win32</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="MetroExplorer.rc">
+      <Filter>Resource Files</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="small.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="MetroExplorer.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <Natvis Include="..\libs\imgui\misc\natvis\imgui.natvis">
+      <Filter>libs\imgui</Filter>
+    </Natvis>
+  </ItemGroup>
+</Project>
