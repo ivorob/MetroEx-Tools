@@ -1,0 +1,17 @@
+BasedOnStyle: Webkit
+Standard: Cpp11
+BreakBeforeBraces: Custom
+BraceWrapping:
+  AfterFunction: false
+ColumnLimit: 120
+SortIncludes: true
+IncludeBlocks: Merge
+IncludeCategories:
+  - Regex: '\"stdafx\.h'
+    Priority: -1
+AlignConsecutiveDeclarations: true
+AlignEscapedNewlines: Left
+AllowShortBlocksOnASingleLine: false
+AllowShortFunctionsOnASingleLine: false
+AllowShortLambdasOnASingleLine: false
+AlwaysBreakTemplateDeclarations: Yes
