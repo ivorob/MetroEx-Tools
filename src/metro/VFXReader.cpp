@@ -117,7 +117,7 @@ bool VFXReader::LoadFromFile(const fs::path& filePath) {
     return result;
 }
 
-MemStream VFXReader::ExtractFile(const size_t fileIdx, const size_t subOffset, const size_t subLength) {
+MemStream VFXReader::ExtractFile(const size_t fileIdx, const size_t subOffset, const size_t subLength) const {
     MemStream result;
 
     const MetroFile& mf = mFiles[fileIdx];
@@ -290,7 +290,7 @@ MyArray<size_t> VFXReader::FindFilesInFolder(const CharString& folder, const Cha
 
 
 
-size_t VFXReader::Decompress(const void* compressedData, const size_t compressedSize, void* uncompressedData, const size_t uncompressedSize) {
+size_t VFXReader::Decompress(const void* compressedData, const size_t compressedSize, void* uncompressedData, const size_t uncompressedSize) const {
     size_t result = 0;
 
     MemStream stream(compressedData, compressedSize);
