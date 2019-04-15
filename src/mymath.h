@@ -21,6 +21,7 @@ using vec3 = glm::highp_vec3;
 using vec4 = glm::highp_vec4;
 using mat3 = glm::highp_mat3;
 using mat4 = glm::highp_mat4;
+using mat43T = glm::highp_mat3x4;
 using quat = glm::highp_quat;
 
 using ivec4 = glm::highp_ivec4;
