@@ -8,6 +8,7 @@ public:
         MainMenu, ///< Ãëàâíîå ìåíş
         FileSystem, ///< Ôàéëîâàÿ ñèñòåìà
         FileViewer, ///< Ïğîñìîòğùèê ôàéëîâ
+        ScriptViewer, ///< Ïğîñìîòğùèê ñêğèïòîâ
     };
 
     Types type() {

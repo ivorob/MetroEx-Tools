@@ -19,7 +19,11 @@ void Editor::SetCurrentFile(int curFile) {
     mCurFile = curFile;
 }
 
-void  Editor::SetMainWnd(HWND wnd)
-{
+void Editor::SetMainWnd(HWND wnd) {
     mWnd = wnd;
+}
+
+void Editor::SetScript(const CharString& objName, const MyArray<Script>& scripts) {
+    mObjName = objName;
+    mScripts = scripts;
 }

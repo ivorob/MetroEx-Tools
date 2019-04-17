@@ -46,6 +46,12 @@
     <Filter Include="libs\imgui\win32">
       <UniqueIdentifier>{654e6933-37c5-47d7-906f-6a8b939ea670}</UniqueIdentifier>
     </Filter>
+    <Filter Include="libs\imgui\addons">
+      <UniqueIdentifier>{ecb6e57b-cb69-4109-aa7a-e4cbc62ebbdf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="libs\imgui\addons\imguinodegrapheditor">
+      <UniqueIdentifier>{bdcceb6a-716f-48da-bafc-f4fd75cfa50c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Resource.h">
@@ -132,9 +138,6 @@
     <ClInclude Include="..\src\hashing.h">
       <Filter>metro</Filter>
     </ClInclude>
-    <ClInclude Include="Editor.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\src\metro\Config.h">
       <Filter>metro</Filter>
     </ClInclude>
@@ -170,6 +173,18 @@
     </ClInclude>
     <ClInclude Include="imgui\win32\imgui_impl_win32.h">
       <Filter>libs\imgui\win32</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\metro\scripts\Script.h">
+      <Filter>metro\scripts</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\metro\scripts\BlockMeta.h">
+      <Filter>metro\scripts</Filter>
+    </ClInclude>
+    <ClInclude Include="Editor.h">
+      <Filter>ui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libs\imgui\addons\imguinodegrapheditor\imguinodegrapheditor.h">
+      <Filter>libs\imgui\addons\imguinodegrapheditor</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -251,9 +266,6 @@
     <ClCompile Include="..\src\hashing.cpp">
       <Filter>metro</Filter>
     </ClCompile>
-    <ClCompile Include="Editor.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\metro\Config.cpp">
       <Filter>metro</Filter>
     </ClCompile>
@@ -283,6 +295,18 @@
     </ClCompile>
     <ClCompile Include="imgui\win32\imgui_impl_win32.cpp">
       <Filter>libs\imgui\win32</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\metro\scripts\Script.cpp">
+      <Filter>metro\scripts</Filter>
+    </ClCompile>
+    <ClCompile Include="Editor.cpp">
+      <Filter>ui</Filter>
+    </ClCompile>
+    <ClCompile Include="ui\ui_scriptviewer.cpp">
+      <Filter>ui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\libs\imgui\addons\imguinodegrapheditor\imguinodegrapheditor.cpp">
+      <Filter>libs\imgui\addons\imguinodegrapheditor</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

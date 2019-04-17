@@ -29,11 +29,14 @@ void switchTool(Tool::Types type) {
         activeTools.erase(id);
 }
 void drawActiveTools() {
+    std::vector<EditorId> forRemoving;
     for (auto i = activeTools.begin(), end = activeTools.end(); i != end; ++i) {
         bool show = i->second->draw();
         if (!show)
-            activeTools.erase(i->first);
+            forRemoving.push_back(i->first);
     }
+    for (const auto& id : forRemoving)
+        activeTools.erase(id);
 }
 
 void showTool(Tool::Types type) {

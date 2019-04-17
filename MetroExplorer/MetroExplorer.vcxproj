@@ -42,8 +42,8 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v141</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v141</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
@@ -153,6 +153,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="..\libs\bc7enc16\bc7decomp.h" />
+    <ClInclude Include="..\libs\imgui\addons\imguinodegrapheditor\imguinodegrapheditor.h" />
     <ClInclude Include="..\libs\imgui\imconfig.h" />
     <ClInclude Include="..\libs\imgui\imgui.h" />
     <ClInclude Include="..\libs\imgui\imgui_internal.h" />
@@ -184,6 +185,8 @@
     <ClInclude Include="..\src\metro\MetroTypes.h" />
     <ClInclude Include="..\src\metro\scripts\Block.h" />
     <ClInclude Include="..\src\metro\scripts\BlockFactory.h" />
+    <ClInclude Include="..\src\metro\scripts\BlockMeta.h" />
+    <ClInclude Include="..\src\metro\scripts\Script.h" />
     <ClInclude Include="..\src\metro\VFXReader.h" />
     <ClInclude Include="Editor.h" />
     <ClInclude Include="imgui\win32\imgui_impl_dx11.h" />
@@ -200,6 +203,9 @@
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">CompileAsCpp</CompileAs>
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">CompileAsCpp</CompileAs>
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">CompileAsCpp</CompileAs>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\libs\imgui\addons\imguinodegrapheditor\imguinodegrapheditor.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="..\libs\imgui\imgui.cpp">
@@ -288,6 +294,9 @@
     <ClCompile Include="..\src\metro\scripts\BlockFactory.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="..\src\metro\scripts\Script.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="..\src\metro\VFXReader.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
     </ClCompile>
@@ -303,6 +312,7 @@
     <ClCompile Include="ui\ui_filesystem.cpp" />
     <ClCompile Include="ui\ui_fileviewer.cpp" />
     <ClCompile Include="ui\ui_mainmenu.cpp" />
+    <ClCompile Include="ui\ui_scriptviewer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="MetroExplorer.rc" />

@@ -34,42 +34,65 @@ public:
         if (ImGui::CollapsingHeader("entities_params")) {
         }
         // if (ImGui::CollapsingHeader("entities")) {
-        int columnWidth[4];
-        ImGui::Columns(4, "mycolumns");
+        const int COLUMN_COUNT = 5;
+        int       columnWidth[COLUMN_COUNT];
+        ImGui::Columns(COLUMN_COUNT, "mycolumns");
         columnWidth[0] = ImGui::GetColumnWidth();
         ImGui::Separator();
         ImGui::Text("ID");
         ImGui::NextColumn();
+
         columnWidth[1] = ImGui::GetColumnWidth();
         ImGui::Text("name");
         ImGui::NextColumn();
+
         columnWidth[2] = ImGui::GetColumnWidth();
         ImGui::Text("class");
         ImGui::NextColumn();
+
         columnWidth[3] = ImGui::GetColumnWidth();
+        ImGui::Text("scripts");
+        ImGui::NextColumn();
+
+        columnWidth[4] = ImGui::GetColumnWidth();
         ImGui::Text("static_data");
         ImGui::NextColumn();
+
         ImGui::Columns(1);
         ImGui::Separator();
         if (ImGui::BeginChild("entities_list")) {
-            ImGui::Columns(4, "mycolumns_data");
+            ImGui::Columns(COLUMN_COUNT, "mycolumns_data");
             for (size_t i = 0; i != std::size(columnWidth); i++)
                 ImGui::SetColumnWidth(i, columnWidth[i]);
             ImGuiListClipper clipper(m_spawn.mSpawn.size(), ImGui::GetTextLineHeightWithSpacing());
             while (clipper.Step())
                 for (int i = clipper.DisplayStart; i < clipper.DisplayEnd; i++) {
+                    ImGui::PushID(i);
                     auto el = m_spawn.mSpawn[i];
                     char idStr[10];
                     sprintf(idStr, "%u", el->initData.id);
                     if (ImGui::Selectable(idStr, selected == i, ImGuiSelectableFlags_SpanAllColumns))
                         selected = i;
+                    ImGui::SetItemAllowOverlap();
                     ImGui::NextColumn();
                     ImGui::Text(el->name.c_str());
                     ImGui::NextColumn();
                     ImGui::Text(el->cls.c_str());
                     ImGui::NextColumn();
+                    if (!el->vss_ver_6.empty()) {
+                        if (ImGui::SmallButton("S")) {
+                            gEditor.SetScript(el->name, el->vss_ver_6);
+                            showTool(Tool::ScriptViewer);
+                        }
+                    }
+                    ImGui::SameLine();
+                    if (!el->commons_vs.empty()) {
+                        ImGui::SmallButton("C");
+                    }
+                    ImGui::NextColumn();
                     ImGui::Text(el->static_data.c_str());
                     ImGui::NextColumn();
+                    ImGui::PopID();
                 }
             ImGui::Columns(1);
             ImGui::Separator();
