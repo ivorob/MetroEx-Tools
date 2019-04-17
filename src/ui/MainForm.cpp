@@ -13,6 +13,8 @@
 #include "MainForm.h"
 #include "ExtractionOptionsDgl.h"
 #include "AboutDlg.h"
+#include "TexturesDatabaseViewer.h"
+#include "ui\NodeSorter.h"
 
 // String to std::string wrapper
 #include <msclr/marshal_cppstd.h>
@@ -58,20 +60,6 @@ namespace MetroEX {
     fs::path StringToPath(String^ s) {
         return marshal_as<std::wstring>(s);
     }
-
-    ref class NodeSorter : public System::Collections::IComparer {
-    public:
-        virtual int Compare(Object^ x, Object^ y) {
-            System::Windows::Forms::TreeNode^ left = safe_cast<System::Windows::Forms::TreeNode^>(x);
-            System::Windows::Forms::TreeNode^ right = safe_cast<System::Windows::Forms::TreeNode^>(y);
-
-            if (left->Nodes->Count) {
-                return (right->Nodes->Count > 0) ? left->Text->CompareTo(right->Text) : -1;
-            } else {
-                return (right->Nodes->Count > 0) ? 1 : left->Text->CompareTo(right->Text);
-            }
-        }
-    };
 
     static FileType DetectFileType(const MetroFile& mf) {
         FileType result = FileType::Unknown;
@@ -221,6 +209,7 @@ namespace MetroEX {
                 this->UpdateFilesList();
             }
 
+            this->toolBtnTexturesDatabase->Enabled = true;
             System::Windows::Forms::Cursor::Current = System::Windows::Forms::Cursors::Arrow;
         }
     }
@@ -239,9 +228,83 @@ namespace MetroEX {
         }
     }
 
+    void MainForm::toolBtnTexturesDatabase_Click(System::Object^ sender, System::EventArgs^ e) {
+        if (mTexturesDatabase == nullptr) {
+            return;
+        }
+
+        TexturesDatabaseViewer wnd(this, this->mTexturesDatabase, this->imageListMain);
+
+        wnd.Icon = this->Icon;
+        wnd.ShowDialog(this);
+    }
+
     // treeview
-    void MainForm::treeView1_AfterSelect(System::Object^, System::Windows::Forms::TreeViewEventArgs^ e) {
-        FileTagData^ fileData = safe_cast<FileTagData^>(e->Node->Tag);
+    void MainForm::ResetTreeView() {
+        if (this->filterableTreeView->TreeView == nullptr ||
+            this->filterableTreeView->TreeView->Nodes->Count == 0 ||
+            this->filterableTreeView->TreeView->Nodes[0] == this->mOriginalRootNode
+        ) {
+            return;
+        }
+
+        this->filterableTreeView->TreeView->BeginUpdate();
+        this->filterableTreeView->TreeView->Nodes->Clear();
+        this->filterableTreeView->TreeView->Nodes->Add(this->mOriginalRootNode);
+        this->filterableTreeView->TreeView->EndUpdate();
+
+        this->filterableTreeView->FilterTextBox->Text = String::Empty;
+    }
+
+    bool MainForm::FindAndSelect(String^ text, array<String^>^ extensions) {
+        auto textParts = text->Split('\\');
+
+        TreeNode^ node = this->mOriginalRootNode;
+        TreeNode^ foundNode;
+        for (int i = 0; i < textParts->Length; i++) {
+            foundNode = this->FindNode(node, textParts[i]);
+
+            if (i == textParts->Length - 1 && extensions != nullptr) {
+                for (int j = 0; j < extensions->Length; j++) {
+                    foundNode = this->FindNode(node, textParts[i] + extensions[j]);
+
+                    if (foundNode != nullptr) {
+                        break;
+                    }
+                }
+            }
+
+            if (foundNode == nullptr) {
+                return false;
+            }
+
+            node = foundNode;
+        }
+
+        // assert(this->mOriginalRootNode == this->filterableTreeView->TreeView->Nodes[0]);
+
+        this->mSavedNode = node;
+        this->filterableTreeView->TreeView->SelectedNode = node;
+
+        return true;
+    }
+
+    TreeNode^ MainForm::FindNode(TreeNode^ parent, String^ text) {
+        String^ term = text->ToUpper();
+
+        for (int i = 0; i < parent->Nodes->Count; i++) {
+            if (parent->Nodes[i]->Text->ToUpper() == term) {
+                return parent->Nodes[i];
+            }
+        }
+
+        return nullptr;
+    }
+
+    void MainForm::filterableTreeView_AfterSelect(System::Object^, System::Windows::Forms::TreeViewEventArgs^ e) {
+        TreeNode^ node = e->Node != nullptr ? e->Node : this->mSavedNode;
+
+        FileTagData^ fileData = safe_cast<FileTagData^>(node->Tag);
         const size_t fileIdx = fileData->fileIdx & kFileIdxMask;
         const bool isSubFile = fileData->subFileIdx != kInvalidValue;
 
@@ -272,42 +335,46 @@ namespace MetroEX {
         }
     }
 
-    void MainForm::treeView1_AfterCollapse(System::Object^, System::Windows::Forms::TreeViewEventArgs^ e) {
+    void MainForm::filterableTreeView_AfterCollapse(System::Object^, System::Windows::Forms::TreeViewEventArgs^ e) {
         UpdateNodeIcon(e->Node, eNodeEventType::Close);
     }
 
-    void MainForm::treeView1_AfterExpand(System::Object^, System::Windows::Forms::TreeViewEventArgs^ e) {
-        UpdateNodeIcon(e->Node, eNodeEventType::Open);
+    void MainForm::filterableTreeView_AfterExpand(System::Object^, System::Windows::Forms::TreeViewEventArgs^ e) {
+        TreeNode^ node = e->Node != nullptr ? e->Node : this->mSavedNode;
 
-        FileTagData^ fileData = safe_cast<FileTagData^>(e->Node->Tag);
+        UpdateNodeIcon(node, eNodeEventType::Open);
+
+        FileTagData^ fileData = safe_cast<FileTagData^>(node->Tag);
         if (0 == (fileData->fileIdx & kFolderSortedFlag)) {
             const size_t fileIdx = fileData->fileIdx & kFileIdxMask;
 
-            if (e->Node->Nodes->Count > 1) {
+            if (node->Nodes->Count > 1) {
                 System::Windows::Forms::Cursor::Current = System::Windows::Forms::Cursors::WaitCursor;
 
                 //#NOTE_SK: somehow, BeginUpdate/BeginUpdate makes it even slower, so commented out for the moment
-                //this->treeView1->BeginUpdate();
-                this->treeView1->SuspendLayout();
-                array<TreeNode^>^ nodes = gcnew array<TreeNode^>(e->Node->Nodes->Count);
-                e->Node->Nodes->CopyTo(nodes, 0);
+                //this->filterableTreeView->TreeView->BeginUpdate();
+                this->filterableTreeView->TreeView->SuspendLayout();
+                array<TreeNode^>^ nodes = gcnew array<TreeNode^>(node->Nodes->Count);
+                node->Nodes->CopyTo(nodes, 0);
                 NodeSorter^ sorter = gcnew NodeSorter();
                 System::Array::Sort(nodes, sorter);
-                e->Node->Nodes->Clear();
-                e->Node->Nodes->AddRange(nodes);
+                node->Nodes->Clear();
+                node->Nodes->AddRange(nodes);
                 delete sorter;
                 delete nodes;
-                //this->treeView1->EndUpdate();
-                this->treeView1->ResumeLayout(false);
+                //this->filterableTreeView->TreeView->EndUpdate();
+                this->filterableTreeView->TreeView->ResumeLayout(false);
 
                 System::Windows::Forms::Cursor::Current = System::Windows::Forms::Cursors::Arrow;
             }
 
-            fileData->fileIdx = kFolderSortedFlag | fileIdx;
+            if (!this->filterableTreeView->IsFiltering) {
+                fileData->fileIdx = kFolderSortedFlag | fileIdx;
+            }
         }
     }
 
-    void MainForm::treeView1_NodeMouseClick(System::Object^, System::Windows::Forms::TreeNodeMouseClickEventArgs^ e) {
+    void MainForm::filterableTreeView_NodeMouseClick(System::Object^, System::Windows::Forms::TreeNodeMouseClickEventArgs^ e) {
         if (e->Button == System::Windows::Forms::MouseButtons::Right) {
             FileTagData^ fileData = safe_cast<FileTagData^>(e->Node->Tag);
             const bool isSubFile = fileData->subFileIdx != kInvalidValue;
@@ -327,15 +394,15 @@ namespace MetroEX {
             if (mf.IsFile()) {
                 switch (fileType) {
                     case FileType::Texture: {
-                        this->ctxMenuExportTexture->Show(this->treeView1, e->X, e->Y);
+                        this->ctxMenuExportTexture->Show(this->filterableTreeView->TreeView, e->X, e->Y);
                     } break;
 
                     case FileType::Model: {
-                        this->ctxMenuExportModel->Show(this->treeView1, e->X, e->Y);
+                        this->ctxMenuExportModel->Show(this->filterableTreeView->TreeView, e->X, e->Y);
                     } break;
 
                     case FileType::Sound: {
-                        this->ctxMenuExportSound->Show(this->treeView1, e->X, e->Y);
+                        this->ctxMenuExportSound->Show(this->filterableTreeView->TreeView, e->X, e->Y);
                     } break;
 
                     case FileType::Bin: {
@@ -345,9 +412,9 @@ namespace MetroEX {
                             mExtractionCtx->customOffset = ci.offset;
                             mExtractionCtx->customLength = ci.length;
                             mExtractionCtx->customFileName = marshal_as<CharString>(e->Node->Text);
-                            this->ctxMenuExportBin->Show(this->treeView1, e->X, e->Y);
+                            this->ctxMenuExportBin->Show(this->filterableTreeView->TreeView, e->X, e->Y);
                         } else {
-                            this->ctxMenuExportRaw->Show(this->treeView1, e->X, e->Y);
+                            this->ctxMenuExportRaw->Show(this->filterableTreeView->TreeView, e->X, e->Y);
                         }
                     } break;
 
@@ -355,11 +422,11 @@ namespace MetroEX {
                     } break;
 
                     default: {
-                        this->ctxMenuExportRaw->Show(this->treeView1, e->X, e->Y);
+                        this->ctxMenuExportRaw->Show(this->filterableTreeView->TreeView, e->X, e->Y);
                     } break;
                 }
             } else {
-                this->ctxMenuExportFolder->Show(this->treeView1, e->X, e->Y);
+                this->ctxMenuExportFolder->Show(this->filterableTreeView->TreeView, e->X, e->Y);
             }
         }
     }
@@ -526,17 +593,17 @@ namespace MetroEX {
     }
 
     void MainForm::UpdateFilesList() {
-        this->treeView1->BeginUpdate();
-        this->treeView1->Nodes->Clear();
+        this->filterableTreeView->TreeView->BeginUpdate();
+        this->filterableTreeView->TreeView->Nodes->Clear();
 
         if (mVFXReader) {
-            this->txtTreeSearch->Text = String::Empty;
+            this->filterableTreeView->FilterTextBox->Text = String::Empty;
 
             // Get idx of config.bin
             const size_t configBinIdx = mVFXReader->FindFile("content\\config.bin");
 
             String^ rootName = marshal_as<String^>(mVFXReader->GetSelfName());
-            TreeNode^ rootNode = this->treeView1->Nodes->Add(rootName);
+            TreeNode^ rootNode = this->filterableTreeView->TreeView->Nodes->Add(rootName);
             size_t rootIdx = 0;
 
             mOriginalRootNode = rootNode;
@@ -559,7 +626,7 @@ namespace MetroEX {
             }
         }
 
-        this->treeView1->EndUpdate();
+        this->filterableTreeView->TreeView->EndUpdate();
     }
 
     void MainForm::AddFoldersRecursive(const MetroFile& dir, const size_t folderIdx, TreeNode^ rootItem, const size_t configBinIdx) {
@@ -1173,61 +1240,6 @@ namespace MetroEX {
             mExtractionProgressDlg->StopProgressDialog();
             MySafeRelease(mExtractionProgressDlg);
         }
-    }
-
-    // filter
-    void MainForm::txtTreeSearch_TextChanged(System::Object^ sender, System::EventArgs^ e) {
-        if (mOriginalRootNode != nullptr) {
-            this->filterTimer->Stop();
-            this->filterTimer->Start();
-        }
-    }
-
-    void MainForm::filterTimer_Tick(System::Object^ sender, System::EventArgs^ e) {
-        this->filterTimer->Stop();
-
-        System::Windows::Forms::Cursor::Current = System::Windows::Forms::Cursors::WaitCursor;
-
-        this->treeView1->BeginUpdate();
-        this->treeView1->Nodes->Clear();
-
-        if (String::IsNullOrWhiteSpace(this->txtTreeSearch->Text)) {
-            this->treeView1->Nodes->Add(mOriginalRootNode);
-        } else {
-            TreeNode^ root = safe_cast<TreeNode^>(mOriginalRootNode->Clone());
-            this->FilterTreeView(root, this->txtTreeSearch->Text);
-            this->treeView1->Nodes->Add(root);
-
-            if (this->txtTreeSearch->Text->Length > 2) {
-                root->ExpandAll();
-            }
-        }
-
-        this->treeView1->EndUpdate();
-
-        System::Windows::Forms::Cursor::Current = System::Windows::Forms::Cursors::Arrow;
-    }
-
-    bool MainForm::FilterTreeView(TreeNode^ node, String^ text) {
-        System::Collections::Generic::List<TreeNode^>^ nodesToRemove = gcnew System::Collections::Generic::List<TreeNode^>();
-
-        for (int i = 0; i < node->Nodes->Count; i++) {
-            if (node->Nodes[i]->Nodes->Count > 0) {
-                if (!this->FilterTreeView(node->Nodes[i], this->txtTreeSearch->Text)) {
-                    nodesToRemove->Add(node->Nodes[i]);
-                }
-            } else if (!node->Nodes[i]->Text->Contains(this->txtTreeSearch->Text)) {
-                nodesToRemove->Add(node->Nodes[i]);
-            }
-        }
-
-        for (int i = 0; i < nodesToRemove->Count; i++) {
-            node->Nodes->Remove(nodesToRemove[i]);
-        }
-
-        MySafeDelete(nodesToRemove);
-
-        return node->Nodes->Count != 0;
     }
 
     // property panels

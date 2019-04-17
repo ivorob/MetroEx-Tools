@@ -27,3 +27,7 @@ src/shaders/*.h
 .vs
 x64
 _build
+MetroEXControls/bin/
+MetroEXControls/obj/
+
+res\.aps
