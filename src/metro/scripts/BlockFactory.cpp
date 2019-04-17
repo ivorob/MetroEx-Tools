@@ -1709,22 +1709,109 @@ MyDict<uint32_t, const char*> CreateBlockMap() {
     return result;
 }
 
-Block* CreateInternal(uint32_t clsid) {
-    switch (clsid) {
-    default:
-        return new UnknownBlock;
-    }
-}
+MyDict<uint32_t, MetaInfo> metaBlocks {
+    // triggers/startgame
+    { 0x475f0709,
+        { {
+              { Type_bool, "active" },
+              { Type_bool8, "flags" },
+          },
+            { "activate", "deactivate" }, { "Event" } } },
+    // logic/delay
+    { 0xde1f2b0e,
+        { {
+              { Type_time, "max" },
+              { Type_time, "min" },
+              { Type_bool8, "dflags" },
+          },
+            { "start", "activate", "deactivate", "stop", "restart" }, { "out" } } },
+    // entities/entity self
+    { 0x5d45f997, { {}, { "connection" }, {} } },
+    // actions/play motion control
+    { 0xe309c996,
+        { {
+              { Type_choose, "dbg_model" },
+              { Type_sz, "dbg_skel" },
+              { Type_anim, "anim_fwd" },
+              { Type_anim, "anim_bwd" },
+              { Type_part, "bone_part" },
+              { Type_fp32, "accel_fwd" },
+              { Type_fp32, "accel_bwd" },
+              { Type_time, "time_to_pause_ms" },
+              { Type_fp32, "accel_pause" },
+              { Type_fp32, "spd_koef" },
+              { Type_fp32, "spd_koef_acc" },
+              { Type_bool8, "flags" },
+              { Type_u16, "fwd_start_frame" },
+              { Type_u16, "fwd_end_frame" },
+              { Type_u16, "bwd_start_frame" },
+              { Type_u16, "bwd_end_frame" },
+          },
+            { "fwd", "pause", "bwd", "stop", "acc", "decc", "reset acc" },
+            { "target", "fwd_end", "bwd_end", "pause_end" } } },
+    // triggers/anim event
+    { 0x69c12d77,
+        { {
+              { Type_bool, "active" },
+              { Type_entity, "entity" },
+              { Type_sz, "event" },
+          },
+            { "activate", "deactivate" }, { "Event", "target" } } },
+    // actions/play particles
+    { 0xf52eb2d3,
+        { {
+              { Type_choose, "particles" },
+              { Type_bool8, "particles_flags" },
+              { Type_color_u32, "particles_color" },
+          },
+            { "activate", "deactivate" }, { "target", "finish" } } },
+    // entities/entity name
+    { 0x782dbef2,
+        { {
+              { Type_sz, "name" },
+          },
+            { "connection" }, {} } },
+    // logic/locker_base
+    { 0xec0b00b7,
+        { {
+              { Type_bool8, "flags" },
+          },
+            { "in" }, { "out" } } },
+    // actions/play sound
+    { 0x08a5261a,
+        { {
+              { Type_choose, "sound" },
+              { Type_fp32, "volume" },
+              { Type_u8, "sound_filter" },
+              { Type_u8, "sound_bus" },
+              { Type_bool8, "flags0" },
+              { Type_u32, "ai_sound_type" },
+              { Type_fp32, "stop_interval" },
+              { Type_fp32, "startus_intervalus" },
+              // { Type_fp32, "start_delay" }, в арктике был, в исходе нет
+              { Type_fp32, "end_cb_offset" },
+              { Type_bool, "play_as_music" },
+
+          },
+            { "activate", "deactivate" }, { "target", "start", "finish" } } },
+};
+
 }
 
 namespace BlockFactory {
-Block* Create(uint32_t clsid) {
+Block Create(uint32_t clsid) {
     static auto nameMap = CreateBlockMap();
-    assert(nameMap.find(clsid) != nameMap.end());
 
-    Block* result = CreateInternal(clsid);
-    result->clsid = clsid;
-    result->name = nameMap[clsid];
+    auto nameIt = nameMap.find(clsid);
+    assert(nameIt != nameMap.end());
+    const char* name = nameIt == nameMap.end() ? nullptr : nameIt->second;
+
+    auto metaIt = metaBlocks.find(clsid);
+    if (metaIt == metaBlocks.end())
+        LogPrint(LogLevel::Info, "unknown script block ", name);
+    auto meta = metaIt == metaBlocks.end() ? nullptr : &metaIt->second;
+
+    Block result(clsid, name, meta);
     return result;
 }
 }

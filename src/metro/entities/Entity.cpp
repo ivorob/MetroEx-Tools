@@ -27,46 +27,19 @@ void uobject::Read(Config& cfg) {
     visual = cfg.r_choose("visual");
     dao_val = cfg.r_u16("dao_val");
     render_aux_val = cfg.r_color("render_aux_val");
-    cfg.ReadArray("vss_ver_6", [](Config& cfg, uint32_t idx) {
-        cfg.ReadArray("groups", [](Config& cfg, uint32_t idx) {
-            assert(false);
-        });
-        cfg.ReadSection("blocks", [](Config& cfg) {
-            uint16_t version = cfg.r_u16("version");
-            uint32_t blockCount = cfg.r_u32("block_count");
-            cfg.ReadArray(nullptr, blockCount, [](Config& cfg, uint32_t idx) {
-                uint32_t clsid = cfg.r_u32("clsid");
-                Block*   block = BlockFactory::Create(clsid);
-                block->Read(cfg);
-            });
-        });
-        uint32_t linkCount = cfg.r_u32("link_count");
-        for (uint32_t j = 0; j != linkCount; j++) {
-            char                    buf[10];
-            std::array<uint16_t, 4> link = cfg.r_vec4s16(itoa(j, buf, 10));
-        }
+    cfg.ReadArray("vss_ver_6", [this](Config& cfg, uint32_t idx) {
+        Script script;
+        script.Read(cfg);
+        vss_ver_6.push_back(std::move(script));
     });
     vs_active = cfg.r_bool("vs_active");
     spatial_sector = cfg.r_u16("spatial_sector");
     qsave_chunk = cfg.r_u8("qsave_chunk");
     if (common_vss()) {
         cfg.ReadArray("commons_vs", [this](Config& cfg, uint32_t idx) {
-            CharString vs_name = cfg.r_sz("vs_name");
-            bool       vs_debug = cfg.r_bool("vs_debug");
-            bool       vs_active = cfg.r_bool("vs_active");
-            bool       disable_qsave = cfg.r_bool("disable_qsave");
-            bool       save_on_nextlevel = cfg.r_bool("save_on_nextlevel");
-            CharString vs_ref = cfg.r_sz("vs_ref");
-            bool       dyn_state_exists = cfg.r_bool("vs_ref_dyn_state_exist");
-            assert(dyn_state_exists == false);
-            if (!vs_ref.empty()) {
-                cfg.ReadArray("exposed_blocks", [this](Config& cfg, uint32_t idx) {
-                    uint16_t blkid = cfg.r_u16("blkid");
-                    uint32_t clsid = cfg.r_u32("clsid");
-                    Block*   block = BlockFactory::Create(clsid);
-                    block->Read(cfg);
-                });
-            }
+            ScriptRef ref;
+            ref.Read(cfg);
+            commons_vs.push_back(std::move(ref));
         });
         cfg.ReadArray("removed_vs", [](Config& cfg, uint32_t idx) {
             assert(false);
@@ -270,6 +243,10 @@ void weapon_item::Read(Config& cfg) {
     upgrade_item::Read(cfg);
     vr_attach = cfg.r_bool("vr_attach");
     free_on_level = cfg.r_bool("free_on_level");
+}
+
+void uobject_vs::Read(Config& cfg) {
+    uobject::Read(cfg);
 }
 
 void unknown_static_params::Read(Config& cfg, uint16_t version) {

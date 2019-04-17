@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../MetroTypes.h"
+#include "../scripts/Script.h"
 #include <array>
 #include <mymath.h>
 #include <variant>
@@ -46,17 +47,19 @@ struct uobject {
     CharString cls;
     CharString static_data;
 
-    CharString name;
-    uint8_t    oflags;
-    uint8_t    sflags;
-    float      cull_distance;
-    mat43T     pose;
-    CharString visual;
-    uint16_t   dao_val;
-    vec4       render_aux_val;
-    bool       vs_active;
-    uint16_t   spatial_sector;
-    uint8_t    qsave_chunk;
+    CharString         name;
+    uint8_t            oflags;
+    uint8_t            sflags;
+    float              cull_distance;
+    mat43T             pose;
+    CharString         visual;
+    uint16_t           dao_val;
+    vec4               render_aux_val;
+    MyArray<Script>    vss_ver_6;
+    bool               vs_active;
+    uint16_t           spatial_sector;
+    uint8_t            qsave_chunk;
+    MyArray<ScriptRef> commons_vs;
 
     uobject_static_params* param;
 };
@@ -270,6 +273,10 @@ struct weapon_item : public upgrade_item {
 
     bool vr_attach;
     bool free_on_level;
+};
+
+struct uobject_vs : public uobject {
+    void Read(Config& cfg) override;
 };
 
 struct unknown_static_params : public uobject_static_params {

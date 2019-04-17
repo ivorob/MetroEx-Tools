@@ -73,6 +73,10 @@ uint32_t Config::r_time(const char* name) {
     return r_u32(name);
 }
 
+uint32_t Config::r_color_u32(const char* name) {
+    return mData.ReadTyped<uint32_t>();
+}
+
 uint64_t Config::r_u64(const char* name) {
     return mData.ReadTyped<uint64_t>();
 }
@@ -188,4 +192,38 @@ void Config::CloseSection() {
     size_t diff = end - mData.GetCursor();
     assert(diff == 0);
     mData.SetCursor(end);
+}
+
+ParamValue Config::Read(ParamType type, const char* name) {
+    switch (type) {
+    case Type_u16:
+        return r_u16(name);
+    case Type_bool:
+        return r_bool(name);
+    case Type_bool8:
+        return r_bool8(name);
+    case Type_time:
+        return r_time(name);
+    case Type_anim:
+        return r_animation_str(name);
+    case Type_choose:
+        return r_choose(name);
+    case Type_color_u32:
+        return r_color_u32(name);
+    case Type_entity:
+        return r_entity_link(name);
+    case Type_fp32:
+        return r_fp32(name);
+    case Type_sz:
+        return r_sz(name);
+    case Type_part:
+        return r_part_str(name);
+    case Type_u8:
+        return r_u8(name);
+    case Type_u32:
+        return r_u32(name);
+    default:
+        assert(false);
+        return ParamValue();
+    }
 }
