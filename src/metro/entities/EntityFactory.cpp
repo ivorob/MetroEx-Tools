@@ -490,6 +490,8 @@ uobject* Create(uint32_t clsid) {
         return new uobject_static;
     case 0x0f10b43b: // O_ENTITY
         return new centity;
+    case 0x54571bfa: // VISUALSCRIPT
+        return new uobject_vs;
     default:
         return new UnknownObject;
     }
@@ -509,6 +511,8 @@ uobject_static_params* CreateStaticParam(uint32_t clsid) {
         return new uobject_static_params;
     case 0x0f10b43b: // O_ENTITY
         return new centity_static_params;
+    case 0x54571bfa: // VISUALSCRIPT
+        return new uobject_static_params;
     default:
         return new unknown_static_params;
     }

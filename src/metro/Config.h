@@ -1,5 +1,6 @@
 #pragma once
 
+#include "scripts/BlockMeta.h"
 #include <mycommon.h>
 #include <mymath.h>
 
@@ -50,6 +51,8 @@ public:
             CloseSection();
     }
 
+    ParamValue Read(ParamType, const char* name);
+
     size_t Remains() const;
     size_t SectionRemains() const;
     bool   Ended() const;
@@ -61,6 +64,7 @@ public:
     int32_t                 r_s32(const char* name);
     uint32_t                r_u32(const char* name);
     uint32_t                r_time(const char* name);
+    uint32_t                r_color_u32(const char* name);
     uint64_t                r_u64(const char* name);
     uint64_t                r_flags64(const char* name);
     float                   r_fp32(const char* name);
