@@ -18,7 +18,7 @@
 #include "imgui_impl_metal.h"
 
 #import <Metal/Metal.h>
-// #import <QuartzCore/CAMetalLayer.h> // Not suported in XCode 9.2. Maybe a macro to detect the SDK version can be used (something like #if MACOS_SDK >= 10.13 ...)
+// #import <QuartzCore/CAMetalLayer.h> // Not supported in XCode 9.2. Maybe a macro to detect the SDK version can be used (something like #if MACOS_SDK >= 10.13 ...)
 #import <simd/simd.h>
 
 #pragma mark - Support classes
@@ -283,7 +283,7 @@ void ImGui_ImplMetal_DestroyDeviceObjects()
 - (_Nullable id<MTLRenderPipelineState>)renderPipelineStateForFrameAndDevice:(id<MTLDevice>)device
 {
     // Try to retrieve a render pipeline state that is compatible with the framebuffer config for this frame
-    // Thie hit rate for this cache should be very near 100%.
+    // The hit rate for this cache should be very near 100%.
     id<MTLRenderPipelineState> renderPipelineState = self.renderPipelineStateCache[self.framebufferDescriptor];
 
     if (renderPipelineState == nil)

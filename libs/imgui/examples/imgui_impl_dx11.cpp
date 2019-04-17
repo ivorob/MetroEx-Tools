@@ -1,5 +1,3 @@
-#include "stdafx.h"
-
 // dear imgui: Renderer for DirectX11
 // This needs to be used along with a Platform Binding (e.g. Win32)
 
@@ -27,7 +25,6 @@
 
 // DirectX
 #include <stdio.h>
-struct IUnknown;
 #include <d3d11.h>
 #include <d3dcompiler.h>
 #ifdef _MSC_VER
@@ -62,6 +59,10 @@ struct VERTEX_CONSTANT_BUFFER
 // (this used to be set in io.RenderDrawListsFn and called by ImGui::Render(), but you can now call this directly from your main loop)
 void ImGui_ImplDX11_RenderDrawData(ImDrawData* draw_data)
 {
+    // Avoid rendering when minimized
+    if (draw_data->DisplaySize.x <= 0.0f || draw_data->DisplaySize.y <= 0.0f)
+        return;
+
     ID3D11DeviceContext* ctx = g_pd3dDeviceContext;
 
     // Create and grow vertex/index buffers if needed
@@ -93,7 +94,7 @@ void ImGui_ImplDX11_RenderDrawData(ImDrawData* draw_data)
             return;
     }
 
-    // Copy and convert all vertices into a single contiguous buffer
+    // Upload vertex/index data into a single contiguous GPU buffer
     D3D11_MAPPED_SUBRESOURCE vtx_resource, idx_resource;
     if (ctx->Map(g_pVB, 0, D3D11_MAP_WRITE_DISCARD, 0, &vtx_resource) != S_OK)
         return;
