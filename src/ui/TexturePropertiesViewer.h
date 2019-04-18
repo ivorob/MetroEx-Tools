@@ -1,16 +1,15 @@
 #pragma once
 #include <msclr/marshal_cppstd.h>
 #include "mycommon.h"
-#include "metro\MetroTexturesDatabase.h"
-#include "metro\MetroTexture.h"
+#include "metro/MetroTexturesDatabase.h"
+#include "metro/MetroTexture.h"
 
 namespace MetroEX {
     using namespace System;
     using namespace msclr::interop;
     using namespace System::ComponentModel;
 
-    ref class TexturePropertiesViewer
-    {
+    ref class TexturePropertiesViewer {
     public:
         TexturePropertiesViewer();
 
@@ -32,12 +31,6 @@ namespace MetroEX {
         property String^ Name {
             String^ get() { return marshal_as<String^>(mTextureInfo->name); }
         };
-
-        [Category("Common")]
-        [Description("Texture flags")]
-        property String^ Flags {
-            String^ get() { return Convert::ToString(mTextureInfo->flags, 2)->PadLeft(8, L'0'); }
-        }
 
         [Category("Common")]
         [Description("Texture type")]
@@ -82,11 +75,7 @@ namespace MetroEX {
         [Description("Texture source name")]
         property String^ SourceName {
             String^ get() {
-                if (mTextureInfo->source_name.IsValidRef()) {
-                    return String::Empty;
-                } else {
-                    return marshal_as<String^>(mTextureInfo->source_name.str);
-                }
+                return marshal_as<String^>(mTextureInfo->source_name);
             }
         }
 
