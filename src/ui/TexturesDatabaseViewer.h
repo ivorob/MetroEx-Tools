@@ -18,57 +18,12 @@ namespace MetroEX {
     /// <summary>
     /// Summary for TexturesDatabaseViewer
     /// </summary>
-    public ref class TexturesDatabaseViewer : public System::Windows::Forms::Form
-    {
+    public ref class TexturesDatabaseViewer : public System::Windows::Forms::Form {
     public:
-        TexturesDatabaseViewer(MainForm^ form, MetroTexturesDatabase* data, System::Windows::Forms::ImageList^ imageList)
-        {
-            InitializeComponent();
-            //
-            //TODO: Add the constructor code here
-            //
-
-            mDataProvider = data;
-            mMainForm = form;
-            mOriginalRootNode = nullptr;
-            mPropertiesViewer = nullptr;
-
-            mFileExtensions = gcnew array<String^>(3);
-            mFileExtensions[0] = ".2048";
-            mFileExtensions[1] = ".1024";
-            mFileExtensions[2] = ".512";
-
-            this->filterableTreeView->TreeView->ImageList = imageList;
-
-            this->FillWithData();
-        }
+        TexturesDatabaseViewer(MainForm^ form, MetroTexturesDatabase* data, System::Windows::Forms::ImageList^ imageList);
 
     protected:
-        /// <summary>
-        /// Clean up any resources being used.
-        /// </summary>
-        ~TexturesDatabaseViewer()
-        {
-            if (components)
-            {
-                delete components;
-            }
-        }
-
-    protected:
-
-    protected:
-
-    protected:
-
-
-
-
-
-
-
-
-
+        ~TexturesDatabaseViewer();
 
 
     private: System::Windows::Forms::SplitContainer^  splitContainer1;

@@ -10,6 +10,35 @@ static const int kImageIdxFolderClosed = 0;
 static const int kImageIdxFolderOpen = 1;
 
 namespace MetroEX {
+    TexturesDatabaseViewer::TexturesDatabaseViewer(MainForm^ form, MetroTexturesDatabase* data, System::Windows::Forms::ImageList^ imageList) {
+        InitializeComponent();
+        //
+        //TODO: Add the constructor code here
+        //
+
+        mDataProvider = data;
+        mMainForm = form;
+        mOriginalRootNode = nullptr;
+        mPropertiesViewer = nullptr;
+
+        mFileExtensions = gcnew array<String^>(3);
+        mFileExtensions[0] = ".2048";
+        mFileExtensions[1] = ".1024";
+        mFileExtensions[2] = ".512";
+
+        this->filterableTreeView->TreeView->ImageList = imageList;
+
+        this->FillWithData();
+    }
+
+    TexturesDatabaseViewer::~TexturesDatabaseViewer() {
+        this->filterableTreeView->TreeView->Nodes->Clear();
+
+        MySafeDelete(mFileExtensions);
+        MySafeDelete(mPropertiesViewer);
+
+        MySafeDelete(components);
+    }
 
     void TexturesDatabaseViewer::FillWithData() {
         if (mDataProvider == nullptr) {
@@ -51,6 +80,7 @@ namespace MetroEX {
 
         NodeSorter^ sorter = gcnew NodeSorter();
         this->SortNodesRecursively(mOriginalRootNode, sorter);
+        delete sorter;
 
         mOriginalRootNode->Expand();
         this->filterableTreeView->TreeView->EndUpdate();
@@ -75,8 +105,7 @@ namespace MetroEX {
         return nullptr;
     }
 
-    void TexturesDatabaseViewer::SortNodesRecursively(TreeNode^ parent, NodeSorter^ sorter)
-    {
+    void TexturesDatabaseViewer::SortNodesRecursively(TreeNode^ parent, NodeSorter^ sorter) {
         array<TreeNode^>^ nodes = gcnew array<TreeNode^>(parent->Nodes->Count);
         parent->Nodes->CopyTo(nodes, 0);
         System::Array::Sort(nodes, sorter);
