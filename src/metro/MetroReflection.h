@@ -387,7 +387,7 @@ public:
     inline void operator >>(FloatQ8& v) {
         uint8_t q8;
         (*this) >> q8;
-        v.value = q8 * 0.00392156862745098 * 2;
+        v.value = 2 * q8 / 255.0f;
     }
 
     inline void operator >>(EntityLink& v) {

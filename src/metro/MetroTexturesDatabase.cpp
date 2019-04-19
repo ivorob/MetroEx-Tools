@@ -150,3 +150,11 @@ const CharString& MetroTexturesDatabase::GetBumpName(const HashString& name) con
     const MetroTextureInfo* mti = this->GetInfoByName((alias.hash == 0) ? name : alias);
     return (mti == nullptr) ? kEmptyString : mti->bump_name;
 }
+
+const size_t MetroTexturesDatabase::GetNumTextures() const {
+    return mPool.size();
+}
+
+const MetroTextureInfo& MetroTexturesDatabase::GetTextureInfo(const size_t idx) const {
+    return mPool[idx];
+}
