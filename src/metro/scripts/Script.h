@@ -5,6 +5,7 @@
 #include <array>
 
 class Config;
+class MetroReflectionReader;
 
 struct Script {
     uint16_t                         version;
@@ -12,6 +13,7 @@ struct Script {
     MyArray<std::array<uint16_t, 4>> links;
 
     void Read(Config& cfg);
+    void Serialize(MetroReflectionReader& r);
 };
 
 struct ScriptRef {
@@ -25,4 +27,5 @@ struct ScriptRef {
     MyArray<Block> exposed_blocks;
 
     void Read(Config& cfg);
+    void Serialize(MetroReflectionReader& r);
 };

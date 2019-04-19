@@ -30,6 +30,14 @@ struct color4f : vec4 {
 
 };
 
+struct pose : mat43T {
+
+};
+
+struct ang3 : vec3 {
+
+};
+
 struct AABBox {
     vec3 minimum, maximum;
 
