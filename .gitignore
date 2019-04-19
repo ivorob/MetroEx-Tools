@@ -30,3 +30,7 @@ res.aps
 .vs
 x64
 _build
+MetroEXControls/bin/
+MetroEXControls/obj/
+
+res\.aps

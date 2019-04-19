@@ -100,6 +100,12 @@
     <ClCompile Include="src\metro\MetroMaterialsDatabase.cpp">
       <Filter>src\metro</Filter>
     </ClCompile>
+    <ClCompile Include="src\ui\TexturePropertiesViewer.cpp">
+      <Filter>src\ui</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ui\TexturesDatabaseViewer.cpp">
+      <Filter>src\ui</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\ui\RenderPanel.h">
@@ -213,6 +219,15 @@
     <ClInclude Include="src\metro\MetroMaterialsDatabase.h">
       <Filter>src\metro</Filter>
     </ClInclude>
+    <ClInclude Include="src\ui\NodeSorter.h">
+      <Filter>src\ui</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ui\TexturePropertiesViewer.h">
+      <Filter>src\ui</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ui\TexturesDatabaseViewer.h">
+      <Filter>src\ui</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="src\ui\ImagePanel.resx" />
@@ -221,6 +236,8 @@
     <EmbeddedResource Include="src\ui\ExtractionOptionsDgl.resx" />
     <EmbeddedResource Include="src\ui\AboutDlg.resx" />
     <EmbeddedResource Include="src\ui\DlgModelInfo.resx" />
+    <EmbeddedResource Include="src\ui\TexturesDatabaseViewer.resx" />
+
   </ItemGroup>
   <ItemGroup>
     <Filter Include="src">

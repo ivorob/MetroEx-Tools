@@ -156,6 +156,8 @@
     <ClCompile Include="src\ui\MainForm.cpp" />
     <ClCompile Include="src\ui\RenderPanel.cpp" />
     <ClCompile Include="src\ui\SoundPanel.cpp" />
+    <ClCompile Include="src\ui\TexturePropertiesViewer.cpp" />
+    <ClCompile Include="src\ui\TexturesDatabaseViewer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="libs\bc7enc16\bc7decomp.h" />
@@ -203,9 +205,14 @@
     <ClInclude Include="src\ui\MainForm.h">
       <FileType>CppForm</FileType>
     </ClInclude>
+    <ClInclude Include="src\ui\NodeSorter.h" />
     <ClInclude Include="src\ui\RenderPanel.h" />
     <ClInclude Include="src\ui\SoundPanel.h">
       <FileType>CppControl</FileType>
+    </ClInclude>
+    <ClInclude Include="src\ui\TexturePropertiesViewer.h" />
+    <ClInclude Include="src\ui\TexturesDatabaseViewer.h">
+      <FileType>CppForm</FileType>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -238,6 +245,11 @@
       <DependentUpon>src\ui\DlgModelInfo.h</DependentUpon>
       <LogicalName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">MetroEX.DlgModelInfo.resources</LogicalName>
       <LogicalName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">MetroEX.DlgModelInfo.resources</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="src\ui\TexturesDatabaseViewer.resx">
+      <DependentUpon>src\ui\TexturesDatabaseViewer.h</DependentUpon>
+      <LogicalName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">MetroEX.TexturesDatabaseViewer.resources</LogicalName>
+      <LogicalName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">MetroEX.TexturesDatabaseViewer.resources</LogicalName>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
@@ -303,6 +315,11 @@
       <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
       </ObjectFileOutput>
     </FxCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="$(SolutionDir)libs\MetroEXControls\MetroEXControls.csproj">
+      <Project>{c49e5f43-f91a-4e8e-817f-79709f284236}</Project>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
