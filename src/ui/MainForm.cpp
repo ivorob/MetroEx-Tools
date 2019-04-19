@@ -15,11 +15,15 @@
 #include "ExtractionOptionsDgl.h"
 #include "AboutDlg.h"
 #include "TexturesDatabaseViewer.h"
-#include "ui\NodeSorter.h"
+#include "NodeSorter.h"
+
+#include "ui/tools/DlgConvertTextures.h"
 
 // String to std::string wrapper
 #include <msclr/marshal_cppstd.h>
 using namespace msclr::interop;
+
+#include "UIHelpers.h"
 
 enum class eNodeEventType : size_t {
     Default,
@@ -53,14 +57,6 @@ namespace MetroEX {
             subFileIdx = _subFileIdx;
         }
     };
-
-    String^ PathToString(const fs::path& p) {
-        return marshal_as<String^>(p.wstring());
-    }
-
-    fs::path StringToPath(String^ s) {
-        return marshal_as<std::wstring>(s);
-    }
 
     static FileType DetectFileType(const MetroFile& mf) {
         FileType result = FileType::Unknown;
@@ -234,18 +230,19 @@ namespace MetroEX {
             return;
         }
 
-        TexturesDatabaseViewer wnd(this, this->mTexturesDatabase, this->imageListMain);
+        TexturesDatabaseViewer^ wnd = gcnew TexturesDatabaseViewer(this, this->mTexturesDatabase, this->imageListMain);
 
-        wnd.Icon = this->Icon;
-        wnd.ShowDialog(this);
+        wnd->Icon = this->Icon;
+        wnd->ShowDialog(this);
+
+        delete wnd;
     }
 
     // treeview
     void MainForm::ResetTreeView() {
         if (this->filterableTreeView->TreeView == nullptr ||
             this->filterableTreeView->TreeView->Nodes->Count == 0 ||
-            this->filterableTreeView->TreeView->Nodes[0] == this->mOriginalRootNode
-        ) {
+            this->filterableTreeView->TreeView->Nodes[0] == this->mOriginalRootNode) {
             return;
         }
 
@@ -398,9 +395,9 @@ namespace MetroEX {
                         this->ctxMenuExportTexture->Show(this->filterableTreeView->TreeView, e->X, e->Y);
                     } break;
 
-                    case FileType::Model: {
-                        this->ctxMenuExportModel->Show(this->filterableTreeView->TreeView, e->X, e->Y);
-                    } break;
+                    //case FileType::Model: {
+                    //    this->ctxMenuExportModel->Show(this->filterableTreeView->TreeView, e->X, e->Y);
+                    //} break;
 
                     case FileType::Sound: {
                         this->ctxMenuExportSound->Show(this->filterableTreeView->TreeView, e->X, e->Y);
@@ -1296,27 +1293,8 @@ namespace MetroEX {
     }
 
     void MainForm::toolBtnConvertTexture_Click(System::Object^ sender, System::EventArgs^ e) {
-        OpenFileDialog ofd;
-        ofd.Title = L"Open image file...";
-        ofd.Filter = L"Image files (*.tga;*.png)|*.tga;*.png";
-        ofd.FilterIndex = 0;
-        ofd.RestoreDirectory = true;
-        if (ofd.ShowDialog(this) == System::Windows::Forms::DialogResult::OK) {
-            fs::path inputPath = StringToPath(ofd.FileName);
-            MetroTexture texture;
-            if (texture.LoadFromFile(inputPath)) {
-                SaveFileDialog sfd;
-                sfd.Title = L"Save file...";
-                sfd.Filter = L"All files (*.*)|*.*";
-                sfd.FileName = PathToString(inputPath.stem());
-                sfd.RestoreDirectory = true;
-                sfd.OverwritePrompt = true;
-
-                if (sfd.ShowDialog(this) == System::Windows::Forms::DialogResult::OK) {
-                    fs::path outPath = StringToPath(sfd.FileName);
-                    texture.SaveAsMetroTexture(outPath);
-                }
-            }
-        }
+        DlgConvertTextures dlg;
+        dlg.Icon = this->Icon;
+        dlg.ShowDialog(this);
     }
 }

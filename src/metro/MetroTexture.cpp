@@ -365,7 +365,7 @@ bool MetroTexture::SaveAsMetroTexture(const fs::path& filePath) {
         }
     }
 
-    return false;
+    return result;
 }
 
 bool MetroTexture::IsCubemap() const {

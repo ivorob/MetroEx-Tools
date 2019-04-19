@@ -819,7 +819,6 @@ private: System::Windows::Forms::ToolStripButton^  toolBtnConvertTexture;
             // toolBtnConvertTexture
             // 
             this->toolBtnConvertTexture->DisplayStyle = System::Windows::Forms::ToolStripItemDisplayStyle::Image;
-            this->toolBtnConvertTexture->Enabled = false;
             this->toolBtnConvertTexture->Image = (cli::safe_cast<System::Drawing::Image^>(resources->GetObject(L"toolBtnConvertTexture.Image")));
             this->toolBtnConvertTexture->ImageTransparentColor = System::Drawing::Color::Magenta;
             this->toolBtnConvertTexture->Name = L"toolBtnConvertTexture";

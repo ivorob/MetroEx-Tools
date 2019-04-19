@@ -106,6 +106,9 @@
     <ClCompile Include="src\ui\TexturesDatabaseViewer.cpp">
       <Filter>src\ui</Filter>
     </ClCompile>
+    <ClCompile Include="src\ui\tools\DlgConvertTextures.cpp">
+      <Filter>src\ui\tools</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\ui\RenderPanel.h">
@@ -228,6 +231,12 @@
     <ClInclude Include="src\ui\TexturesDatabaseViewer.h">
       <Filter>src\ui</Filter>
     </ClInclude>
+    <ClInclude Include="src\ui\tools\DlgConvertTextures.h">
+      <Filter>src\ui\tools</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ui\UIHelpers.h">
+      <Filter>src\ui</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="src\ui\ImagePanel.resx">
@@ -250,6 +259,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="src\ui\TexturesDatabaseViewer.resx">
       <Filter>src\ui</Filter>
+    </EmbeddedResource>
+    <EmbeddedResource Include="src\ui\tools\DlgConvertTextures.resx">
+      <Filter>src\ui\tools</Filter>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
@@ -276,6 +288,9 @@
     </Filter>
     <Filter Include="src\shaders">
       <UniqueIdentifier>{cee2b1cb-62a2-4870-9f25-ebf41f6fd84b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\ui\tools">
+      <UniqueIdentifier>{32bfa4d5-f1d2-4858-a34c-b599aca57dc9}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
