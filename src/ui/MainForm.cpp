@@ -230,12 +230,9 @@ namespace MetroEX {
             return;
         }
 
-        TexturesDatabaseViewer^ wnd = gcnew TexturesDatabaseViewer(this, this->mTexturesDatabase, this->imageListMain);
-
-        wnd->Icon = this->Icon;
-        wnd->ShowDialog(this);
-
-        delete wnd;
+        TexturesDatabaseViewer wnd(this, this->mTexturesDatabase, this->imageListMain);
+        wnd.Icon = this->Icon;
+        wnd.ShowDialog(this);
     }
 
     // treeview
