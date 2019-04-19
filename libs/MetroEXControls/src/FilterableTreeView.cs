@@ -7,11 +7,16 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Runtime.InteropServices;
 
-namespace MetroEXControls
-{
-    public partial class FilterableTreeView : UserControl
-    {
+namespace MetroEXControls {
+    public partial class FilterableTreeView : UserControl {
+        #region WinAPI bindings
+        private const int EM_SETCUEBANNER = 0x1501;
+        [DllImport("user32.dll", CharSet = CharSet.Auto)]
+        private static extern Int32 SendMessage(IntPtr hWnd, int msg, int wParam, [MarshalAs(UnmanagedType.LPWStr)]string lParam);
+        #endregion
+
         public int FilterTimeout { get; set; } = 1000;
         public TreeView TreeView { get { return this.treeView; } }
         public TextBox FilterTextBox { get { return this.filterTextBox; } }
@@ -21,9 +26,11 @@ namespace MetroEXControls
         private TreeNode[] mOriginalRootNodes;
         private bool mIsFiltering;
 
-        public FilterableTreeView()
-        {
+        public FilterableTreeView() {
             InitializeComponent();
+
+            //#NOTE_SK: set placeholder text for better and cooler look ;)
+            SendMessage(FilterTextBox.Handle, EM_SETCUEBANNER, 0, "Search here...");
 
             mTimer = new Timer();
             mTimer.Interval = FilterTimeout;
@@ -53,7 +60,7 @@ namespace MetroEXControls
                 this.treeView.Nodes.AddRange(mOriginalRootNodes);
             } else {
                 mIsFiltering = true;
-                for (var i = 0; i < mOriginalRootNodes.Length; i++) {
+                for (var i = 0; i < mOriginalRootNodes.Length; ++i) {
                     var rootNode = mOriginalRootNodes[i].Clone() as TreeNode;
                     FilterTreeView(rootNode, this.filterTextBox.Text);
                     this.treeView.Nodes.Add(rootNode);
@@ -69,7 +76,7 @@ namespace MetroEXControls
         private void FilterTreeView(TreeNode node, string text) {
             var nodesToRemove = new List<TreeNode>();
 
-            for (int i = 0; i < node.Nodes.Count; i++) {
+            for (int i = 0; i < node.Nodes.Count; ++i) {
                 if (node.Nodes[i].Nodes.Count > 0) {
                     FilterTreeView(node.Nodes[i], text);
 
@@ -81,7 +88,7 @@ namespace MetroEXControls
                 }
             }
 
-            for (int i = 0; i < nodesToRemove.Count; i++) {
+            for (int i = 0; i < nodesToRemove.Count; ++i) {
                 node.Nodes.Remove(nodesToRemove[i]);
             }
         }

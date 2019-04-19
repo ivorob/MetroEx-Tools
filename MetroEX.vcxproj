@@ -317,7 +317,7 @@
     </FxCompile>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="MetroEXControls\MetroEXControls.csproj">
+    <ProjectReference Include="$(SolutionDir)libs\MetroEXControls\MetroEXControls.csproj">
       <Project>{c49e5f43-f91a-4e8e-817f-79709f284236}</Project>
     </ProjectReference>
   </ItemGroup>

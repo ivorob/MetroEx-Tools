@@ -275,11 +275,11 @@ private: System::Windows::Forms::ToolStripButton^  toolBtnConvertTexture;
             this->toolStripSeparator2 = (gcnew System::Windows::Forms::ToolStripSeparator());
             this->toolBtnImgEnableAlpha = (gcnew System::Windows::Forms::ToolStripButton());
             this->toolBtnCreatePatch = (gcnew System::Windows::Forms::ToolStripButton());
+            this->toolBtnConvertTexture = (gcnew System::Windows::Forms::ToolStripButton());
             this->toolBtnTexturesDatabase = (gcnew System::Windows::Forms::ToolStripButton());
             this->ctxMenuExportBin = (gcnew System::Windows::Forms::ContextMenuStrip(this->components));
             this->extractBinRootToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
             this->extractBinChunkToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
-            this->toolBtnConvertTexture = (gcnew System::Windows::Forms::ToolStripButton());
             this->statusStrip1->SuspendLayout();
             (cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->splitContainer1))->BeginInit();
             this->splitContainer1->Panel1->SuspendLayout();
@@ -344,6 +344,7 @@ private: System::Windows::Forms::ToolStripButton^  toolBtnConvertTexture;
             // 
             this->splitContainer1->Dock = System::Windows::Forms::DockStyle::Fill;
             this->splitContainer1->Location = System::Drawing::Point(0, 25);
+            this->splitContainer1->Margin = System::Windows::Forms::Padding(0);
             this->splitContainer1->Name = L"splitContainer1";
             // 
             // splitContainer1.Panel1
@@ -362,6 +363,7 @@ private: System::Windows::Forms::ToolStripButton^  toolBtnConvertTexture;
             this->filterableTreeView->Dock = System::Windows::Forms::DockStyle::Fill;
             this->filterableTreeView->FilterTimeout = 1000;
             this->filterableTreeView->Location = System::Drawing::Point(0, 0);
+            this->filterableTreeView->Margin = System::Windows::Forms::Padding(0);
             this->filterableTreeView->Name = L"filterableTreeView";
             this->filterableTreeView->Size = System::Drawing::Size(301, 672);
             this->filterableTreeView->TabIndex = 0;
@@ -813,6 +815,16 @@ private: System::Windows::Forms::ToolStripButton^  toolBtnConvertTexture;
             this->toolBtnCreatePatch->Text = L"Create patch";
             this->toolBtnCreatePatch->Click += gcnew System::EventHandler(this, &MainForm::toolBtnCreatePatch_Click);
             // 
+            // toolBtnConvertTexture
+            // 
+            this->toolBtnConvertTexture->DisplayStyle = System::Windows::Forms::ToolStripItemDisplayStyle::Image;
+            this->toolBtnConvertTexture->Image = (cli::safe_cast<System::Drawing::Image^>(resources->GetObject(L"toolBtnConvertTexture.Image")));
+            this->toolBtnConvertTexture->ImageTransparentColor = System::Drawing::Color::Magenta;
+            this->toolBtnConvertTexture->Name = L"toolBtnConvertTexture";
+            this->toolBtnConvertTexture->Size = System::Drawing::Size(23, 22);
+            this->toolBtnConvertTexture->ToolTipText = L"Convert texture to Metro format";
+            this->toolBtnConvertTexture->Click += gcnew System::EventHandler(this, &MainForm::toolBtnConvertTexture_Click);
+            // 
             // toolBtnTexturesDatabase
             // 
             this->toolBtnTexturesDatabase->DisplayStyle = System::Windows::Forms::ToolStripItemDisplayStyle::Image;
@@ -848,16 +860,6 @@ private: System::Windows::Forms::ToolStripButton^  toolBtnConvertTexture;
             this->extractBinChunkToolStripMenuItem->Size = System::Drawing::Size(162, 22);
             this->extractBinChunkToolStripMenuItem->Text = L"Extract this file...";
             this->extractBinChunkToolStripMenuItem->Click += gcnew System::EventHandler(this, &MainForm::extractBinChunkToolStripMenuItem_Click);
-            // 
-            // toolBtnConvertTexture
-            // 
-            this->toolBtnConvertTexture->DisplayStyle = System::Windows::Forms::ToolStripItemDisplayStyle::Image;
-            this->toolBtnConvertTexture->Image = (cli::safe_cast<System::Drawing::Image^>(resources->GetObject(L"toolBtnConvertTexture.Image")));
-            this->toolBtnConvertTexture->ImageTransparentColor = System::Drawing::Color::Magenta;
-            this->toolBtnConvertTexture->Name = L"toolBtnConvertTexture";
-            this->toolBtnConvertTexture->Size = System::Drawing::Size(23, 22);
-            this->toolBtnConvertTexture->ToolTipText = L"Convert texture to Metro format";
-            this->toolBtnConvertTexture->Click += gcnew System::EventHandler(this, &MainForm::toolBtnConvertTexture_Click);
             // 
             // MainForm
             // 
