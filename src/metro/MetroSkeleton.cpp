@@ -36,7 +36,7 @@ MetroSkeleton::~MetroSkeleton() {
 bool MetroSkeleton::LoadFromData(MemStream& stream) {
     bool result = false;
 
-    MetroBinArchive bin(kEmptyString, stream, MetroBinArchive::kHeaderDoAutoSearch);
+    MetroBinArchive bin(kEmptyString, stream, MetroBinArchive::kHeaderNotExist);
     MetroReflectionReader reader = bin.ReflectionReader();
     if (reader.Good()) {
         this->DeserializeSelf(reader);

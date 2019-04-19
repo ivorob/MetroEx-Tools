@@ -33,6 +33,7 @@ namespace MetroEX {
             int                         numBones;
             Generic::List<MeshInfo^>    meshes;
             Generic::List<MotionInfo^>  motions;
+            String^                     comment;
         };
 
     public:
@@ -91,6 +92,10 @@ namespace MetroEX {
     private: System::Windows::Forms::TextBox^  txtMeshMaterials;
 
     private: System::Windows::Forms::Label^  label4;
+    private: System::Windows::Forms::Panel^  panel1;
+    private: System::Windows::Forms::Label^  label5;
+    private: System::Windows::Forms::TextBox^  txtModelComment;
+
 
 
     protected:
@@ -136,6 +141,9 @@ namespace MetroEX {
             this->label3 = (gcnew System::Windows::Forms::Label());
             this->panel8 = (gcnew System::Windows::Forms::Panel());
             this->lblMotionLength = (gcnew System::Windows::Forms::Label());
+            this->panel1 = (gcnew System::Windows::Forms::Panel());
+            this->label5 = (gcnew System::Windows::Forms::Label());
+            this->txtModelComment = (gcnew System::Windows::Forms::TextBox());
             this->tableLayoutPanel1->SuspendLayout();
             this->panel2->SuspendLayout();
             this->groupBox1->SuspendLayout();
@@ -156,6 +164,7 @@ namespace MetroEX {
             this->tableLayoutPanel3->SuspendLayout();
             this->panel7->SuspendLayout();
             this->panel8->SuspendLayout();
+            this->panel1->SuspendLayout();
             this->SuspendLayout();
             // 
             // tableLayoutPanel1
@@ -235,6 +244,7 @@ namespace MetroEX {
             this->tableLayoutPanel2->Controls->Add(this->panel4, 0, 0);
             this->tableLayoutPanel2->Controls->Add(this->panel5, 0, 1);
             this->tableLayoutPanel2->Controls->Add(this->panel6, 0, 2);
+            this->tableLayoutPanel2->Controls->Add(this->panel1, 0, 3);
             this->tableLayoutPanel2->Dock = System::Windows::Forms::DockStyle::Fill;
             this->tableLayoutPanel2->Location = System::Drawing::Point(0, 0);
             this->tableLayoutPanel2->Margin = System::Windows::Forms::Padding(0);
@@ -265,6 +275,7 @@ namespace MetroEX {
             this->txtMeshMaterials->Dock = System::Windows::Forms::DockStyle::Top;
             this->txtMeshMaterials->Location = System::Drawing::Point(0, 46);
             this->txtMeshMaterials->Name = L"txtMeshMaterials";
+            this->txtMeshMaterials->ReadOnly = true;
             this->txtMeshMaterials->Size = System::Drawing::Size(679, 20);
             this->txtMeshMaterials->TabIndex = 3;
             // 
@@ -487,6 +498,38 @@ namespace MetroEX {
             this->lblMotionLength->TabIndex = 0;
             this->lblMotionLength->Text = L"Length: 15 seconds";
             // 
+            // panel1
+            // 
+            this->panel1->Controls->Add(this->txtModelComment);
+            this->panel1->Controls->Add(this->label5);
+            this->panel1->Dock = System::Windows::Forms::DockStyle::Fill;
+            this->panel1->Location = System::Drawing::Point(0, 255);
+            this->panel1->Margin = System::Windows::Forms::Padding(0);
+            this->panel1->Name = L"panel1";
+            this->panel1->Size = System::Drawing::Size(679, 86);
+            this->panel1->TabIndex = 3;
+            // 
+            // label5
+            // 
+            this->label5->AutoSize = true;
+            this->label5->Dock = System::Windows::Forms::DockStyle::Top;
+            this->label5->Location = System::Drawing::Point(0, 0);
+            this->label5->Margin = System::Windows::Forms::Padding(0);
+            this->label5->Name = L"label5";
+            this->label5->Size = System::Drawing::Size(54, 13);
+            this->label5->TabIndex = 0;
+            this->label5->Text = L"Comment:";
+            // 
+            // txtModelComment
+            // 
+            this->txtModelComment->Dock = System::Windows::Forms::DockStyle::Fill;
+            this->txtModelComment->Location = System::Drawing::Point(0, 13);
+            this->txtModelComment->Multiline = true;
+            this->txtModelComment->Name = L"txtModelComment";
+            this->txtModelComment->ReadOnly = true;
+            this->txtModelComment->Size = System::Drawing::Size(679, 73);
+            this->txtModelComment->TabIndex = 1;
+            // 
             // DlgModelInfo
             // 
             this->AutoScaleDimensions = System::Drawing::SizeF(6, 13);
@@ -520,6 +563,8 @@ namespace MetroEX {
             this->panel7->PerformLayout();
             this->panel8->ResumeLayout(false);
             this->panel8->PerformLayout();
+            this->panel1->ResumeLayout(false);
+            this->panel1->PerformLayout();
             this->ResumeLayout(false);
 
         }

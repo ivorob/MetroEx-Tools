@@ -26,6 +26,8 @@ public:
     size_t                  GetNumMotions() const;
     const MetroMotion*      GetMotion(const size_t idx) const;
 
+    const CharString&       GetComment() const;
+
 private:
     void                    ReadSubChunks(MemStream& stream);
     void                    LoadLinkedMeshes(const StringArray& links);
@@ -38,6 +40,7 @@ private:
     CharString              mSkeletonPath;
     MetroSkeleton*          mSkeleton;
     MyArray<MetroMotion*>   mMotions;
+    CharString              mComment;
 
     // these are temp pointers, invalid after loading
     MetroMesh*              mCurrentMesh;

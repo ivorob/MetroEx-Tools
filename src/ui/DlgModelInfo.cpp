@@ -54,6 +54,9 @@ namespace MetroEX {
                 }
                 mModelInfo->numBones = scast<int>(model->GetSkeleton()->GetNumBones());
             }
+
+            mModelInfo->comment = marshal_as<String^>(model->GetComment());
+            mModelInfo->comment = mModelInfo->comment->Replace(L"\n", L"\r\n");
         }
 
         this->UpdateUI();
@@ -76,6 +79,8 @@ namespace MetroEX {
         for each (MotionInfo^ mi in mModelInfo->motions) {
             this->lstMotions->Items->Add(mi->name);
         }
+
+        this->txtModelComment->Text = mModelInfo->comment;
 
         this->txtSkeletonPath->Text = mModelInfo->skeletonPath;
         this->lblNumBones->Text = String::Format(L"Bones: {0}", mModelInfo->numBones);

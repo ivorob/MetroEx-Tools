@@ -30,6 +30,8 @@ enum ModelChunks {
 
     MC_SkeletonLink         = 0x00000014,   // 20
     MC_SkeletonInline       = 0x00000018,   // 24
+
+    MC_Comment              = 0x00000024,   // 36
 };
 
 static const size_t kMetroModelMaxMaterials = 4;
@@ -683,6 +685,10 @@ const MetroMotion* MetroModel::GetMotion(const size_t idx) const {
     return mMotions[idx];
 }
 
+const CharString& MetroModel::GetComment() const {
+    return mComment;
+}
+
 
 // for string delimiter
 StringArray SplitString(const CharString& s, const char delimiter) {
@@ -873,6 +879,13 @@ void MetroModel::ReadSubChunks(MemStream& stream) {
                 mSkeleton = new MetroSkeleton();
                 if (!mSkeleton->LoadFromData(stream.Substream(chunkSize))) {
                     MySafeDelete(mSkeleton);
+                }
+            } break;
+
+            case MC_Comment: {
+                if (chunkSize > 16) {
+                    stream.SkipBytes(16); // wtf ???
+                    mComment = stream.ReadStringZ();
                 }
             } break;
         }

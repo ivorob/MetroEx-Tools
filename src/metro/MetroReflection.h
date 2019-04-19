@@ -210,7 +210,7 @@ public:
                 MetroReflectionReader result(mStream.Substream(dataSize), flags);
                 result.SetSTable(mSTable);
 
-                if (this->HasDebugInfo()) {
+                if (result.HasDebugInfo()) {
                     CharString name;
                     result >> name;
                     if (!nameUnknown) {
