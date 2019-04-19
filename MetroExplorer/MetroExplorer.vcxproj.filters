@@ -186,6 +186,15 @@
     <ClInclude Include="..\libs\imgui\addons\imguinodegrapheditor\imguinodegrapheditor.h">
       <Filter>libs\imgui\addons\imguinodegrapheditor</Filter>
     </ClInclude>
+    <ClInclude Include="..\src\metro\MetroCompression.h">
+      <Filter>metro</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libs\bc7enc16\bc7enc16.h">
+      <Filter>libs\bc7enc16</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libs\lz4\lz4hc.h">
+      <Filter>libs\lz4</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="MetroExplorer.cpp">
@@ -231,9 +240,6 @@
       <Filter>metro</Filter>
     </ClCompile>
     <ClCompile Include="..\src\metro\MetroMotion.cpp">
-      <Filter>metro</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\metro\MetroReflection.cpp">
       <Filter>metro</Filter>
     </ClCompile>
     <ClCompile Include="..\src\metro\MetroSkeleton.cpp">
@@ -307,6 +313,15 @@
     </ClCompile>
     <ClCompile Include="..\libs\imgui\addons\imguinodegrapheditor\imguinodegrapheditor.cpp">
       <Filter>libs\imgui\addons\imguinodegrapheditor</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\metro\MetroCompression.cpp">
+      <Filter>metro</Filter>
+    </ClCompile>
+    <ClCompile Include="..\libs\bc7enc16\bc7enc16.c">
+      <Filter>libs\bc7enc16</Filter>
+    </ClCompile>
+    <ClCompile Include="..\libs\lz4\lz4hc.c">
+      <Filter>libs\lz4</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

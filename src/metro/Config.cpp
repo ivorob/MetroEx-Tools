@@ -91,7 +91,7 @@ float Config::r_fp32(const char* name) {
 
 float Config::r_fp32_q8(const char* name) {
     uint8_t b = mData.ReadTyped<uint8_t>();
-    return b * 0.00392156862745098 * 2;
+    return 2 * b / 255.0f;
 }
 
 float Config::r_angle(const char* name) {

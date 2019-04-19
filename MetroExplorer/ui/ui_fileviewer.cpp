@@ -64,11 +64,11 @@ public:
             ImGui::Columns(COLUMN_COUNT, "mycolumns_data");
             for (size_t i = 0; i != std::size(columnWidth); i++)
                 ImGui::SetColumnWidth(i, columnWidth[i]);
-            ImGuiListClipper clipper(m_spawn.mSpawn.size(), ImGui::GetTextLineHeightWithSpacing());
+            ImGuiListClipper clipper(m_spawn.entities.size(), ImGui::GetTextLineHeightWithSpacing());
             while (clipper.Step())
                 for (int i = clipper.DisplayStart; i < clipper.DisplayEnd; i++) {
                     ImGui::PushID(i);
-                    auto el = m_spawn.mSpawn[i];
+                    auto el = m_spawn.entities[i];
                     char idStr[10];
                     sprintf(idStr, "%u", el->initData.id);
                     if (ImGui::Selectable(idStr, selected == i, ImGuiSelectableFlags_SpanAllColumns))

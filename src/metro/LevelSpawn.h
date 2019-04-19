@@ -3,9 +3,9 @@
 #include "MetroTypes.h"
 
 struct uobject;
-class Config;
 class MetroConfigsDatabase;
 class VFXReader;
+class MetroReflectionReader;
 
 struct PresetBlend {
     CharString name;
@@ -14,7 +14,7 @@ struct PresetBlend {
     int32_t    start;
     int32_t    finish;
 
-    void Read(Config& cfg);
+    void Serialize(MetroReflectionReader& r);
 };
 
 struct Startup {
@@ -31,8 +31,8 @@ struct Startup {
     MyArray<PresetBlend> modifiers;
     uint64_t             _total_time;
     CharString           weather_preset;
-    uint32_t             dc_start;
-    uint32_t             dc_duration;
+    MetroTime            dc_start;
+    MetroTime            dc_duration;
     CharString           foliage_set;
     float                foliage_fuzziness;
     vec3                 map_positional_min;
@@ -45,13 +45,13 @@ struct Startup {
     CharString           back_music;
     uint16_t             migration_rules;
 
-    void Read(Config& cfg);
+    void Serialize(MetroReflectionReader& r);
 };
 
 struct Params {
     uint16_t version;
 
-    void Read(Config& cfg);
+    void Serialize(MetroReflectionReader& r);
 };
 
 class LevelSpawn {
@@ -61,7 +61,7 @@ public:
 
     bool LoadFromData(MemStream& stream, const VFXReader& fs, const MetroConfigsDatabase& configInfo);
 
-    Startup           mStartup;
-    Params            mParams;
-    MyArray<uobject*> mSpawn;
+    Startup           startup;
+    Params            entities_params;
+    MyArray<uobject*> entities;
 };

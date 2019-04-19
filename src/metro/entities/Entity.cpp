@@ -1,8 +1,20 @@
 #include "Entity.h"
 #include "../Config.h"
+#include "../MetroReflection.h"
 #include "../scripts/Block.h"
 #include "../scripts/BlockFactory.h"
 #include <array>
+
+void InitData::Serialize(MetroReflectionReader& r) {
+    r.VerifyTypeInfo("class", MetroTypeGetAlias<decltype(clsid)>());
+    r >> clsid;
+    METRO_READ_MEMBER(r, static_data_key);
+    METRO_READ_MEMBER_CHOOSE(r, att_bone_id);
+    METRO_READ_MEMBER(r, id);
+    METRO_READ_MEMBER(r, parent_id);
+    METRO_READ_MEMBER(r, att_offset);
+    METRO_READ_MEMBER(r, att_root);
+}
 
 void uobject_static_params::Read(Config& cfg, uint16_t version) {
     this->version = version;
@@ -18,75 +30,60 @@ void uobject_static_params::Read(Config& cfg, uint16_t version) {
     usage_distance = cfg.r_fp32("usage_distance");
 }
 
-void uobject::Read(Config& cfg) {
-    name = cfg.r_name("name");
-    oflags = cfg.r_bool8("oflags");
-    sflags = cfg.r_bool8("sflags");
-    cull_distance = cfg.r_fp32("cull_distance");
-    pose = cfg.r_pose("");
-    visual = cfg.r_choose("visual");
-    dao_val = cfg.r_u16("dao_val");
-    render_aux_val = cfg.r_color("render_aux_val");
-    cfg.ReadArray("vss_ver_6", [this](Config& cfg, uint32_t idx) {
-        Script script;
-        script.Read(cfg);
-        vss_ver_6.push_back(std::move(script));
-    });
-    vs_active = cfg.r_bool("vs_active");
-    spatial_sector = cfg.r_u16("spatial_sector");
-    qsave_chunk = cfg.r_u8("qsave_chunk");
+void uobject::Read(MetroReflectionReader& r) {
+    METRO_READ_MEMBER_NAME(r, name);
+    METRO_READ_MEMBER(r, oflags);
+    METRO_READ_MEMBER(r, sflags);
+    METRO_READ_MEMBER(r, cull_distance);
+    r.VerifyTypeInfo("", MetroTypeGetAlias<decltype(pose)>());
+    r >> pose;
+    METRO_READ_MEMBER_CHOOSE(r, visual);
+    METRO_READ_MEMBER(r, dao_val);
+    METRO_READ_MEMBER(r, render_aux_val);
+    METRO_READ_CHILD_STRUCT_ARRAY(r, vss_ver_6);
+    METRO_READ_MEMBER(r, vs_active);
+    METRO_READ_MEMBER(r, spatial_sector);
+    METRO_READ_MEMBER(r, qsave_chunk);
     if (common_vss()) {
-        cfg.ReadArray("commons_vs", [this](Config& cfg, uint32_t idx) {
-            ScriptRef ref;
-            ref.Read(cfg);
-            commons_vs.push_back(std::move(ref));
-        });
-        cfg.ReadArray("removed_vs", [](Config& cfg, uint32_t idx) {
-            assert(false);
-        });
+        METRO_READ_CHILD_STRUCT_ARRAY(r, commons_vs);
+        METRO_READ_CHILD_STRUCT_ARRAY(r, removed_vs);
     }
 }
 
-void interest_info::Read(Config& cfg) {
-    cfg.ReadSection("interest", [this](Config& cfg) {
-        min_importance = cfg.r_u16("min_importance");
-        max_importance = cfg.r_u16("max_importance");
-        interest_type = cfg.r_u8("interest_type");
-        duration = cfg.r_u16("duration");
-        speed = cfg.r_fp32("speed");
-        distance = cfg.r_fp32("distance");
-        max_angle_x = cfg.r_angle("max_angle_x");
-        max_angle_y = cfg.r_angle("max_angle_y");
-        angle_coef = cfg.r_fp32("angle_coef");
-    });
+void interest_info::Serialize(MetroReflectionReader& r) {
+    METRO_READ_MEMBER(r, min_importance);
+    METRO_READ_MEMBER(r, max_importance);
+    METRO_READ_MEMBER(r, interest_type);
+    METRO_READ_MEMBER(r, duration);
+    METRO_READ_MEMBER(r, speed);
+    METRO_READ_MEMBER(r, distance);
+    METRO_READ_MEMBER(r, max_angle_x);
+    METRO_READ_MEMBER(r, max_angle_y);
+    METRO_READ_MEMBER(r, angle_coef);
 }
 
-void uobject_static::Read(Config& cfg) {
-    uobject::Read(cfg);
-    flags = cfg.r_bool8("flags");
-    collision_group = cfg.r_u8("collision_group");
-    interest.Read(cfg);
+void uobject_static::Read(MetroReflectionReader& r) {
+    uobject::Read(r);
+    METRO_READ_MEMBER(r, flags);
+    METRO_READ_MEMBER(r, collision_group);
+    METRO_READ_CHILD_STRUCT(r, interest);
 }
 
-void uobject_effect::Read(Config& cfg) {
-    uobject::Read(cfg);
-    startup_animation = cfg.r_animation_str("startup_animation");
-    bone_part = cfg.r_part_str("bone_part");
-    start_frame = cfg.r_u16("start_frame");
-    speed = cfg.r_fp32("speed");
-    startup_animation_flags = cfg.r_bool8("startup_animation_flags");
-    force_looped = cfg.r_u8("force_looped");
-    sound = cfg.r_sound("sound");
-    sound_volume = cfg.r_fp32_q8("sound_volume");
-    sound_filter = cfg.r_u8("sound_filter");
-    particle_flags = cfg.r_bool8("particle_flags");
-    particles = cfg.r_choose("particles");
-    interest.Read(cfg);
-    // do_r_str_array("labels", ait_string);
-    uint32_t count = cfg.r_u32("labels");
-    labels.resize(count);
-    for (uint32_t i = 0; i != count; i++)
-        labels[i] = cfg.r_sz("labels");
+void uobject_effect::Read(MetroReflectionReader& r) {
+    uobject::Read(r);
+    METRO_READ_MEMBER(r, startup_animation);
+    METRO_READ_MEMBER_PART_STR(r, bone_part);
+    METRO_READ_MEMBER(r, start_frame);
+    METRO_READ_MEMBER(r, speed);
+    METRO_READ_MEMBER(r, startup_animation_flags);
+    METRO_READ_MEMBER(r, force_looped);
+    METRO_READ_MEMBER_CHOOSE(r, sound);
+    METRO_READ_MEMBER(r, sound_volume);
+    METRO_READ_MEMBER(r, sound_filter);
+    METRO_READ_MEMBER(r, particle_flags);
+    METRO_READ_MEMBER_CHOOSE(r, particles);
+    METRO_READ_CHILD_STRUCT(r, interest);
+    METRO_READ_ARRAY32_MEMBER(r, labels);
 }
 
 void centity_static_params::Read(Config& cfg, uint16_t version) {
@@ -99,65 +96,76 @@ void centity_static_params::Read(Config& cfg, uint16_t version) {
     attach_armor = cfg.r_fp32("attach_armor");
 }
 
-void centity::Read(Config& cfg) {
-    health = cfg.r_fp32("health");
-    dying_mask = cfg.r_u32("dying_mask");
-    physics_flags = cfg.r_bool8("physics_flags");
-    physics_flags1 = cfg.r_bool8("physics_flags1");
-    physics_flags2 = cfg.r_bool8("physics_flags2");
-    uobject_effect::Read(cfg);
-    friend_type = cfg.r_u8("friend_type");
-    reaction_type = cfg.r_u8("reaction_type");
-    fixed_bones = cfg.r_choose_array("fixed_bones");
-    break_impulse_threshold = cfg.r_fp32("break_impulse_threshold");
-    collisions_group = cfg.r_u8("collisions_group");
-    scene_type = cfg.r_u8("scene_type");
-    break_particles_break = cfg.r_choose("break_particles_break");
-    break_particles_death = cfg.r_choose("break_particles_death");
-    break_sound_death = cfg.r_sound("break_sound_death");
-    break_sound_death_ai_type = cfg.r_u8("break_sound_death_ai_type");
-    type_mask = cfg.r_flags64("type_mask");
-    ph_shell_model_src = cfg.r_u32("ph_shell_model_src");
-    ph_shell_skltn_src = cfg.r_u32("ph_shell_skltn_src");
-    ph_shell_skltn_bcount = cfg.r_u32("ph_shell_skltn_bcount");
-    ph_shell_writed = cfg.r_bool("ph_shell_writed");
-    if (ph_shell_writed) {
-        cfg.ReadSection("physics_shell", [this](Config& cfg) {
-            cfg.ReadArray("elements", [this](Config& cfg, uint32_t idx) {
-                cfg.r_u16("root_bid");
-                cfg.r_fp32("accumulated_impulse");
-                cfg.r_pose("xform");
-                cfg.r_vec3f("velocity");
-                cfg.r_bool("nx_awake");
-                cfg.ReadArray("shapes", [this](Config& cfg, uint32_t idx) {
-                    cfg.r_u16("bid");
-                });
-            });
-        });
-    }
-    attach_with_joint = cfg.r_bool("attach_with_joint");
-    if (attach_with_joint) {
-        cfg.ReadSection("joint_section", [this](Config& cfg) {
-            bool enabled = cfg.r_bool("enabled");
-            auto entity_src = cfg.r_entity_link("entity_src");
-            auto bone_src = cfg.r_attp_str("bone_src");
-            auto entity_dst = cfg.r_entity_link("entity_dst");
-            auto bone_dst = cfg.r_attp_str("bone_dst");
-            auto pos = cfg.r_vec3f("pos");
-            auto rot = cfg.r_ang3f("rot");
-            // g_physics_world->vfptr->load_joint_desc
-            auto joint_type = cfg.r_u16("joint_type");
-            cfg.ReadSection("params", [this](Config& cfg) {
-                cfg.r_bytes(cfg.SectionRemains());
-            });
-        });
-    }
-    footprint_size = cfg.r_fp32("footprint_size");
-    footprint_power = cfg.r_fp32("footprint_power");
+void PhysicsShape::Serialize(MetroReflectionReader& r) {
+    METRO_READ_MEMBER(r, bid);
 }
 
-void lamp::Read(Config& cfg) {
-    centity::Read(cfg);
+void PhysicsElement::Serialize(MetroReflectionReader& r) {
+    METRO_READ_MEMBER(r, root_bid);
+    METRO_READ_MEMBER(r, accumulated_impulse);
+    METRO_READ_MEMBER(r, xform);
+    METRO_READ_MEMBER(r, velocity);
+    METRO_READ_MEMBER(r, nx_awake);
+    METRO_READ_CHILD_STRUCT_ARRAY(r, shapes);
+}
+
+void PhysicsShell::Serialize(MetroReflectionReader& r) {
+    METRO_READ_CHILD_STRUCT_ARRAY(r, elements);
+}
+
+void PhysicsJointParam::Serialize(MetroReflectionReader& r) {
+    unknown.resize(r.GetStream().Remains());
+    r.GetStream().ReadToBuffer(unknown.data(), unknown.size());
+}
+
+void PhysicsJoint::Serialize(MetroReflectionReader& r) {
+    METRO_READ_MEMBER(r, enabled);
+    METRO_READ_MEMBER(r, entity_src);
+    METRO_READ_MEMBER_ATTP_SRC(r, bone_src);
+    METRO_READ_MEMBER(r, entity_dst);
+    METRO_READ_MEMBER_ATTP_SRC(r, bone_dst);
+    METRO_READ_MEMBER(r, pos);
+    METRO_READ_MEMBER(r, rot);
+    // g_physics_world->vfptr->load_joint_desc
+    METRO_READ_MEMBER(r, joint_type);
+    METRO_READ_CHILD_STRUCT(r, params);
+}
+
+void centity::Read(MetroReflectionReader& r) {
+    METRO_READ_MEMBER(r, health);
+    METRO_READ_MEMBER(r, dying_mask);
+    METRO_READ_MEMBER(r, physics_flags);
+    METRO_READ_MEMBER(r, physics_flags1);
+    METRO_READ_MEMBER(r, physics_flags2);
+    uobject_effect::Read(r);
+    METRO_READ_MEMBER(r, friend_type);
+    METRO_READ_MEMBER(r, reaction_type);
+    METRO_READ_MEMBER_CHOOSE(r, fixed_bones); // choose_array, str_shared
+    METRO_READ_MEMBER(r, break_impulse_threshold);
+    METRO_READ_MEMBER(r, collisions_group);
+    METRO_READ_MEMBER(r, scene_type);
+    METRO_READ_MEMBER_CHOOSE(r, break_particles_break);
+    METRO_READ_MEMBER_CHOOSE(r, break_particles_death);
+    METRO_READ_MEMBER_CHOOSE(r, break_sound_death);
+    METRO_READ_MEMBER(r, break_sound_death_ai_type);
+    METRO_READ_MEMBER(r, type_mask);
+    METRO_READ_MEMBER(r, ph_shell_model_src);
+    METRO_READ_MEMBER(r, ph_shell_skltn_src);
+    METRO_READ_MEMBER(r, ph_shell_skltn_bcount);
+    METRO_READ_MEMBER(r, ph_shell_writed);
+    if (ph_shell_writed) {
+        METRO_READ_CHILD_STRUCT(r, physics_shell);
+    }
+    METRO_READ_MEMBER(r, attach_with_joint);
+    if (attach_with_joint) {
+        METRO_READ_CHILD_STRUCT(r, joint_section);
+    }
+    METRO_READ_MEMBER(r, footprint_size);
+    METRO_READ_MEMBER(r, footprint_power);
+}
+
+void lamp::Read(MetroReflectionReader& r) {
+    centity::Read(r);
 }
 
 void inventory_item_static_params::Read(Config& cfg, uint16_t version) {
@@ -196,12 +204,12 @@ void inventory_item_object_static_params::Read(Config& cfg, uint16_t version) {
     can_be_taken_as_child = cfg.r_bool("can_be_taken_as_child");
 }
 
-void inventory_item_object::Read(Config& cfg) {
-    flags0 = cfg.r_bool8("flags0");
-    trade_weight = cfg.r_u16("trade_weight");
-    ui_force_slot_id = cfg.r_u8("ui_force_slot_id");
-    centity::Read(cfg);
-    anim_simplification = cfg.r_bool("anim_simplification");
+void inventory_item_object::Read(MetroReflectionReader& r) {
+    METRO_READ_MEMBER(r, flags0);
+    METRO_READ_MEMBER(r, trade_weight);
+    METRO_READ_MEMBER(r, ui_force_slot_id);
+    centity::Read(r);
+    METRO_READ_MEMBER(r, anim_simplification);
 }
 
 void chud_item_container_static_params::Read(Config& cfg, uint16_t version) {
@@ -212,9 +220,9 @@ void upgrade_item_static_params::Read(Config& cfg, uint16_t version) {
     container.Read(cfg, version);
 }
 
-void upgrade_item::Read(Config& cfg) {
-    inventory_item_object::Read(cfg);
-    upgrade_id = cfg.r_sz("upgrade_id");
+void upgrade_item::Read(MetroReflectionReader& r) {
+    inventory_item_object::Read(r);
+    METRO_READ_MEMBER(r, upgrade_id);
 }
 
 void device_upgrade_static_params::Read(Config& cfg, uint16_t version) {
@@ -239,14 +247,14 @@ void player_timer_hud_item_object_static_params::Read(Config& cfg, uint16_t vers
     hud_item.Read(cfg, version);
 }
 
-void weapon_item::Read(Config& cfg) {
-    upgrade_item::Read(cfg);
-    vr_attach = cfg.r_bool("vr_attach");
-    free_on_level = cfg.r_bool("free_on_level");
+void weapon_item::Read(MetroReflectionReader& r) {
+    upgrade_item::Read(r);
+    METRO_READ_MEMBER(r, vr_attach);
+    METRO_READ_MEMBER(r, free_on_level);
 }
 
-void uobject_vs::Read(Config& cfg) {
-    uobject::Read(cfg);
+void uobject_vs::Read(MetroReflectionReader& r) {
+    uobject::Read(r);
 }
 
 void unknown_static_params::Read(Config& cfg, uint16_t version) {
@@ -255,6 +263,7 @@ void unknown_static_params::Read(Config& cfg, uint16_t version) {
     unknown = cfg.r_bytes(cfg.Remains());
 }
 
-void UnknownObject::Read(Config& cfg) {
-    unknown = cfg.r_bytes(cfg.SectionRemains());
+void UnknownObject::Read(MetroReflectionReader& r) {
+    unknown.resize(r.GetStream().Remains());
+    r.GetStream().ReadToBuffer(unknown.data(), unknown.size());
 }

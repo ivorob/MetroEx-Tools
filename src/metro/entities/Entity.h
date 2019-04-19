@@ -7,17 +7,18 @@
 #include <variant>
 
 class Config;
+class MetroReflectionReader;
 
 struct InitData {
-    uint32_t   cls;
+    uint32_t   clsid;
     uint32_t   static_data_key;
     CharString att_bone_id;
     uint16_t   id;
     uint16_t   parent_id;
-    mat43T     att_offset;
+    pose       att_offset;
     bool       att_root;
 
-    void Read(Config& cfg);
+    void Serialize(MetroReflectionReader& r);
 };
 
 struct uobject_static_params {
@@ -37,7 +38,7 @@ struct uobject {
     virtual ~uobject() {
     }
 
-    virtual void Read(Config& cfg);
+    virtual void Read(MetroReflectionReader& r);
     // на самом деле возвращает common_vss**
     virtual bool common_vss() {
         return false;
@@ -48,18 +49,19 @@ struct uobject {
     CharString static_data;
 
     CharString         name;
-    uint8_t            oflags;
-    uint8_t            sflags;
+    Flags8             oflags;
+    Flags8             sflags;
     float              cull_distance;
-    mat43T             pose;
+    pose               pose;
     CharString         visual;
     uint16_t           dao_val;
-    vec4               render_aux_val;
+    color4f            render_aux_val;
     MyArray<Script>    vss_ver_6;
     bool               vs_active;
     uint16_t           spatial_sector;
     uint8_t            qsave_chunk;
     MyArray<ScriptRef> commons_vs;
+    MyArray<ScriptRef> removed_vs;
 
     uobject_static_params* param;
 };
@@ -75,36 +77,36 @@ struct interest_info {
     float    max_angle_y;
     float    angle_coef;
 
-    void Read(Config& cfg);
+    void Serialize(MetroReflectionReader& r);
 };
 
 struct uobject_static : public uobject {
-    uint8_t       flags;
+    Flags8        flags;
     uint8_t       collision_group;
     interest_info interest;
 
-    void Read(Config& cfg) override;
+    void Read(MetroReflectionReader& r) override;
 };
 
 struct uobject_effect : public uobject {
-    void Read(Config& cfg) override;
-    bool common_vss() override {
-        return true;
-    }
-
-    CharString          startup_animation;
+    AnimationString     startup_animation;
     CharString          bone_part;
     uint16_t            start_frame;
     float               speed;
-    uint8_t             startup_animation_flags;
+    Flags8              startup_animation_flags;
     uint8_t             force_looped;
     CharString          sound;
-    float               sound_volume;
+    FloatQ8             sound_volume;
     uint8_t             sound_filter;
     CharString          particles;
-    uint8_t             particle_flags;
+    Flags8              particle_flags;
     interest_info       interest;
     MyArray<CharString> labels;
+
+    void Read(MetroReflectionReader& r) override;
+    bool common_vss() override {
+        return true;
+    }
 };
 
 struct centity_static_params : public uobject_static_params {
@@ -118,37 +120,82 @@ struct centity_static_params : public uobject_static_params {
     void Read(Config& cfg, uint16_t version) override;
 };
 
-struct centity : public uobject_effect {
-    void Read(Config& cfg) override;
+struct PhysicsShape {
+    uint16_t bid;
 
+    void Serialize(MetroReflectionReader& r);
+};
+
+struct PhysicsElement {
+    uint16_t              root_bid;
+    float                 accumulated_impulse;
+    pose                  xform;
+    vec3                  velocity;
+    bool                  nx_awake;
+    MyArray<PhysicsShape> shapes;
+
+    void Serialize(MetroReflectionReader& r);
+};
+
+struct PhysicsShell {
+    MyArray<PhysicsElement> elements;
+
+    void Serialize(MetroReflectionReader& r);
+};
+
+struct PhysicsJointParam {
+    MyArray<uint8_t> unknown;
+
+    void Serialize(MetroReflectionReader& r);
+};
+
+struct PhysicsJoint {
+    bool              enabled;
+    EntityLink        entity_src;
+    CharString        bone_src;
+    EntityLink        entity_dst;
+    CharString        bone_dst;
+    vec3              pos;
+    ang3              rot;
+    uint16_t          joint_type;
+    PhysicsJointParam params;
+
+    void Serialize(MetroReflectionReader& r);
+};
+
+struct centity : public uobject_effect {
     float    health;
     uint32_t dying_mask;
-    uint8_t  physics_flags;
-    uint8_t  physics_flags1;
-    uint8_t  physics_flags2;
+    Flags8   physics_flags;
+    Flags8   physics_flags1;
+    Flags8   physics_flags2;
 
-    uint8_t    friend_type;
-    uint8_t    reaction_type;
-    CharString fixed_bones;
-    float      break_impulse_threshold;
-    uint8_t    collisions_group;
-    uint8_t    scene_type;
-    CharString break_particles_break;
-    CharString break_particles_death;
-    CharString break_sound_death;
-    uint8_t    break_sound_death_ai_type;
-    uint64_t   type_mask;
-    uint32_t   ph_shell_model_src;
-    uint32_t   ph_shell_skltn_src;
-    uint32_t   ph_shell_skltn_bcount;
-    bool       ph_shell_writed;
-    bool       attach_with_joint;
-    float      footprint_size;
-    float      footprint_power;
+    uint8_t      friend_type;
+    uint8_t      reaction_type;
+    CharString   fixed_bones;
+    float        break_impulse_threshold;
+    uint8_t      collisions_group;
+    uint8_t      scene_type;
+    CharString   break_particles_break;
+    CharString   break_particles_death;
+    CharString   break_sound_death;
+    uint8_t      break_sound_death_ai_type;
+    Flags64      type_mask;
+    uint32_t     ph_shell_model_src;
+    uint32_t     ph_shell_skltn_src;
+    uint32_t     ph_shell_skltn_bcount;
+    bool         ph_shell_writed;
+    PhysicsShell physics_shell;
+    bool         attach_with_joint;
+    PhysicsJoint joint_section;
+    float        footprint_size;
+    float        footprint_power;
+
+    void Read(MetroReflectionReader& r) override;
 };
 
 struct lamp : public centity {
-    void Read(Config& cfg) override;
+    void Read(MetroReflectionReader& r) override;
 };
 
 struct inventory_item_static_params {
@@ -189,13 +236,13 @@ struct inventory_item_object_static_params : public centity_static_params {
 };
 
 struct inventory_item_object : public centity {
-    void Read(Config& cfg) override;
-
     // inventory_item
-    uint8_t  flags0;
+    Flags8   flags0;
     uint16_t trade_weight;
     uint8_t  ui_force_slot_id;
     bool     anim_simplification; // ? неизвестно в каком классе должно быть
+
+    void Read(MetroReflectionReader& r) override;
 };
 
 struct chud_item_container_static_params {
@@ -209,7 +256,7 @@ struct upgrade_item_static_params : public inventory_item_object_static_params {
 };
 
 struct upgrade_item : public inventory_item_object {
-    void Read(Config& cfg) override;
+    void Read(MetroReflectionReader& r) override;
 
     CharString upgrade_id;
 };
@@ -269,14 +316,14 @@ struct chuditem_static_params {
 };
 
 struct weapon_item : public upgrade_item {
-    void Read(Config& cfg) override;
-
     bool vr_attach;
     bool free_on_level;
+
+    void Read(MetroReflectionReader& r) override;
 };
 
 struct uobject_vs : public uobject {
-    void Read(Config& cfg) override;
+    void Read(MetroReflectionReader& cfg) override;
 };
 
 struct unknown_static_params : public uobject_static_params {
@@ -288,5 +335,5 @@ struct unknown_static_params : public uobject_static_params {
 struct UnknownObject : public uobject {
     BytesArray unknown;
 
-    void Read(Config& cfg) override;
+    void Read(MetroReflectionReader& r) override;
 };

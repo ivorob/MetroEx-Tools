@@ -524,9 +524,9 @@ namespace EntityFactory {
 uobject* Create(const InitData& data) {
     static auto classMap = CreateClassMap();
     static auto staticMap = CreateStaticDataMap();
-    CharString  cls = classMap[data.cls];
+    CharString  cls = classMap[data.clsid];
     CharString  staticData = staticMap[data.static_data_key];
-    uobject*    entity = ::Create(data.cls);
+    uobject*    entity = ::Create(data.clsid);
     entity->initData = data;
     entity->cls = cls;
     entity->static_data = staticData;
@@ -534,15 +534,15 @@ uobject* Create(const InitData& data) {
 }
 
 uobject_static_params* GetStaticParams(const InitData& init, const MetroConfigsDatabase& configDb, MemStream& config) {
-    uint64_t key = ((uint64_t)init.cls << 32) + init.static_data_key;
+    uint64_t key = ((uint64_t)init.clsid << 32) + init.static_data_key;
     auto     it = paramCache.find(key);
     if (it != paramCache.end())
         return it->second.get();
-    auto param = CreateStaticParam(init.cls);
+    auto param = CreateStaticParam(init.clsid);
     paramCache[key].reset(param);
 
     char cfgName[256];
-    sprintf(cfgName, "content\\scripts\\static_data\\%08x_%08x_%08x.bin", init.cls, init.cls, init.static_data_key);
+    sprintf(cfgName, "content\\scripts\\static_data\\%08x_%08x_%08x.bin", init.clsid, init.clsid, init.static_data_key);
     const auto* cfgInfo = configDb.FindFile(cfgName);
     const auto* cfgInfo2 = configDb.FindFile(Hash_CalculateCRC32(cfgName));
     assert(cfgInfo2);

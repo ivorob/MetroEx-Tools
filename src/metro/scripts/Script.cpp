@@ -1,7 +1,13 @@
 #include "Script.h"
 #include "../Config.h"
+#include "../MetroReflection.h"
 #include "Block.h"
 #include "BlockFactory.h"
+
+void Script::Serialize(MetroReflectionReader& r) {
+    MyArray<uint8_t> unknown(r.GetStream().Remains());
+    r.GetStream().ReadToBuffer(unknown.data(), unknown.size());
+}
 
 void Script::Read(Config& cfg) {
     cfg.ReadArray("groups", [this](Config& cfg, uint32_t idx) {
@@ -23,6 +29,11 @@ void Script::Read(Config& cfg) {
         std::array<uint16_t, 4> link = cfg.r_vec4s16(itoa(j, buf, 10));
         links.push_back(link);
     }
+}
+
+void ScriptRef::Serialize(MetroReflectionReader& r) {
+    MyArray<uint8_t> unknown(r.GetStream().Remains());
+    r.GetStream().ReadToBuffer(unknown.data(), unknown.size());
 }
 
 void ScriptRef::Read(Config& cfg) {
