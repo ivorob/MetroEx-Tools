@@ -53,6 +53,7 @@ LevelSpawn::LevelSpawn() {
 }
 
 LevelSpawn::~LevelSpawn() {
+    ClearEntities();
 }
 
 void Serialize(MetroReflectionReader& r, uobject*& obj) {
@@ -74,10 +75,18 @@ bool LevelSpawn::LoadFromData(MemStream& stream, const VFXReader& fs, const Metr
         return false;
     stream.SetCursor(0);
 
+    ClearEntities();
+
     MetroBinArchive a("level.bin", stream, 4);
     auto            r = a.ReflectionReader();
     METRO_READ_CHILD_STRUCT(r, startup);
     METRO_READ_CHILD_STRUCT(r, entities_params);
     METRO_READ_CHILD_STRUCT_ARRAY(r, entities);
     return true;
+}
+
+void LevelSpawn::ClearEntities() {
+    std::for_each(entities.begin(), entities.end(), [](uobject* obj) {
+        delete obj;
+    });
 }

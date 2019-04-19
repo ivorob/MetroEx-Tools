@@ -64,4 +64,7 @@ public:
     Startup           startup;
     Params            entities_params;
     MyArray<uobject*> entities;
+
+private:
+    void ClearEntities();
 };
