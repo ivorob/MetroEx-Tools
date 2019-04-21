@@ -3,7 +3,18 @@
 
 #include <fstream>
 
-static const size_t kVFXVersionExodus   = 3;
+static const size_t kVFXVersionUnknown      = 0;
+static const size_t kVFXVersion2033Redux    = 1;
+static const size_t kVFXVersionArktika1     = 2;
+static const size_t kVFXVersionExodus       = 3;
+static const size_t kVFXVersionMax          = 4;
+
+static const CharString sGameVersions[] = {
+    "Unknown",
+    "Redux (2033 / Last Light)",
+    "Arktika.1",
+    "Exodus"
+};
 
 VFXReader::VFXReader() {
 
@@ -54,13 +65,16 @@ bool VFXReader::LoadFromFile(const fs::path& filePath) {
 
         LogPrint(LogLevel::Info, "vfx version = " + std::to_string(version) + ", compression = " + std::to_string(compressionType));
 
-        if (version == kVFXVersionExodus && compressionType == MetroCompression::Type_LZ4) { // Metro Exodus and LZ4
-            mContentVersion = stream.ReadStringZ();
+        if ((version > kVFXVersionUnknown && version < kVFXVersionMax) && compressionType == MetroCompression::Type_LZ4) {
+            if (version >= kVFXVersionExodus) {
+                mContentVersion = stream.ReadStringZ();
+            }
             stream.ReadStruct(mGUID); // guid, seems to be static across the game
             const size_t numVFS = stream.ReadTyped<uint32_t>();
             const size_t numFiles = stream.ReadTyped<uint32_t>();
             const size_t unknown_0 = stream.ReadTyped<uint32_t>();
 
+            LogPrint(LogLevel::Info, "game version = " + sGameVersions[version]);
             LogPrint(LogLevel::Info, "vfx content version = " + mContentVersion);
             LogPrintF(LogLevel::Info, "vfx guid = %08x-%04x-%04x-%04x-%02x%02x%02x%02x%02x%02x",
                 mGUID.a, mGUID.b, mGUID.c, mGUID.d, mGUID.e[0], mGUID.e[1], mGUID.e[2], mGUID.e[3], mGUID.e[4], mGUID.e[5]);
