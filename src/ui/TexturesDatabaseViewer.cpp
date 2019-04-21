@@ -151,7 +151,7 @@ namespace MetroEX {
     String^ TexturesDatabaseViewer::GetRealPath(const size_t index) {
         const MetroTextureInfo& texInfo = mDataProvider->GetTextureInfo(index);
         const CharString& sourceName = mDataProvider->GetSourceName(texInfo.name);
-        return marshal_as<String^>(sourceName);
+        return ToNetString(sourceName);
     }
 
     void TexturesDatabaseViewer::filterableTreeView_AfterCollapse(System::Object^ sender, System::Windows::Forms::TreeViewEventArgs^ e) {

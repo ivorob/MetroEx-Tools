@@ -12,15 +12,32 @@ namespace MetroEX {
 
     ref class TexturePropertiesViewer {
     public:
-        TexturePropertiesViewer();
+        TexturePropertiesViewer() {
+            mAuxNames = gcnew array<String^>(8);
+        }
+        ~TexturePropertiesViewer() {
+            MySafeDelete(mAuxNames);
+        }
 
     private:
         const MetroTextureInfo* mTextureInfo;
         String^ mRealPath;
+        array<String^>^ mAuxNames;
 
     public:
         void SetTextureInfo(const MetroTextureInfo* textureInfo) {
             mTextureInfo = textureInfo;
+
+            if (mTextureInfo) {
+                mAuxNames[0] = ToNetString(mTextureInfo->aux0_name);
+                mAuxNames[1] = ToNetString(mTextureInfo->aux1_name);
+                mAuxNames[2] = ToNetString(mTextureInfo->aux2_name);
+                mAuxNames[3] = ToNetString(mTextureInfo->aux3_name);
+                mAuxNames[4] = ToNetString(mTextureInfo->aux4_name);
+                mAuxNames[5] = ToNetString(mTextureInfo->aux5_name);
+                mAuxNames[6] = ToNetString(mTextureInfo->aux6_name);
+                mAuxNames[7] = ToNetString(mTextureInfo->aux7_name);
+            }
         }
 
         void SetRealPath(String^ path) {
@@ -164,5 +181,71 @@ namespace MetroEX {
         property String^ RealPath {
             String^ get() { return mRealPath; }
         };
+
+    #pragma region Material properties
+
+        [Category("Material")]
+        [Description("Shader name")]
+        property String^ ShaderName {
+            String^ get() { return ToNetString(mTextureInfo->shader_name); }
+        };
+
+        [Category("Material")]
+        [Description("Bump Name")]
+        property String^ BumpName {
+            String^ get() { return ToNetString(mTextureInfo->bump_name); }
+        };
+
+        [Category("Material")]
+        [Description("Bump height")]
+        property float BumpHeight {
+            float get() { return mTextureInfo->bump_height; }
+        };
+
+        [Category("Material")]
+        [Description("Parallax height multiplicator")]
+        property float ParallaxHeightMult {
+            float get() { return mTextureInfo->parallax_height_mul; }
+        };
+
+        [Category("Material")]
+        [Description("Reflectivity factor")]
+        property float Reflectivity {
+            float get() { return mTextureInfo->reflectivity; }
+        };
+
+        [Category("Material")]
+        [Description("Is metal")]
+        property bool IsMetal {
+            bool get() { return mTextureInfo->treat_as_metal; }
+        };
+
+        [Category("Material")]
+        [Description("Detail texture name")]
+        property String^ DetailName {
+            String^ get() { return ToNetString(mTextureInfo->det_name); }
+        };
+
+        [Category("Material")]
+        [Description("Detail texture scale")]
+        property System::Drawing::PointF DetailScale {
+            System::Drawing::PointF get() { return System::Drawing::PointF(mTextureInfo->det_scale_u, mTextureInfo->det_scale_v); }
+        };
+
+        [Category("Material")]
+        [Description("Detail texture intensity")]
+        property float DetailIntensity {
+            float get() { return mTextureInfo->det_intensity; }
+        };
+
+        [Category("Material")]
+        [Description("Auxiliary texture names")]
+        property array<String^>^ AuxNames {
+            array<String^>^ get() {
+                return mAuxNames;
+            }
+        };
+
+    #pragma endregion
     };
 }
