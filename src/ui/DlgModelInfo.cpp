@@ -4,9 +4,7 @@
 #include "metro/MetroSkeleton.h"
 #include "metro/MetroMotion.h"
 
-// String to std::string wrapper
-#include <msclr/marshal_cppstd.h>
-using namespace msclr::interop;
+#include "ui/UIHelpers.h"
 
 namespace MetroEX {
 
@@ -26,10 +24,10 @@ namespace MetroEX {
 
                 MeshInfo^ mi = gcnew MeshInfo();
                 mi->name = String::Format(L"Mesh_{0}", i);
-                mi->texturePath = L"content\\textures\\" + marshal_as<String^>(mesh->materials[0]);
-                mi->material1 = marshal_as<String^>(mesh->materials[1]);
-                mi->material2 = marshal_as<String^>(mesh->materials[2]);
-                mi->material3 = marshal_as<String^>(mesh->materials[3]);
+                mi->texturePath = L"content\\textures\\" + ToNetString(mesh->materials[0]);
+                mi->material1 = ToNetString(mesh->materials[1]);
+                mi->material2 = ToNetString(mesh->materials[2]);
+                mi->material3 = ToNetString(mesh->materials[3]);
                 mi->numVertices = scast<int>(mesh->vertices.size());
                 mi->numFaces = scast<int>(mesh->faces.size());
 
@@ -40,22 +38,22 @@ namespace MetroEX {
                 const MetroMotion* motion = model->GetMotion(i);
 
                 MotionInfo^ mi = gcnew MotionInfo();
-                mi->name = marshal_as<String^>(motion->GetName());
-                mi->path = marshal_as<String^>(motion->GetPath());
+                mi->name = ToNetString(motion->GetName());
+                mi->path = ToNetString(motion->GetPath());
                 mi->duration = motion->GetMotionTimeInSeconds();
 
                 mModelInfo->motions.Add(mi);
             }
 
             if (model->GetSkeleton()) {
-                mModelInfo->skeletonPath = marshal_as<String^>(model->GetSkeletonPath());
+                mModelInfo->skeletonPath = ToNetString(model->GetSkeletonPath());
                 if (!mModelInfo->skeletonPath->Length) {
                     mModelInfo->skeletonPath = L"Inline";
                 }
                 mModelInfo->numBones = scast<int>(model->GetSkeleton()->GetNumBones());
             }
 
-            mModelInfo->comment = marshal_as<String^>(model->GetComment());
+            mModelInfo->comment = ToNetString(model->GetComment());
             mModelInfo->comment = mModelInfo->comment->Replace(L"\n", L"\r\n");
         }
 

@@ -3,9 +3,7 @@
 #include "ui/MainForm.h"
 #include <VersionHelpers.h>
 
-// String to std::string wrapper
-#include <msclr/marshal_cppstd.h>
-using namespace msclr::interop;
+#include "ui/UIHelpers.h"
 
 //#NOTE_SK: CLR issues - have to undef this bullshit so I can use the proper static function of Icon
 //Thanks Microsoft !!!
@@ -48,7 +46,7 @@ void Main(array<String^>^ args) {
     MetroEX::MainForm form;
     form.Icon = appIcon;
 
-    fs::path folder = marshal_as<std::wstring>(Application::StartupPath);
+    fs::path folder = MetroEX::StringToPath(Application::StartupPath);
     LogOpen(folder);
 
     if (IsWindows7OrGreater() && !IsWindows8OrGreater()) {

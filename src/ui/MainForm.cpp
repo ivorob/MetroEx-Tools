@@ -5,6 +5,7 @@
 #include "metro/MetroSound.h"
 #include "metro/MetroSkeleton.h"
 #include "metro/MetroMotion.h"
+#include "metro/MetroLocalization.h"
 #include "metro/MetroPatchTool.h"
 
 #include <fstream>
@@ -18,10 +19,6 @@
 #include "NodeSorter.h"
 
 #include "ui/tools/DlgConvertTextures.h"
-
-// String to std::string wrapper
-#include <msclr/marshal_cppstd.h>
-using namespace msclr::interop;
 
 #include "UIHelpers.h"
 
@@ -41,6 +38,7 @@ static const int    kImageIdxTexture        = 6;
 static const int    kImageIdxMotion         = 7;
 static const int    kImageIdxSound          = 8;
 static const int    kImageIdxModel          = 9;
+static const int    kImageIdxLocalization   = 10;
 
 static const size_t kFileIdxMask            = size_t(~0) >> 1;
 static const size_t kFolderSortedFlag       = size_t(1) << ((sizeof(size_t) * 8) - 1);
@@ -61,7 +59,7 @@ namespace MetroEX {
     static FileType DetectFileType(const MetroFile& mf) {
         FileType result = FileType::Unknown;
 
-        String^ name = marshal_as<String^>(mf.name.c_str());
+        String^ name = ToNetString(mf.name.c_str());
 
         if (name->EndsWith(L".dds") ||
             name->EndsWith(L".512") ||
@@ -78,6 +76,8 @@ namespace MetroEX {
             result = FileType::Sound;
         } else if (name->EndsWith(L"lightmaps")) {
             result = FileType::Level;
+        } else if (name->EndsWith(L".lng")) {
+            result = FileType::Localization;
         }
 
         return result;
@@ -135,6 +135,11 @@ namespace MetroEX {
                 Node->ImageIndex = kImageIdxSound;
                 Node->SelectedImageIndex = kImageIdxSound;
             } break;
+
+            case FileType::Localization: {
+                Node->ImageIndex = kImageIdxLocalization;
+                Node->SelectedImageIndex = kImageIdxLocalization;
+            } break;
         }
     }
 
@@ -164,6 +169,14 @@ namespace MetroEX {
         mSoundPanel->Location = System::Drawing::Point(0, 0);
         mSoundPanel->Name = L"mSoundPanel";
         mSoundPanel->Size = System::Drawing::Size(528, 386);
+
+
+        mLocalizationPanel = gcnew LocalizationPanel();
+        this->pnlViewers->Controls->Add(mLocalizationPanel);
+        mLocalizationPanel->Dock = System::Windows::Forms::DockStyle::Fill;
+        mLocalizationPanel->Location = System::Drawing::Point(0, 0);
+        mLocalizationPanel->Name = L"mLocalizationPanel";
+        mLocalizationPanel->Size = System::Drawing::Size(528, 386);
 
 
         mRenderPanel = gcnew RenderPanel();
@@ -406,7 +419,7 @@ namespace MetroEX {
 
                             mExtractionCtx->customOffset = ci.offset;
                             mExtractionCtx->customLength = ci.length;
-                            mExtractionCtx->customFileName = marshal_as<CharString>(e->Node->Text);
+                            mExtractionCtx->customFileName = NetToCharStr(e->Node->Text);
                             this->ctxMenuExportBin->Show(this->filterableTreeView->TreeView, e->X, e->Y);
                         } else {
                             this->ctxMenuExportRaw->Show(this->filterableTreeView->TreeView, e->X, e->Y);
@@ -597,7 +610,7 @@ namespace MetroEX {
             // Get idx of config.bin
             const size_t configBinIdx = mVFXReader->FindFile("content\\config.bin");
 
-            String^ rootName = marshal_as<String^>(mVFXReader->GetSelfName());
+            String^ rootName = ToNetString(mVFXReader->GetSelfName());
             TreeNode^ rootNode = this->filterableTreeView->TreeView->Nodes->Add(rootName);
             size_t rootIdx = 0;
 
@@ -612,7 +625,7 @@ namespace MetroEX {
 
                 if (mf.IsFile()) {
                     const FileType fileType = DetectFileType(mf);
-                    TreeNode^ fileNode = rootNode->Nodes->Add(marshal_as<String^>(mf.name));
+                    TreeNode^ fileNode = rootNode->Nodes->Add(ToNetString(mf.name));
                     fileNode->Tag = gcnew FileTagData(fileType, idx, kInvalidValue);
                     UpdateNodeIcon(fileNode);
                 } else {
@@ -626,7 +639,7 @@ namespace MetroEX {
 
     void MainForm::AddFoldersRecursive(const MetroFile& dir, const size_t folderIdx, TreeNode^ rootItem, const size_t configBinIdx) {
         // Add root folder
-        TreeNode^ dirLeafNode = rootItem->Nodes->Add(marshal_as<String^>(dir.name));
+        TreeNode^ dirLeafNode = rootItem->Nodes->Add(ToNetString(dir.name));
 
         dirLeafNode->Tag = gcnew FileTagData(FileType::Folder, folderIdx, kInvalidValue);
         UpdateNodeIcon(dirLeafNode);
@@ -643,7 +656,7 @@ namespace MetroEX {
                 } else {
                     //====> any other file
                     const FileType fileType = DetectFileType(mf);
-                    TreeNode^ fileNode = dirLeafNode->Nodes->Add(marshal_as<String^>(mf.name));
+                    TreeNode^ fileNode = dirLeafNode->Nodes->Add(ToNetString(mf.name));
                     fileNode->Tag = gcnew FileTagData(fileType, idx, kInvalidValue);
                     UpdateNodeIcon(fileNode);
                 }
@@ -655,7 +668,7 @@ namespace MetroEX {
     }
 
     void MainForm::AddBinaryArchive(const MetroFile& mf, const size_t fileIdx, TreeNode^ rootItem) {
-        TreeNode^ fileNode = rootItem->Nodes->Add(marshal_as<String^>(mf.name));
+        TreeNode^ fileNode = rootItem->Nodes->Add(ToNetString(mf.name));
         fileNode->Tag = gcnew FileTagData(FileType::BinArchive, fileIdx, kInvalidValue);
         UpdateNodeIcon(fileNode);
 
@@ -665,7 +678,7 @@ namespace MetroEX {
             const bool isNameDecrypted = !ci.nameStr.empty();
 
             String^ fileName = (isNameDecrypted ?
-                marshal_as<String^>(ci.nameStr) :
+                ToNetString(ci.nameStr) :
                 String::Format("unknCRC32_0x{0:X}.bin", ci.nameCRC)
             );
 
@@ -727,6 +740,10 @@ namespace MetroEX {
         //case FileType::Level: {
         //    this->ShowLevel(fileIdx);
         //} break;
+
+            case FileType::Localization: {
+                this->ShowLocalization(fileIdx);
+            } break;
         }
     }
 
@@ -771,7 +788,7 @@ namespace MetroEX {
                     const size_t numMotions = mdl->GetNumMotions();
                     for (size_t i = 0; i < numMotions; ++i) {
                         const MetroMotion* motion = mdl->GetMotion(i);
-                        this->lstMdlPropMotions->Items->Add(marshal_as<String^>(motion->GetName()));
+                        this->lstMdlPropMotions->Items->Add(ToNetString(motion->GetName()));
                     }
 
                     this->lblMdlPropType->Text = L"Animated";
@@ -804,9 +821,8 @@ namespace MetroEX {
     }
 
     void MainForm::ShowSound(const size_t fileIdx) {
-        mImagePanel->Hide();
-        mRenderPanel->Hide();
-        mSoundPanel->Show();
+        this->SwitchViewPanel(PanelType::Sound);
+        this->SwitchInfoPanel(PanelType::Sound);
 
         const MetroFile& mf = mVFXReader->GetFile(fileIdx);
         MemStream stream = mVFXReader->ExtractFile(fileIdx);
@@ -820,24 +836,48 @@ namespace MetroEX {
         }
     }
 
+    void MainForm::ShowLocalization(const size_t fileIdx) {
+        this->SwitchViewPanel(PanelType::Localization);
+        this->SwitchInfoPanel(PanelType::Localization);
+
+        const MetroFile& mf = mVFXReader->GetFile(fileIdx);
+        MemStream stream = mVFXReader->ExtractFile(fileIdx);
+        if (stream) {
+            MetroLocalization loc;
+            if (loc.LoadFromData(stream)) {
+                mLocalizationPanel->SetLocalizationTable(&loc);
+            }
+        }
+    }
+
     void MainForm::SwitchViewPanel(PanelType t) {
         switch (t) {
             case PanelType::Texture: {
                 mRenderPanel->Hide();
                 mSoundPanel->Hide();
+                mLocalizationPanel->Hide();
                 mImagePanel->Show();
             } break;
 
             case PanelType::Model: {
                 mImagePanel->Hide();
                 mSoundPanel->Hide();
+                mLocalizationPanel->Hide();
                 mRenderPanel->Show();
             } break;
 
             case PanelType::Sound: {
                 mImagePanel->Hide();
                 mRenderPanel->Hide();
+                mLocalizationPanel->Hide();
                 mSoundPanel->Show();
+            } break;
+
+            case PanelType::Localization: {
+                mImagePanel->Hide();
+                mRenderPanel->Hide();
+                mSoundPanel->Hide();
+                mLocalizationPanel->Show();
             } break;
         }
     }
@@ -862,7 +902,8 @@ namespace MetroEX {
                 this->pnlMdlProps->Show();
             } break;
 
-            case PanelType::Sound: {
+            case PanelType::Sound:
+            case PanelType::Localization: {
                 this->pnlMdlProps->Dock = System::Windows::Forms::DockStyle::None;
                 this->pnlMdlProps->Hide();
 
@@ -950,8 +991,8 @@ namespace MetroEX {
 
         const MetroFile& mf = mVFXReader->GetFile(ctx.fileIdx);
         String^ name = ctx.customFileName.empty() ?
-            marshal_as<String^>(mf.name) :
-            marshal_as<String^>(ctx.customFileName);
+            ToNetString(mf.name) :
+            ToNetString(ctx.customFileName);
 
         fs::path resultPath = outPath;
         if (resultPath.empty()) {
@@ -1023,7 +1064,7 @@ namespace MetroEX {
             SaveFileDialog sfd;
             sfd.Title = title;
             sfd.Filter = filter;
-            sfd.FileName = marshal_as<String^>(nameWithExt);
+            sfd.FileName = ToNetString(nameWithExt);
             sfd.RestoreDirectory = true;
             sfd.OverwritePrompt = true;
 
@@ -1079,7 +1120,7 @@ namespace MetroEX {
             SaveFileDialog sfd;
             sfd.Title = title;
             sfd.Filter = filter;
-            sfd.FileName = marshal_as<String^>(nameWithExt);
+            sfd.FileName = ToNetString(nameWithExt);
             sfd.RestoreDirectory = true;
             sfd.OverwritePrompt = true;
 
@@ -1149,7 +1190,7 @@ namespace MetroEX {
             SaveFileDialog sfd;
             sfd.Title = title;
             sfd.Filter = filter;
-            sfd.FileName = marshal_as<String^>(nameWithExt);
+            sfd.FileName = ToNetString(nameWithExt);
             sfd.RestoreDirectory = true;
             sfd.OverwritePrompt = true;
 

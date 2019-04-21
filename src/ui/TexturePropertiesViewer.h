@@ -1,8 +1,9 @@
 #pragma once
-#include <msclr/marshal_cppstd.h>
 #include "mycommon.h"
 #include "metro/MetroTexturesDatabase.h"
 #include "metro/MetroTexture.h"
+
+#include "ui/UIHelpers.h"
 
 namespace MetroEX {
     using namespace System;
@@ -29,7 +30,7 @@ namespace MetroEX {
         [Category("Common")]
         [Description("Texture name")]
         property String^ Name {
-            String^ get() { return marshal_as<String^>(mTextureInfo->name); }
+            String^ get() { return ToNetString(mTextureInfo->name); }
         };
 
         [Category("Common")]
@@ -75,7 +76,7 @@ namespace MetroEX {
         [Description("Texture source name")]
         property String^ SourceName {
             String^ get() {
-                return marshal_as<String^>(mTextureInfo->source_name);
+                return ToNetString(mTextureInfo->source_name);
             }
         }
 

@@ -109,6 +109,12 @@
     <ClCompile Include="src\ui\tools\DlgConvertTextures.cpp">
       <Filter>src\ui\tools</Filter>
     </ClCompile>
+    <ClCompile Include="src\metro\MetroLocalization.cpp">
+      <Filter>src\metro</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ui\LocalizationPanel.cpp">
+      <Filter>src\ui</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\ui\RenderPanel.h">
@@ -237,6 +243,12 @@
     <ClInclude Include="src\ui\UIHelpers.h">
       <Filter>src\ui</Filter>
     </ClInclude>
+    <ClInclude Include="src\metro\MetroLocalization.h">
+      <Filter>src\metro</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ui\LocalizationPanel.h">
+      <Filter>src\ui</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="src\ui\ImagePanel.resx">
@@ -262,6 +274,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="src\ui\tools\DlgConvertTextures.resx">
       <Filter>src\ui\tools</Filter>
+    </EmbeddedResource>
+    <EmbeddedResource Include="src\ui\LocalizationPanel.resx">
+      <Filter>src\ui</Filter>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

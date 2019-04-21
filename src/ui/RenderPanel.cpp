@@ -20,8 +20,7 @@
 #include "shaders/CubemapViewerVS.hlsl.h"
 #include "shaders/CubemapViewerPS.hlsl.h"
 
-// String to std::string wrapper
-#include <msclr/marshal_cppstd.h>
+#include "UIHelpers.h"
 
 namespace MetroEX {
 
@@ -488,7 +487,7 @@ namespace MetroEX {
                 const CharString& textureName = mesh->materials.front();
                 const CharString& sourceName = mDatabase->GetSourceName(textureName);
 
-                String^ texNameManaged = msclr::interop::marshal_as<String^>(textureName);
+                String^ texNameManaged = ToNetString(textureName);
 
                 const bool contains = mModelTextures->ContainsKey(texNameManaged);
                 if (!contains) {

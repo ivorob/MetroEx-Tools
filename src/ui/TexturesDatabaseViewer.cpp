@@ -1,9 +1,8 @@
-#include <msclr/marshal_cppstd.h>
 #include "TexturesDatabaseViewer.h"
-#include "ui\MainForm.h"
-#include "ui\NodeSorter.h"
+#include "ui/MainForm.h"
+#include "ui/NodeSorter.h"
+#include "ui/UIHelpers.h"
 
-using namespace msclr::interop;
 
 static const int kImageIdxFile = 6;
 static const int kImageIdxFolderClosed = 0;
@@ -56,7 +55,7 @@ namespace MetroEX {
 
         for (size_t i = 0, end = mDataProvider->GetNumTextures(); i < end; ++i) {
             const MetroTextureInfo& texInfo = mDataProvider->GetTextureInfo(i);
-            String^ name = marshal_as<String^>(texInfo.name);
+            String^ name = ToNetString(texInfo.name);
             array<String^>^ parts = name->Split('\\');
 
             TreeNode^ parentNode = mOriginalRootNode;

@@ -139,6 +139,7 @@
     <ClCompile Include="src\metro\MetroConfigDatabase.cpp" />
     <ClCompile Include="src\metro\MetroLevel.cpp" />
     <ClCompile Include="src\metro\MetroDatabases.h" />
+    <ClCompile Include="src\metro\MetroLocalization.cpp" />
     <ClCompile Include="src\metro\MetroMaterialsDatabase.cpp" />
     <ClCompile Include="src\metro\MetroModel.cpp" />
     <ClCompile Include="src\metro\MetroMotion.cpp" />
@@ -153,6 +154,7 @@
     <ClCompile Include="src\ui\DlgModelInfo.cpp" />
     <ClCompile Include="src\ui\ExtractionOptionsDgl.cpp" />
     <ClCompile Include="src\ui\ImagePanel.cpp" />
+    <ClCompile Include="src\ui\LocalizationPanel.cpp" />
     <ClCompile Include="src\ui\MainForm.cpp" />
     <ClCompile Include="src\ui\RenderPanel.cpp" />
     <ClCompile Include="src\ui\SoundPanel.cpp" />
@@ -177,6 +179,7 @@
     <ClInclude Include="src\hashing.h" />
     <ClInclude Include="src\metro\MetroConfigDatabase.h" />
     <ClInclude Include="src\metro\MetroLevel.h" />
+    <ClInclude Include="src\metro\MetroLocalization.h" />
     <ClInclude Include="src\metro\MetroMaterialsDatabase.h" />
     <ClInclude Include="src\metro\MetroModel.h" />
     <ClInclude Include="src\metro\MetroMotion.h" />
@@ -201,6 +204,9 @@
       <FileType>CppForm</FileType>
     </ClInclude>
     <ClInclude Include="src\ui\ImagePanel.h">
+      <FileType>CppControl</FileType>
+    </ClInclude>
+    <ClInclude Include="src\ui\LocalizationPanel.h">
       <FileType>CppControl</FileType>
     </ClInclude>
     <ClInclude Include="src\ui\MainForm.h">
@@ -260,6 +266,11 @@
       <DependentUpon>src\ui\tools\DlgConvertTextures.h</DependentUpon>
       <LogicalName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">MetroEX.DlgConvertTextures.resources</LogicalName>
       <LogicalName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">MetroEX.DlgConvertTextures.resources</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="src\ui\LocalizationPanel.resx">
+      <DependentUpon>src\ui\LocalizationPanel.h</DependentUpon>
+      <LogicalName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">MetroEX.LocalizationPanel.resources</LogicalName>
+      <LogicalName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">MetroEX.LocalizationPanel.resources</LogicalName>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

@@ -22,6 +22,7 @@ using MyArray = std::vector<T>;
 template <typename K, typename T>
 using MyDict = std::unordered_map<K, T>;
 using CharString = std::string;
+using WideString = std::wstring;
 using StringArray = MyArray<CharString>;
 using BytesArray = MyArray<uint8_t>;
 

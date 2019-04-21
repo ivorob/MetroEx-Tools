@@ -8,6 +8,7 @@
 #include "RenderPanel.h"
 #include "ImagePanel.h"
 #include "SoundPanel.h"
+#include "LocalizationPanel.h"
 #include "DlgModelInfo.h"
 
 class VFXReader;
@@ -26,13 +27,15 @@ namespace MetroEX {
         Model,
         Motion,
         Level,
-        Sound
+        Sound,
+        Localization
     };
 
     enum class PanelType {
         Texture,
         Model,
-        Sound
+        Sound,
+        Localization
     };
 
     struct FileExtractionCtx {
@@ -78,6 +81,7 @@ namespace MetroEX {
             mImagePanel = nullptr;
             mRenderPanel = nullptr;
             mSoundPanel = nullptr;
+            mLocalizationPanel = nullptr;
             mDlgModelInfo = nullptr;
             mVFXReader = nullptr;
 
@@ -107,6 +111,7 @@ namespace MetroEX {
         MetroEX::ImagePanel^        mImagePanel;
         MetroEX::RenderPanel^       mRenderPanel;
         MetroEX::SoundPanel^        mSoundPanel;
+        MetroEX::LocalizationPanel^ mLocalizationPanel;
         MetroEX::DlgModelInfo^      mDlgModelInfo;
 
         //
@@ -627,6 +632,7 @@ private: System::Windows::Forms::ToolStripButton^  toolBtnConvertTexture;
             this->imageListMain->Images->SetKeyName(7, L"anim.png");
             this->imageListMain->Images->SetKeyName(8, L"sound.png");
             this->imageListMain->Images->SetKeyName(9, L"model.png");
+            this->imageListMain->Images->SetKeyName(10, L"localization.png");
             // 
             // ctxMenuExportTexture
             // 
@@ -938,6 +944,7 @@ private: System::Windows::Forms::ToolStripButton^  toolBtnConvertTexture;
         void ShowTexture(const size_t fileIdx);
         void ShowModel(const size_t fileIdx);
         void ShowSound(const size_t fileIdx);
+        void ShowLocalization(const size_t fileIdx);
         void SwitchViewPanel(PanelType t);
         void SwitchInfoPanel(PanelType t);
 
