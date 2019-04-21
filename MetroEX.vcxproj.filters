@@ -115,6 +115,9 @@
     <ClCompile Include="src\ui\LocalizationPanel.cpp">
       <Filter>src\ui</Filter>
     </ClCompile>
+    <ClCompile Include="libs\pugixml\src\pugixml.cpp">
+      <Filter>libs\pugixml</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\ui\RenderPanel.h">
@@ -249,6 +252,9 @@
     <ClInclude Include="src\ui\LocalizationPanel.h">
       <Filter>src\ui</Filter>
     </ClInclude>
+    <ClInclude Include="libs\pugixml\src\pugixml.hpp">
+      <Filter>libs\pugixml</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="src\ui\ImagePanel.resx">
@@ -306,6 +312,9 @@
     </Filter>
     <Filter Include="src\ui\tools">
       <UniqueIdentifier>{32bfa4d5-f1d2-4858-a34c-b599aca57dc9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="libs\pugixml">
+      <UniqueIdentifier>{fab92e35-1e7a-4049-8945-f2b8fedc8c1c}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

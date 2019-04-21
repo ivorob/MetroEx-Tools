@@ -405,12 +405,16 @@ namespace MetroEX {
                         this->ctxMenuExportTexture->Show(this->filterableTreeView->TreeView, e->X, e->Y);
                     } break;
 
-                    //case FileType::Model: {
-                    //    this->ctxMenuExportModel->Show(this->filterableTreeView->TreeView, e->X, e->Y);
-                    //} break;
+                    case FileType::Model: {
+                        this->ctxMenuExportModel->Show(this->filterableTreeView->TreeView, e->X, e->Y);
+                    } break;
 
                     case FileType::Sound: {
                         this->ctxMenuExportSound->Show(this->filterableTreeView->TreeView, e->X, e->Y);
+                    } break;
+
+                    case FileType::Localization: {
+                        this->ctxMenuExportLocalization->Show(this->filterableTreeView->TreeView, e->X, e->Y);
                     } break;
 
                     case FileType::Bin: {
@@ -488,7 +492,7 @@ namespace MetroEX {
         }
     }
 
-    void MainForm::saveAsFBXToolStripMenuItem_Click(System::Object^ sender, System::EventArgs^ e) {
+    void MainForm::saveAsFBXToolStripMenuItem_Click(System::Object^, System::EventArgs^) {
         mExtractionCtx->mdlSaveAsFbx = true;
         mExtractionCtx->mdlSaveWithAnims = true;
 
@@ -497,7 +501,7 @@ namespace MetroEX {
         }
     }
 
-    void MainForm::saveAsOGGToolStripMenuItem_Click(System::Object^ sender, System::EventArgs^ e) {
+    void MainForm::saveAsOGGToolStripMenuItem_Click(System::Object^, System::EventArgs^) {
         mExtractionCtx->sndSaveAsOgg = true;
 
         if (!this->ExtractSound(*mExtractionCtx, fs::path())) {
@@ -505,7 +509,7 @@ namespace MetroEX {
         }
     }
 
-    void MainForm::saveAsWAVToolStripMenuItem_Click(System::Object^ sender, System::EventArgs^ e) {
+    void MainForm::saveAsWAVToolStripMenuItem_Click(System::Object^, System::EventArgs^) {
         mExtractionCtx->sndSaveAsWav = true;
 
         if (!this->ExtractSound(*mExtractionCtx, fs::path())) {
@@ -513,15 +517,21 @@ namespace MetroEX {
         }
     }
 
-    void MainForm::extractBinRootToolStripMenuItem_Click(System::Object^ sender, System::EventArgs^ e) {
+    void MainForm::saveAsExcel2003XMLToolStripMenuItem_Click(System::Object^, System::EventArgs^) {
+        if (!this->ExtractLocalization(*mExtractionCtx, fs::path())) {
+            this->ShowErrorMessage("Failed to extract localization!");
+        }
+    }
+
+    void MainForm::extractBinRootToolStripMenuItem_Click(System::Object^, System::EventArgs^) {
         mExtractionCtx->customOffset = kInvalidValue;
         mExtractionCtx->customLength = kInvalidValue;
         mExtractionCtx->customFileName = "";
 
-        this->extractFileToolStripMenuItem_Click(sender, e);
+        this->extractFileToolStripMenuItem_Click(nullptr, nullptr);
     }
 
-    void MainForm::extractBinChunkToolStripMenuItem_Click(System::Object^  sender, System::EventArgs^  e) {
+    void MainForm::extractBinChunkToolStripMenuItem_Click(System::Object^, System::EventArgs^) {
         if (!this->ExtractFile(*mExtractionCtx, fs::path())) {
             this->ShowErrorMessage("Failed to extract bin file chunk!");
         }
@@ -953,6 +963,12 @@ namespace MetroEX {
                     name[name.size() - 1] = 'v';
                 }
             } break;
+
+            case FileType::Localization: {
+                name[name.size() - 3] = 'x';
+                name[name.size() - 2] = 'm';
+                name[name.size() - 1] = 'l';
+            } break;
         }
 
         return name;
@@ -1211,6 +1227,42 @@ namespace MetroEX {
                     } else {
                         result = sound.SaveAsWAV(resultPath);
                     }
+                }
+            }
+        }
+
+        return result;
+    }
+
+    bool MainForm::ExtractLocalization(const FileExtractionCtx& ctx, const fs::path& outPath) {
+        bool result = false;
+
+        const MetroFile& mf = mVFXReader->GetFile(ctx.fileIdx);
+
+        fs::path resultPath = outPath;
+        if (resultPath.empty()) {
+            CharString nameWithExt = this->MakeFileOutputName(mf, ctx);
+
+            SaveFileDialog sfd;
+            sfd.Title = L"Save Excel 2003 XML...";
+            sfd.Filter = L"Excel 2003 XML (*.xml)|*.xml";
+            sfd.FileName = ToNetString(nameWithExt);
+            sfd.RestoreDirectory = true;
+            sfd.OverwritePrompt = true;
+
+            if (sfd.ShowDialog(this) == System::Windows::Forms::DialogResult::OK) {
+                resultPath = StringToPath(sfd.FileName);
+            } else {
+                return true;
+            }
+        }
+
+        if (!resultPath.empty()) {
+            MemStream stream = mVFXReader->ExtractFile(ctx.fileIdx);
+            if (stream) {
+                MetroLocalization loc;
+                if (loc.LoadFromData(stream)) {
+                    result = loc.SaveToExcel2003(resultPath);
                 }
             }
         }

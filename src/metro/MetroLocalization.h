@@ -8,6 +8,8 @@ public:
 
     bool                LoadFromData(MemStream stream);
 
+    bool                SaveToExcel2003(const fs::path& path);
+
     size_t              GetNumStrings() const;
     const CharString&   GetKey(const size_t idx) const;
     const WideString&   GetValue(const size_t idx) const;

@@ -202,6 +202,8 @@ private: System::Windows::Forms::ToolStripButton^  toolBtnConvertTexture;
 
     private: System::Windows::Forms::ToolStripButton^  toolBtnTexturesDatabase;
     private: MetroEXControls::FilterableTreeView^  filterableTreeView;
+private: System::Windows::Forms::ContextMenuStrip^  ctxMenuExportLocalization;
+private: System::Windows::Forms::ToolStripMenuItem^  saveAsExcel2003XMLToolStripMenuItem;
 
 
 
@@ -285,6 +287,8 @@ private: System::Windows::Forms::ToolStripButton^  toolBtnConvertTexture;
             this->ctxMenuExportBin = (gcnew System::Windows::Forms::ContextMenuStrip(this->components));
             this->extractBinRootToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
             this->extractBinChunkToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
+            this->ctxMenuExportLocalization = (gcnew System::Windows::Forms::ContextMenuStrip(this->components));
+            this->saveAsExcel2003XMLToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
             this->statusStrip1->SuspendLayout();
             (cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->splitContainer1))->BeginInit();
             this->splitContainer1->Panel1->SuspendLayout();
@@ -301,6 +305,7 @@ private: System::Windows::Forms::ToolStripButton^  toolBtnConvertTexture;
             this->ctxMenuExportFolder->SuspendLayout();
             this->toolStrip1->SuspendLayout();
             this->ctxMenuExportBin->SuspendLayout();
+            this->ctxMenuExportLocalization->SuspendLayout();
             this->SuspendLayout();
             // 
             // statusStrip1
@@ -868,6 +873,19 @@ private: System::Windows::Forms::ToolStripButton^  toolBtnConvertTexture;
             this->extractBinChunkToolStripMenuItem->Text = L"Extract this file...";
             this->extractBinChunkToolStripMenuItem->Click += gcnew System::EventHandler(this, &MainForm::extractBinChunkToolStripMenuItem_Click);
             // 
+            // ctxMenuExportLocalization
+            // 
+            this->ctxMenuExportLocalization->Items->AddRange(gcnew cli::array< System::Windows::Forms::ToolStripItem^  >(1) { this->saveAsExcel2003XMLToolStripMenuItem });
+            this->ctxMenuExportLocalization->Name = L"ctxMenuExportLocalization";
+            this->ctxMenuExportLocalization->Size = System::Drawing::Size(196, 48);
+            // 
+            // saveAsExcel2003XMLToolStripMenuItem
+            // 
+            this->saveAsExcel2003XMLToolStripMenuItem->Name = L"saveAsExcel2003XMLToolStripMenuItem";
+            this->saveAsExcel2003XMLToolStripMenuItem->Size = System::Drawing::Size(195, 22);
+            this->saveAsExcel2003XMLToolStripMenuItem->Text = L"Save as Excel 2003 XML";
+            this->saveAsExcel2003XMLToolStripMenuItem->Click += gcnew System::EventHandler(this, &MainForm::saveAsExcel2003XMLToolStripMenuItem_Click);
+            // 
             // MainForm
             // 
             this->AutoScaleDimensions = System::Drawing::SizeF(6, 13);
@@ -900,6 +918,7 @@ private: System::Windows::Forms::ToolStripButton^  toolBtnConvertTexture;
             this->toolStrip1->ResumeLayout(false);
             this->toolStrip1->PerformLayout();
             this->ctxMenuExportBin->ResumeLayout(false);
+            this->ctxMenuExportLocalization->ResumeLayout(false);
             this->ResumeLayout(false);
             this->PerformLayout();
 
@@ -927,6 +946,7 @@ private: System::Windows::Forms::ToolStripButton^  toolBtnConvertTexture;
         void saveAsFBXToolStripMenuItem_Click(System::Object^ sender, System::EventArgs^ e);
         void saveAsOGGToolStripMenuItem_Click(System::Object^ sender, System::EventArgs^ e);
         void saveAsWAVToolStripMenuItem_Click(System::Object^ sender, System::EventArgs^ e);
+        void saveAsExcel2003XMLToolStripMenuItem_Click(System::Object^ sender, System::EventArgs^ e);
         void extractBinRootToolStripMenuItem_Click(System::Object^ sender, System::EventArgs^ e);
         void extractBinChunkToolStripMenuItem_Click(System::Object^ sender, System::EventArgs^ e);
 
@@ -955,6 +975,7 @@ private: System::Windows::Forms::ToolStripButton^  toolBtnConvertTexture;
         bool ExtractTexture(const FileExtractionCtx& ctx, const fs::path& outPath);
         bool ExtractModel(const FileExtractionCtx& ctx, const fs::path& outPath);
         bool ExtractSound(const FileExtractionCtx& ctx, const fs::path& outPath);
+        bool ExtractLocalization(const FileExtractionCtx& ctx, const fs::path& outPath);
         bool ExtractFolderComplete(const FileExtractionCtx& ctx, const fs::path& outPath);
         void ExtractionProcessFunc(Object^ folderPath);
 
