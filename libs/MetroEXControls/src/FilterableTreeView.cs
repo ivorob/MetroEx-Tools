@@ -22,7 +22,6 @@ namespace MetroEXControls {
         public TreeView TreeView { get { return this.treeView; } }
         public TextBox FilterTextBox { get { return this.filterTextBox; } }
         public bool IsFiltering { get { return mIsFiltering; } }
-        public TreeNode SavedNode { get; private set; }
 
         private Timer mTimer;
         private TreeNode[] mOriginalRootNodes;
@@ -121,14 +120,18 @@ namespace MetroEXControls {
                 for (int i = 0; i < textParts.Length; i++) {
                     foundNode = this.FindNode(nodeToSearch, textParts[i]);
 
-                    if (i == textParts.Length - 1 && extensions != null) {
-                        for (int j = 0; j < extensions.Length; j++) {
-                            foundNode = this.FindNode(nodeToSearch, textParts[i] + extensions[j]);
+                    if (i == textParts.Length - 1) {
+                        if(extensions != null) {
+                            for (int j = 0; j < extensions.Length; j++) {
+                                foundNode = this.FindNode(nodeToSearch, textParts[i] + extensions[j]);
 
-                            if (foundNode != null) {
-                                break;
+                                if (foundNode != null) {
+                                    break;
+                                }
                             }
                         }
+                    } else if(foundNode != null) {
+                        foundNode.Expand();
                     }
 
                     nodeToSearch = foundNode;
@@ -142,7 +145,6 @@ namespace MetroEXControls {
             }
 
             if (node != null) {
-                this.SavedNode = node;
                 this.TreeView.SelectedNode = node;
 
                 return true;

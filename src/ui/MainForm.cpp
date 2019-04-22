@@ -279,9 +279,11 @@ namespace MetroEX {
     }
 
     void MainForm::filterableTreeView_AfterSelect(System::Object^, System::Windows::Forms::TreeViewEventArgs^ e) {
-        TreeNode^ node = e->Node != nullptr ? e->Node : this->filterableTreeView->SavedNode;
+        if (e->Node == nullptr) {
+            return;
+        }
 
-        FileTagData^ fileData = safe_cast<FileTagData^>(node->Tag);
+        FileTagData^ fileData = safe_cast<FileTagData^>(e->Node->Tag);
         const size_t fileIdx = fileData->fileIdx & kFileIdxMask;
         const bool isSubFile = fileData->subFileIdx != kInvalidValue;
 
@@ -317,7 +319,11 @@ namespace MetroEX {
     }
 
     void MainForm::filterableTreeView_AfterExpand(System::Object^, System::Windows::Forms::TreeViewEventArgs^ e) {
-        TreeNode^ node = e->Node != nullptr ? e->Node : this->filterableTreeView->SavedNode;
+        TreeNode^ node = e->Node;
+
+        if (node == nullptr) {
+            return;
+        }
 
         UpdateNodeIcon(node, eNodeEventType::Open);
 
