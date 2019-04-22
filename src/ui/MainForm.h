@@ -86,7 +86,6 @@ namespace MetroEX {
             mExtractionProgressDlg = nullptr;
 
             mOriginalRootNode = nullptr;
-            mSavedNode = nullptr;
 
             InitializeComponent();
 
@@ -752,8 +751,6 @@ private: System::Windows::Forms::ToolStripMenuItem^  saveAsExcel2003XMLToolStrip
 
         // textures database
         void toolBtnTexturesDatabase_Click(System::Object^ sender, System::EventArgs^ e);
-        TreeNode^ FindNode(TreeNode^ parent, String^ text);
-        TreeNode^ mSavedNode;
 
     public:
         void ResetTreeView();

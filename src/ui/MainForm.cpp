@@ -275,54 +275,15 @@ namespace MetroEX {
     }
 
     bool MainForm::FindAndSelect(String^ text, array<String^>^ extensions) {
-        auto textParts = text->Split('\\');
-
-        TreeNode^ node = this->mOriginalRootNode;
-        TreeNode^ foundNode;
-        for (int i = 0; i < textParts->Length; i++) {
-            foundNode = this->FindNode(node, textParts[i]);
-
-            if (i == textParts->Length - 1 && extensions != nullptr) {
-                for (int j = 0; j < extensions->Length; j++) {
-                    foundNode = this->FindNode(node, textParts[i] + extensions[j]);
-
-                    if (foundNode != nullptr) {
-                        break;
-                    }
-                }
-            }
-
-            if (foundNode == nullptr) {
-                return false;
-            }
-
-            node = foundNode;
-        }
-
-        // assert(this->mOriginalRootNode == this->filterableTreeView->TreeView->Nodes[0]);
-
-        this->mSavedNode = node;
-        this->filterableTreeView->TreeView->SelectedNode = node;
-
-        return true;
-    }
-
-    TreeNode^ MainForm::FindNode(TreeNode^ parent, String^ text) {
-        String^ term = text->ToUpper();
-
-        for (int i = 0; i < parent->Nodes->Count; i++) {
-            if (parent->Nodes[i]->Text->ToUpper() == term) {
-                return parent->Nodes[i];
-            }
-        }
-
-        return nullptr;
+        return this->filterableTreeView->FindAndSelect(text, extensions);
     }
 
     void MainForm::filterableTreeView_AfterSelect(System::Object^, System::Windows::Forms::TreeViewEventArgs^ e) {
-        TreeNode^ node = e->Node != nullptr ? e->Node : this->mSavedNode;
+        if (e->Node == nullptr) {
+            return;
+        }
 
-        FileTagData^ fileData = safe_cast<FileTagData^>(node->Tag);
+        FileTagData^ fileData = safe_cast<FileTagData^>(e->Node->Tag);
         const size_t fileIdx = fileData->fileIdx & kFileIdxMask;
         const bool isSubFile = fileData->subFileIdx != kInvalidValue;
 
@@ -358,7 +319,11 @@ namespace MetroEX {
     }
 
     void MainForm::filterableTreeView_AfterExpand(System::Object^, System::Windows::Forms::TreeViewEventArgs^ e) {
-        TreeNode^ node = e->Node != nullptr ? e->Node : this->mSavedNode;
+        TreeNode^ node = e->Node;
+
+        if (node == nullptr) {
+            return;
+        }
 
         UpdateNodeIcon(node, eNodeEventType::Open);
 
