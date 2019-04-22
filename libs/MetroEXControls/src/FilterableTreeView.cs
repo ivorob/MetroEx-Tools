@@ -141,10 +141,14 @@ namespace MetroEXControls {
                 }
             }
 
-            this.SavedNode = node;
-            this.TreeView.SelectedNode = node;
+            if (node != null) {
+                this.SavedNode = node;
+                this.TreeView.SelectedNode = node;
 
-            return true;
+                return true;
+            }
+
+            return false;
         }
 
         private TreeNode FindNode(TreeNode parent, string text) {
