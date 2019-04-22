@@ -49,11 +49,29 @@
     <Compile Include="src\FilterableTreeView.designer.cs">
       <DependentUpon>FilterableTreeView.cs</DependentUpon>
     </Compile>
+    <Compile Include="src\ImageInfoPanel.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="src\ImageInfoPanel.Designer.cs">
+      <DependentUpon>ImageInfoPanel.cs</DependentUpon>
+    </Compile>
+    <Compile Include="src\ModelInfoPanel.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="src\ModelInfoPanel.Designer.cs">
+      <DependentUpon>ModelInfoPanel.cs</DependentUpon>
+    </Compile>
     <Service Include="{94E38DFF-614B-4cbd-B67C-F211BB35CE8B}" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="src\FilterableTreeView.resx">
       <DependentUpon>FilterableTreeView.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="src\ImageInfoPanel.resx">
+      <DependentUpon>ImageInfoPanel.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="src\ModelInfoPanel.resx">
+      <DependentUpon>ModelInfoPanel.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

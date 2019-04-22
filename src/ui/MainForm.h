@@ -105,20 +105,24 @@ namespace MetroEX {
         }
 
     private:
-        MetroEX::ImagePanel^        mImagePanel;
-        MetroEX::RenderPanel^       mRenderPanel;
-        MetroEX::SoundPanel^        mSoundPanel;
-        MetroEX::LocalizationPanel^ mLocalizationPanel;
-        MetroEX::DlgModelInfo^      mDlgModelInfo;
+        MetroEX::ImagePanel^                mImagePanel;
+        MetroEX::RenderPanel^               mRenderPanel;
+        MetroEX::SoundPanel^                mSoundPanel;
+        MetroEX::LocalizationPanel^         mLocalizationPanel;
+        // Info panels
+        MetroEXControls::ImageInfoPanel^    mImageInfoPanel;
+        MetroEXControls::ModelInfoPanel^    mModelInfoPanel;
+        //
+        MetroEX::DlgModelInfo^              mDlgModelInfo;
 
         //
-        FileExtractionCtx*          mExtractionCtx;
-        System::Threading::Thread^  mExtractionThread;
-        IProgressDialog*            mExtractionProgressDlg;
+        FileExtractionCtx*                  mExtractionCtx;
+        System::Threading::Thread^          mExtractionThread;
+        IProgressDialog*                    mExtractionProgressDlg;
 
-        TreeNode^                   mOriginalRootNode;
+        TreeNode^                           mOriginalRootNode;
 
-        MetroConfigsDatabase*       mConfigsDatabase;
+        MetroConfigsDatabase*               mConfigsDatabase;
 
     protected:
 
@@ -168,30 +172,30 @@ namespace MetroEX {
     private: System::Windows::Forms::TableLayoutPanel^  tableLayoutPanel2;
     private: System::Windows::Forms::Panel^  pnlViewers;
     private: System::Windows::Forms::Panel^  pnlMetaProps;
-    private: System::Windows::Forms::Panel^  pnlImageProps;
-    private: System::Windows::Forms::Label^  lblImgPropMips;
-    private: System::Windows::Forms::Label^  label5;
-    private: System::Windows::Forms::Label^  lblImgPropHeight;
-    private: System::Windows::Forms::Label^  label4;
-    private: System::Windows::Forms::Label^  lblImgPropWidth;
-    private: System::Windows::Forms::Label^  label2;
-    private: System::Windows::Forms::Label^  lblImgPropCompression;
 
-    private: System::Windows::Forms::Label^  label1;
-    private: System::Windows::Forms::Panel^  pnlMdlProps;
 
-    private: System::Windows::Forms::Button^  btnMdlPropPlayStopAnim;
-    private: System::Windows::Forms::ListBox^  lstMdlPropMotions;
-    private: System::Windows::Forms::Label^  lblMdlPropJoints;
-    private: System::Windows::Forms::Label^  label9;
-    private: System::Windows::Forms::Label^  lblMdlPropTriangles;
-    private: System::Windows::Forms::Label^  label8;
-    private: System::Windows::Forms::Label^  lblMdlPropVertices;
-    private: System::Windows::Forms::Label^  label7;
-    private: System::Windows::Forms::Label^  lblMdlPropType;
-    private: System::Windows::Forms::Label^  label3;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 private: System::Windows::Forms::ToolStripButton^  toolBtnCreatePatch;
-private: System::Windows::Forms::Button^  btnModelInfo;
+
 private: System::Windows::Forms::ToolStripButton^  toolBtnConvertTexture;
 
     private: System::Windows::Forms::ToolStripButton^  toolBtnTexturesDatabase;
@@ -231,27 +235,6 @@ private: System::Windows::Forms::ToolStripMenuItem^  saveAsExcel2003XMLToolStrip
             this->tableLayoutPanel2 = (gcnew System::Windows::Forms::TableLayoutPanel());
             this->pnlViewers = (gcnew System::Windows::Forms::Panel());
             this->pnlMetaProps = (gcnew System::Windows::Forms::Panel());
-            this->pnlMdlProps = (gcnew System::Windows::Forms::Panel());
-            this->btnModelInfo = (gcnew System::Windows::Forms::Button());
-            this->btnMdlPropPlayStopAnim = (gcnew System::Windows::Forms::Button());
-            this->lstMdlPropMotions = (gcnew System::Windows::Forms::ListBox());
-            this->lblMdlPropJoints = (gcnew System::Windows::Forms::Label());
-            this->label9 = (gcnew System::Windows::Forms::Label());
-            this->lblMdlPropTriangles = (gcnew System::Windows::Forms::Label());
-            this->label8 = (gcnew System::Windows::Forms::Label());
-            this->lblMdlPropVertices = (gcnew System::Windows::Forms::Label());
-            this->label7 = (gcnew System::Windows::Forms::Label());
-            this->lblMdlPropType = (gcnew System::Windows::Forms::Label());
-            this->label3 = (gcnew System::Windows::Forms::Label());
-            this->pnlImageProps = (gcnew System::Windows::Forms::Panel());
-            this->lblImgPropMips = (gcnew System::Windows::Forms::Label());
-            this->label5 = (gcnew System::Windows::Forms::Label());
-            this->lblImgPropHeight = (gcnew System::Windows::Forms::Label());
-            this->label4 = (gcnew System::Windows::Forms::Label());
-            this->lblImgPropWidth = (gcnew System::Windows::Forms::Label());
-            this->label2 = (gcnew System::Windows::Forms::Label());
-            this->lblImgPropCompression = (gcnew System::Windows::Forms::Label());
-            this->label1 = (gcnew System::Windows::Forms::Label());
             this->imageListMain = (gcnew System::Windows::Forms::ImageList(this->components));
             this->ctxMenuExportTexture = (gcnew System::Windows::Forms::ContextMenuStrip(this->components));
             this->saveAsDDSToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
@@ -289,9 +272,6 @@ private: System::Windows::Forms::ToolStripMenuItem^  saveAsExcel2003XMLToolStrip
             this->splitContainer1->Panel2->SuspendLayout();
             this->splitContainer1->SuspendLayout();
             this->tableLayoutPanel2->SuspendLayout();
-            this->pnlMetaProps->SuspendLayout();
-            this->pnlMdlProps->SuspendLayout();
-            this->pnlImageProps->SuspendLayout();
             this->ctxMenuExportTexture->SuspendLayout();
             this->ctxMenuExportModel->SuspendLayout();
             this->ctxMenuExportSound->SuspendLayout();
@@ -401,221 +381,12 @@ private: System::Windows::Forms::ToolStripMenuItem^  saveAsExcel2003XMLToolStrip
             // pnlMetaProps
             // 
             this->pnlMetaProps->BorderStyle = System::Windows::Forms::BorderStyle::FixedSingle;
-            this->pnlMetaProps->Controls->Add(this->pnlMdlProps);
-            this->pnlMetaProps->Controls->Add(this->pnlImageProps);
             this->pnlMetaProps->Dock = System::Windows::Forms::DockStyle::Fill;
             this->pnlMetaProps->Location = System::Drawing::Point(0, 592);
             this->pnlMetaProps->Margin = System::Windows::Forms::Padding(0);
             this->pnlMetaProps->Name = L"pnlMetaProps";
             this->pnlMetaProps->Size = System::Drawing::Size(854, 80);
             this->pnlMetaProps->TabIndex = 1;
-            // 
-            // pnlMdlProps
-            // 
-            this->pnlMdlProps->Controls->Add(this->btnModelInfo);
-            this->pnlMdlProps->Controls->Add(this->btnMdlPropPlayStopAnim);
-            this->pnlMdlProps->Controls->Add(this->lstMdlPropMotions);
-            this->pnlMdlProps->Controls->Add(this->lblMdlPropJoints);
-            this->pnlMdlProps->Controls->Add(this->label9);
-            this->pnlMdlProps->Controls->Add(this->lblMdlPropTriangles);
-            this->pnlMdlProps->Controls->Add(this->label8);
-            this->pnlMdlProps->Controls->Add(this->lblMdlPropVertices);
-            this->pnlMdlProps->Controls->Add(this->label7);
-            this->pnlMdlProps->Controls->Add(this->lblMdlPropType);
-            this->pnlMdlProps->Controls->Add(this->label3);
-            this->pnlMdlProps->Location = System::Drawing::Point(3, 2);
-            this->pnlMdlProps->Name = L"pnlMdlProps";
-            this->pnlMdlProps->Size = System::Drawing::Size(623, 73);
-            this->pnlMdlProps->TabIndex = 1;
-            // 
-            // btnModelInfo
-            // 
-            this->btnModelInfo->Location = System::Drawing::Point(481, 47);
-            this->btnModelInfo->Name = L"btnModelInfo";
-            this->btnModelInfo->Size = System::Drawing::Size(75, 23);
-            this->btnModelInfo->TabIndex = 10;
-            this->btnModelInfo->Text = L"Info";
-            this->btnModelInfo->UseVisualStyleBackColor = true;
-            this->btnModelInfo->Click += gcnew System::EventHandler(this, &MainForm::btnModelInfo_Click);
-            // 
-            // btnMdlPropPlayStopAnim
-            // 
-            this->btnMdlPropPlayStopAnim->Location = System::Drawing::Point(480, 5);
-            this->btnMdlPropPlayStopAnim->Name = L"btnMdlPropPlayStopAnim";
-            this->btnMdlPropPlayStopAnim->Size = System::Drawing::Size(75, 23);
-            this->btnMdlPropPlayStopAnim->TabIndex = 9;
-            this->btnMdlPropPlayStopAnim->Text = L"Play";
-            this->btnMdlPropPlayStopAnim->UseVisualStyleBackColor = true;
-            this->btnMdlPropPlayStopAnim->Click += gcnew System::EventHandler(this, &MainForm::btnMdlPropPlayStopAnim_Click);
-            // 
-            // lstMdlPropMotions
-            // 
-            this->lstMdlPropMotions->FormattingEnabled = true;
-            this->lstMdlPropMotions->Location = System::Drawing::Point(180, 1);
-            this->lstMdlPropMotions->Margin = System::Windows::Forms::Padding(0);
-            this->lstMdlPropMotions->Name = L"lstMdlPropMotions";
-            this->lstMdlPropMotions->Size = System::Drawing::Size(297, 69);
-            this->lstMdlPropMotions->TabIndex = 8;
-            this->lstMdlPropMotions->SelectedIndexChanged += gcnew System::EventHandler(this, &MainForm::lstMdlPropMotions_SelectedIndexChanged);
-            // 
-            // lblMdlPropJoints
-            // 
-            this->lblMdlPropJoints->AutoSize = true;
-            this->lblMdlPropJoints->Location = System::Drawing::Point(68, 53);
-            this->lblMdlPropJoints->Name = L"lblMdlPropJoints";
-            this->lblMdlPropJoints->Size = System::Drawing::Size(43, 13);
-            this->lblMdlPropJoints->TabIndex = 7;
-            this->lblMdlPropJoints->Text = L"100500";
-            // 
-            // label9
-            // 
-            this->label9->AutoSize = true;
-            this->label9->Location = System::Drawing::Point(4, 53);
-            this->label9->Name = L"label9";
-            this->label9->Size = System::Drawing::Size(37, 13);
-            this->label9->TabIndex = 6;
-            this->label9->Text = L"Joints:";
-            // 
-            // lblMdlPropTriangles
-            // 
-            this->lblMdlPropTriangles->AutoSize = true;
-            this->lblMdlPropTriangles->Location = System::Drawing::Point(68, 37);
-            this->lblMdlPropTriangles->Name = L"lblMdlPropTriangles";
-            this->lblMdlPropTriangles->Size = System::Drawing::Size(43, 13);
-            this->lblMdlPropTriangles->TabIndex = 5;
-            this->lblMdlPropTriangles->Text = L"100500";
-            // 
-            // label8
-            // 
-            this->label8->AutoSize = true;
-            this->label8->Location = System::Drawing::Point(4, 37);
-            this->label8->Name = L"label8";
-            this->label8->Size = System::Drawing::Size(53, 13);
-            this->label8->TabIndex = 4;
-            this->label8->Text = L"Triangles:";
-            // 
-            // lblMdlPropVertices
-            // 
-            this->lblMdlPropVertices->AutoSize = true;
-            this->lblMdlPropVertices->Location = System::Drawing::Point(68, 21);
-            this->lblMdlPropVertices->Name = L"lblMdlPropVertices";
-            this->lblMdlPropVertices->Size = System::Drawing::Size(43, 13);
-            this->lblMdlPropVertices->TabIndex = 3;
-            this->lblMdlPropVertices->Text = L"100500";
-            // 
-            // label7
-            // 
-            this->label7->AutoSize = true;
-            this->label7->Location = System::Drawing::Point(4, 21);
-            this->label7->Name = L"label7";
-            this->label7->Size = System::Drawing::Size(48, 13);
-            this->label7->TabIndex = 2;
-            this->label7->Text = L"Vertices:";
-            // 
-            // lblMdlPropType
-            // 
-            this->lblMdlPropType->AutoSize = true;
-            this->lblMdlPropType->Location = System::Drawing::Point(68, 5);
-            this->lblMdlPropType->Name = L"lblMdlPropType";
-            this->lblMdlPropType->Size = System::Drawing::Size(51, 13);
-            this->lblMdlPropType->TabIndex = 1;
-            this->lblMdlPropType->Text = L"Animated";
-            // 
-            // label3
-            // 
-            this->label3->AutoSize = true;
-            this->label3->Location = System::Drawing::Point(4, 5);
-            this->label3->Name = L"label3";
-            this->label3->Size = System::Drawing::Size(34, 13);
-            this->label3->TabIndex = 0;
-            this->label3->Text = L"Type:";
-            // 
-            // pnlImageProps
-            // 
-            this->pnlImageProps->Controls->Add(this->lblImgPropMips);
-            this->pnlImageProps->Controls->Add(this->label5);
-            this->pnlImageProps->Controls->Add(this->lblImgPropHeight);
-            this->pnlImageProps->Controls->Add(this->label4);
-            this->pnlImageProps->Controls->Add(this->lblImgPropWidth);
-            this->pnlImageProps->Controls->Add(this->label2);
-            this->pnlImageProps->Controls->Add(this->lblImgPropCompression);
-            this->pnlImageProps->Controls->Add(this->label1);
-            this->pnlImageProps->Location = System::Drawing::Point(721, 3);
-            this->pnlImageProps->Name = L"pnlImageProps";
-            this->pnlImageProps->Size = System::Drawing::Size(481, 72);
-            this->pnlImageProps->TabIndex = 0;
-            // 
-            // lblImgPropMips
-            // 
-            this->lblImgPropMips->AutoSize = true;
-            this->lblImgPropMips->Location = System::Drawing::Point(81, 52);
-            this->lblImgPropMips->Name = L"lblImgPropMips";
-            this->lblImgPropMips->Size = System::Drawing::Size(19, 13);
-            this->lblImgPropMips->TabIndex = 7;
-            this->lblImgPropMips->Text = L"10";
-            // 
-            // label5
-            // 
-            this->label5->AutoSize = true;
-            this->label5->Location = System::Drawing::Point(4, 52);
-            this->label5->Name = L"label5";
-            this->label5->Size = System::Drawing::Size(32, 13);
-            this->label5->TabIndex = 6;
-            this->label5->Text = L"Mips:";
-            // 
-            // lblImgPropHeight
-            // 
-            this->lblImgPropHeight->AutoSize = true;
-            this->lblImgPropHeight->Location = System::Drawing::Point(81, 36);
-            this->lblImgPropHeight->Name = L"lblImgPropHeight";
-            this->lblImgPropHeight->Size = System::Drawing::Size(31, 13);
-            this->lblImgPropHeight->TabIndex = 5;
-            this->lblImgPropHeight->Text = L"2048";
-            // 
-            // label4
-            // 
-            this->label4->AutoSize = true;
-            this->label4->Location = System::Drawing::Point(4, 36);
-            this->label4->Name = L"label4";
-            this->label4->Size = System::Drawing::Size(41, 13);
-            this->label4->TabIndex = 4;
-            this->label4->Text = L"Height:";
-            // 
-            // lblImgPropWidth
-            // 
-            this->lblImgPropWidth->AutoSize = true;
-            this->lblImgPropWidth->Location = System::Drawing::Point(81, 20);
-            this->lblImgPropWidth->Name = L"lblImgPropWidth";
-            this->lblImgPropWidth->Size = System::Drawing::Size(31, 13);
-            this->lblImgPropWidth->TabIndex = 3;
-            this->lblImgPropWidth->Text = L"2048";
-            // 
-            // label2
-            // 
-            this->label2->AutoSize = true;
-            this->label2->Location = System::Drawing::Point(4, 20);
-            this->label2->Name = L"label2";
-            this->label2->Size = System::Drawing::Size(38, 13);
-            this->label2->TabIndex = 2;
-            this->label2->Text = L"Width:";
-            // 
-            // lblImgPropCompression
-            // 
-            this->lblImgPropCompression->AutoSize = true;
-            this->lblImgPropCompression->Location = System::Drawing::Point(81, 4);
-            this->lblImgPropCompression->Name = L"lblImgPropCompression";
-            this->lblImgPropCompression->Size = System::Drawing::Size(35, 13);
-            this->lblImgPropCompression->TabIndex = 1;
-            this->lblImgPropCompression->Text = L"BC6H";
-            // 
-            // label1
-            // 
-            this->label1->AutoSize = true;
-            this->label1->Location = System::Drawing::Point(4, 4);
-            this->label1->Name = L"label1";
-            this->label1->Size = System::Drawing::Size(70, 13);
-            this->label1->TabIndex = 0;
-            this->label1->Text = L"Compression:";
             // 
             // imageListMain
             // 
@@ -871,7 +642,7 @@ private: System::Windows::Forms::ToolStripMenuItem^  saveAsExcel2003XMLToolStrip
             // 
             this->ctxMenuExportLocalization->Items->AddRange(gcnew cli::array< System::Windows::Forms::ToolStripItem^  >(1) { this->saveAsExcel2003XMLToolStripMenuItem });
             this->ctxMenuExportLocalization->Name = L"ctxMenuExportLocalization";
-            this->ctxMenuExportLocalization->Size = System::Drawing::Size(196, 48);
+            this->ctxMenuExportLocalization->Size = System::Drawing::Size(196, 26);
             // 
             // saveAsExcel2003XMLToolStripMenuItem
             // 
@@ -899,11 +670,6 @@ private: System::Windows::Forms::ToolStripMenuItem^  saveAsExcel2003XMLToolStrip
             (cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->splitContainer1))->EndInit();
             this->splitContainer1->ResumeLayout(false);
             this->tableLayoutPanel2->ResumeLayout(false);
-            this->pnlMetaProps->ResumeLayout(false);
-            this->pnlMdlProps->ResumeLayout(false);
-            this->pnlMdlProps->PerformLayout();
-            this->pnlImageProps->ResumeLayout(false);
-            this->pnlImageProps->PerformLayout();
             this->ctxMenuExportTexture->ResumeLayout(false);
             this->ctxMenuExportModel->ResumeLayout(false);
             this->ctxMenuExportSound->ResumeLayout(false);
@@ -975,9 +741,9 @@ private: System::Windows::Forms::ToolStripMenuItem^  saveAsExcel2003XMLToolStrip
 
         // property panels
         // model props
-        void lstMdlPropMotions_SelectedIndexChanged(System::Object^ sender, System::EventArgs^ e);
-        void btnMdlPropPlayStopAnim_Click(System::Object^ sender, System::EventArgs^ e);
-        void btnModelInfo_Click(System::Object^ sender, System::EventArgs^ e);
+        void lstMdlPropMotions_SelectedIndexChanged(int selection);
+        void btnMdlPropPlayStopAnim_Click(System::Object^ sender);
+        void btnModelInfo_Click(System::Object^ sender);
         void OnDlgModelInfo_Closed(System::Object^ sender, System::EventArgs^ e);
 
         // patch creation
