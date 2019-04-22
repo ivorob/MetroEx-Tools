@@ -191,6 +191,25 @@ namespace MetroEX {
             this->ShowErrorMessage("Failed to initialize DirectX 11 graphics!\n3D viewer will be unavailable.");
         }
 
+        // Create info panels
+        mImageInfoPanel = gcnew MetroEXControls::ImageInfoPanel();
+        this->pnlMetaProps->Controls->Add(this->mImageInfoPanel);
+        mImageInfoPanel->Dock = System::Windows::Forms::DockStyle::None;
+        mImageInfoPanel->Location = System::Drawing::Point(0, 0);
+        mImageInfoPanel->Name = L"mImageInfoPanel";
+        mImageInfoPanel->Size = System::Drawing::Size(481, 72);
+
+        mModelInfoPanel = gcnew MetroEXControls::ModelInfoPanel();
+        this->pnlMetaProps->Controls->Add(this->mModelInfoPanel);
+        mModelInfoPanel->Dock = System::Windows::Forms::DockStyle::None;
+        mModelInfoPanel->Location = System::Drawing::Point(0, 0);
+        mModelInfoPanel->Name = L"mModelInfoPanel";
+        mModelInfoPanel->Size = System::Drawing::Size(481, 72);
+        mModelInfoPanel->OnMotionsListSelectionChanged += gcnew MetroEXControls::ModelInfoPanel::OnListSelectionChanged(this, &MainForm::lstMdlPropMotions_SelectedIndexChanged);
+        mModelInfoPanel->OnPlayButtonClicked += gcnew MetroEXControls::ModelInfoPanel::OnButtonClicked(this, &MainForm::btnMdlPropPlayStopAnim_Click);
+        mModelInfoPanel->OnInfoButtonClicked += gcnew MetroEXControls::ModelInfoPanel::OnButtonClicked(this, &MainForm::btnModelInfo_Click);
+        ////
+
         this->SwitchViewPanel(PanelType::Texture);
         this->SwitchInfoPanel(PanelType::Sound);
     }
@@ -257,54 +276,15 @@ namespace MetroEX {
     }
 
     bool MainForm::FindAndSelect(String^ text, array<String^>^ extensions) {
-        auto textParts = text->Split('\\');
-
-        TreeNode^ node = this->mOriginalRootNode;
-        TreeNode^ foundNode;
-        for (int i = 0; i < textParts->Length; i++) {
-            foundNode = this->FindNode(node, textParts[i]);
-
-            if (i == textParts->Length - 1 && extensions != nullptr) {
-                for (int j = 0; j < extensions->Length; j++) {
-                    foundNode = this->FindNode(node, textParts[i] + extensions[j]);
-
-                    if (foundNode != nullptr) {
-                        break;
-                    }
-                }
-            }
-
-            if (foundNode == nullptr) {
-                return false;
-            }
-
-            node = foundNode;
-        }
-
-        // assert(this->mOriginalRootNode == this->filterableTreeView->TreeView->Nodes[0]);
-
-        this->mSavedNode = node;
-        this->filterableTreeView->TreeView->SelectedNode = node;
-
-        return true;
-    }
-
-    TreeNode^ MainForm::FindNode(TreeNode^ parent, String^ text) {
-        String^ term = text->ToUpper();
-
-        for (int i = 0; i < parent->Nodes->Count; i++) {
-            if (parent->Nodes[i]->Text->ToUpper() == term) {
-                return parent->Nodes[i];
-            }
-        }
-
-        return nullptr;
+        return this->filterableTreeView->FindAndSelect(text, extensions);
     }
 
     void MainForm::filterableTreeView_AfterSelect(System::Object^, System::Windows::Forms::TreeViewEventArgs^ e) {
-        TreeNode^ node = e->Node != nullptr ? e->Node : this->mSavedNode;
+        if (e->Node == nullptr) {
+            return;
+        }
 
-        FileTagData^ fileData = safe_cast<FileTagData^>(node->Tag);
+        FileTagData^ fileData = safe_cast<FileTagData^>(e->Node->Tag);
         const size_t fileIdx = fileData->fileIdx & kFileIdxMask;
         const bool isSubFile = fileData->subFileIdx != kInvalidValue;
 
@@ -340,7 +320,11 @@ namespace MetroEX {
     }
 
     void MainForm::filterableTreeView_AfterExpand(System::Object^, System::Windows::Forms::TreeViewEventArgs^ e) {
-        TreeNode^ node = e->Node != nullptr ? e->Node : this->mSavedNode;
+        TreeNode^ node = e->Node;
+
+        if (node == nullptr) {
+            return;
+        }
 
         UpdateNodeIcon(node, eNodeEventType::Open);
 
@@ -766,10 +750,10 @@ namespace MetroEX {
 
                 this->SwitchInfoPanel(PanelType::Texture);
 
-                this->lblImgPropCompression->Text = texture.IsCubemap() ? L"BC6H" : L"BC7";
-                this->lblImgPropWidth->Text = texture.GetWidth().ToString();
-                this->lblImgPropHeight->Text = texture.GetHeight().ToString();
-                this->lblImgPropMips->Text = texture.GetNumMips().ToString();
+                mImageInfoPanel->ImgPropCompressionText = texture.IsCubemap() ? L"BC6H" : L"BC7";;
+                mImageInfoPanel->ImgPropWidthText = texture.GetWidth().ToString();
+                mImageInfoPanel->ImgPropHeightText = texture.GetHeight().ToString();
+                mImageInfoPanel->ImgPropsMipsText = texture.GetNumMips().ToString();
             }
         }
     }
@@ -785,19 +769,19 @@ namespace MetroEX {
             if (mdl->LoadFromData(stream, fileIdx)) {
                 mRenderPanel->SetModel(mdl);
 
-                this->lstMdlPropMotions->Items->Clear();
+                mModelInfoPanel->ClearMotionsList();
                 if (mdl->IsAnimated()) {
                     const size_t numMotions = mdl->GetNumMotions();
                     for (size_t i = 0; i < numMotions; ++i) {
                         const MetroMotion* motion = mdl->GetMotion(i);
-                        this->lstMdlPropMotions->Items->Add(ToNetString(motion->GetName()));
+                        mModelInfoPanel->AddMotionToList(ToNetString(motion->GetName()));
                     }
 
-                    this->lblMdlPropType->Text = L"Animated";
-                    this->lblMdlPropJoints->Text = mdl->GetSkeleton()->GetNumBones().ToString();
+                    mModelInfoPanel->MdlPropTypeText = L"Animated";
+                    mModelInfoPanel->MdlPropJointsText = mdl->GetSkeleton()->GetNumBones().ToString();
                 } else {
-                    this->lblMdlPropType->Text = L"Static";
-                    this->lblMdlPropJoints->Text = L"0";
+                    mModelInfoPanel->MdlPropTypeText = L"Static";
+                    mModelInfoPanel->MdlPropJointsText = L"0";
                 }
 
                 size_t numVertices = 0, numTriangles = 0;
@@ -808,10 +792,10 @@ namespace MetroEX {
                     numTriangles += mesh->faces.size();
                 }
 
-                this->lblMdlPropVertices->Text = numVertices.ToString();
-                this->lblMdlPropTriangles->Text = numTriangles.ToString();
+                mModelInfoPanel->MdlPropVerticesText = numVertices.ToString();
+                mModelInfoPanel->MdlPropTrianglesText = numTriangles.ToString();
 
-                this->btnMdlPropPlayStopAnim->Text = L"Play";
+                mModelInfoPanel->MdlPropPlayStopAnimBtnText = L"Play";
 
                 if (mDlgModelInfo) {
                     mDlgModelInfo->SetModel(mdl);
@@ -887,30 +871,30 @@ namespace MetroEX {
     void MainForm::SwitchInfoPanel(PanelType t) {
         switch (t) {
             case PanelType::Texture: {
-                this->pnlMdlProps->Dock = System::Windows::Forms::DockStyle::None;
-                this->pnlMdlProps->Hide();
+                mModelInfoPanel->Dock = System::Windows::Forms::DockStyle::None;
+                mModelInfoPanel->Hide();
 
-                this->pnlImageProps->Location = System::Drawing::Point(0, 0);
-                this->pnlImageProps->Dock = System::Windows::Forms::DockStyle::Fill;
-                this->pnlImageProps->Show();
+                mImageInfoPanel->Location = System::Drawing::Point(0, 0);
+                mImageInfoPanel->Dock = System::Windows::Forms::DockStyle::Fill;
+                mImageInfoPanel->Show();
             } break;
 
             case PanelType::Model: {
-                this->pnlImageProps->Dock = System::Windows::Forms::DockStyle::None;
-                this->pnlImageProps->Hide();
+                mImageInfoPanel->Dock = System::Windows::Forms::DockStyle::None;
+                mImageInfoPanel->Hide();
 
-                this->pnlMdlProps->Location = System::Drawing::Point(0, 0);
-                this->pnlMdlProps->Dock = System::Windows::Forms::DockStyle::Fill;
-                this->pnlMdlProps->Show();
+                mModelInfoPanel->Location = System::Drawing::Point(0, 0);
+                mModelInfoPanel->Dock = System::Windows::Forms::DockStyle::Fill;
+                mModelInfoPanel->Show();
             } break;
 
             case PanelType::Sound:
             case PanelType::Localization: {
-                this->pnlMdlProps->Dock = System::Windows::Forms::DockStyle::None;
-                this->pnlMdlProps->Hide();
+                mModelInfoPanel->Dock = System::Windows::Forms::DockStyle::None;
+                mModelInfoPanel->Hide();
 
-                this->pnlImageProps->Dock = System::Windows::Forms::DockStyle::None;
-                this->pnlImageProps->Hide();
+                mImageInfoPanel->Dock = System::Windows::Forms::DockStyle::None;
+                mImageInfoPanel->Hide();
             } break;
         }
     }
@@ -1328,20 +1312,18 @@ namespace MetroEX {
 
     // property panels
     // model props
-    void MainForm::lstMdlPropMotions_SelectedIndexChanged(System::Object^, System::EventArgs^) {
-        const int idx = lstMdlPropMotions->SelectedIndex;
-        if (idx >= 0) {
-            mRenderPanel->SwitchMotion(idx);
+    void MainForm::lstMdlPropMotions_SelectedIndexChanged(int selection) {
+        if (selection >= 0) {
+            mRenderPanel->SwitchMotion(scast<size_t>(selection));
         }
     }
 
-    void MainForm::btnMdlPropPlayStopAnim_Click(System::Object^, System::EventArgs^) {
+    void MainForm::btnMdlPropPlayStopAnim_Click(System::Object^) {
         mRenderPanel->PlayAnim(!mRenderPanel->IsPlayingAnim());
-
-        this->btnMdlPropPlayStopAnim->Text = mRenderPanel->IsPlayingAnim() ? L"Stop" : L"Play";
+        mModelInfoPanel->MdlPropPlayStopAnimBtnText = mRenderPanel->IsPlayingAnim() ? L"Stop" : L"Play";
     }
 
-    void MainForm::btnModelInfo_Click(System::Object^ sender, System::EventArgs^ e) {
+    void MainForm::btnModelInfo_Click(System::Object^ sender) {
         if (!mDlgModelInfo) {
             mDlgModelInfo = gcnew MetroEX::DlgModelInfo();
             mDlgModelInfo->Closed += gcnew System::EventHandler(this, &MetroEX::MainForm::OnDlgModelInfo_Closed);
