@@ -19,6 +19,7 @@
 #include "NodeSorter.h"
 
 #include "ui/tools/DlgConvertTextures.h"
+#include "ui/tools/DlgCreateArchive.h"
 
 #include "UIHelpers.h"
 
@@ -1356,24 +1357,13 @@ namespace MetroEX {
     }
 
     // patch creation
-    void MainForm::toolBtnCreatePatch_Click(System::Object^ sender, System::EventArgs^ e) {
-        fs::path folderPath = ChooseFolderDialog::ChooseFolder("Choose content directory...", this->Handle.ToPointer());
-        if (!folderPath.empty()) {
-            SaveFileDialog sfd;
-            sfd.Title = L"Save patch archive...";
-            sfd.Filter = L"VFX files (*.vfx)|*.vfx";
-            sfd.FileName = L"patch_00.vfx";
-            sfd.RestoreDirectory = true;
-            sfd.OverwritePrompt = true;
-
-            if (sfd.ShowDialog(this) == System::Windows::Forms::DialogResult::OK) {
-                MetroPatchTool tool;
-                tool.CreatePatchFromFolder(folderPath, StringToPath(sfd.FileName));
-            }
-        }
+    void MainForm::toolBtnCreatePatch_Click(System::Object^, System::EventArgs^) {
+        DlgCreateArchive dlg;
+        dlg.Icon = this->Icon;
+        dlg.ShowDialog(this);
     }
 
-    void MainForm::toolBtnConvertTexture_Click(System::Object^ sender, System::EventArgs^ e) {
+    void MainForm::toolBtnConvertTexture_Click(System::Object^, System::EventArgs^) {
         DlgConvertTextures dlg;
         dlg.Icon = this->Icon;
         dlg.ShowDialog(this);

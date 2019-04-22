@@ -118,6 +118,9 @@
     <ClCompile Include="libs\pugixml\src\pugixml.cpp">
       <Filter>libs\pugixml</Filter>
     </ClCompile>
+    <ClCompile Include="src\ui\tools\DlgCreateArchive.cpp">
+      <Filter>src\ui\tools</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\ui\RenderPanel.h">
@@ -255,6 +258,9 @@
     <ClInclude Include="libs\pugixml\src\pugixml.hpp">
       <Filter>libs\pugixml</Filter>
     </ClInclude>
+    <ClInclude Include="src\ui\tools\DlgCreateArchive.h">
+      <Filter>src\ui\tools</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="src\ui\ImagePanel.resx">
@@ -283,6 +289,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="src\ui\LocalizationPanel.resx">
       <Filter>src\ui</Filter>
+    </EmbeddedResource>
+    <EmbeddedResource Include="src\ui\tools\DlgCreateArchive.resx">
+      <Filter>src\ui\tools</Filter>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
