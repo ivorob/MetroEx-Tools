@@ -117,6 +117,10 @@ bool MetroTexturesDatabase::LoadAliasesFromData(MemStream& stream) {
     return true;
 }
 
+bool MetroTexturesDatabase::Good() const {
+    return !mPool.empty();
+}
+
 const MetroTextureInfo* MetroTexturesDatabase::GetInfoByName(const HashString& name) const {
     const auto it = mDatabase.find(name);
     if (it == mDatabase.end()) {

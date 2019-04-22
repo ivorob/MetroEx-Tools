@@ -1,10 +1,10 @@
 #pragma once
 #include <msclr/marshal_cppstd.h>
 #include "mycommon.h"
-#include "metro\MetroTexturesDatabase.h"
+#include "metro/MetroTexturesDatabase.h"
 #include "MainForm.h"
-#include "ui\TexturePropertiesViewer.h"
-#include "ui\NodeSorter.h"
+#include "ui/TexturePropertiesViewer.h"
+#include "ui/NodeSorter.h"
 
 namespace MetroEX {
 
@@ -20,7 +20,7 @@ namespace MetroEX {
     /// </summary>
     public ref class TexturesDatabaseViewer : public System::Windows::Forms::Form {
     public:
-        TexturesDatabaseViewer(MainForm^ form, MetroTexturesDatabase* data, System::Windows::Forms::ImageList^ imageList);
+        TexturesDatabaseViewer(MainForm^ form, System::Windows::Forms::ImageList^ imageList);
 
     protected:
         ~TexturesDatabaseViewer();
@@ -119,7 +119,6 @@ namespace MetroEX {
     private:
         void FillWithData();
         TreeNode^ mOriginalRootNode;
-        MetroTexturesDatabase* mDataProvider;
         MainForm^ mMainForm;
         array<String^>^ mFileExtensions;
         TexturePropertiesViewer^ mPropertiesViewer;

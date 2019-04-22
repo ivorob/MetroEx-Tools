@@ -67,7 +67,6 @@ struct MetroOBB {           // size = 60
 MetroModel::MetroModel()
     : mSkeleton(nullptr)
     , mCurrentMesh(nullptr)
-    , mVFXReader(nullptr)
     , mThisFileIdx(MetroFile::InvalidFileIdx)
 {
 }
@@ -77,10 +76,9 @@ MetroModel::~MetroModel() {
     MySafeDelete(mSkeleton);
 }
 
-bool MetroModel::LoadFromData(MemStream& stream, VFXReader* vfxReader, const size_t fileIdx) {
+bool MetroModel::LoadFromData(MemStream& stream, const size_t fileIdx) {
     bool result = false;
 
-    mVFXReader = vfxReader;
     mThisFileIdx = fileIdx;
 
     this->ReadSubChunks(stream);
@@ -92,10 +90,8 @@ bool MetroModel::LoadFromData(MemStream& stream, VFXReader* vfxReader, const siz
     return result;
 }
 
-bool MetroModel::SaveAsOBJ(const fs::path& filePath, VFXReader* vfxReader, MetroTexturesDatabase* database) {
+bool MetroModel::SaveAsOBJ(const fs::path& filePath) {
     bool result = false;
-
-    const bool exportWithMats = (vfxReader != nullptr);
 
     std::ofstream file(filePath, std::ofstream::binary);
     if (file.good()) {
@@ -107,10 +103,7 @@ bool MetroModel::SaveAsOBJ(const fs::path& filePath, VFXReader* vfxReader, Metro
         std::ostringstream stringBuilder;
         stringBuilder << "# Generated from Metro Exodus model file" << std::endl;
         stringBuilder << "# using MetroEX tool made by iOrange, 2019" << std::endl << std::endl;
-
-        if (exportWithMats) {
-            stringBuilder << "mtllib " << matName << std::endl << std::endl;
-        }
+        stringBuilder << "mtllib " << matName << std::endl << std::endl;
 
         size_t lastIdx = 0;
         for (size_t i = 0; i < mMeshes.size(); ++i) {
@@ -132,9 +125,7 @@ bool MetroModel::SaveAsOBJ(const fs::path& filePath, VFXReader* vfxReader, Metro
                 stringBuilder << "# " << mesh->vertices.size() << " normals" << std::endl << std::endl;
 
                 stringBuilder << "g Mesh_" << i << std::endl;
-                if (exportWithMats) {
-                    stringBuilder << "usemtl " << "Material_" << i << std::endl;
-                }
+                stringBuilder << "usemtl " << "Material_" << i << std::endl;
 
                 for (const MetroFace& f : mesh->faces) {
                     const size_t a = f.c + lastIdx + 1;
@@ -155,53 +146,51 @@ bool MetroModel::SaveAsOBJ(const fs::path& filePath, VFXReader* vfxReader, Metro
         file.write(str.c_str(), str.length());
         file.flush();
 
-        if (exportWithMats) {
-            fs::path modelFolder = filePath.parent_path();
+        fs::path modelFolder = filePath.parent_path();
 
-            CharString matPath = filePath.string();
-            matPath[matPath.size() - 3] = 'm';
-            matPath[matPath.size() - 2] = 't';
-            matPath[matPath.size() - 1] = 'l';
+        CharString matPath = filePath.string();
+        matPath[matPath.size() - 3] = 'm';
+        matPath[matPath.size() - 2] = 't';
+        matPath[matPath.size() - 1] = 'l';
 
-            std::ofstream mtlFile(matPath, std::ofstream::binary);
-            if (mtlFile.good()) {
-                std::ostringstream mtlBuilder;
-                mtlBuilder << "# Generated from Metro Exodus model file" << std::endl;
-                mtlBuilder << "# using MetroEX tool made by iOrange, 2019" << std::endl << std::endl;
+        std::ofstream mtlFile(matPath, std::ofstream::binary);
+        if (mtlFile.good()) {
+            std::ostringstream mtlBuilder;
+            mtlBuilder << "# Generated from Metro Exodus model file" << std::endl;
+            mtlBuilder << "# using MetroEX tool made by iOrange, 2019" << std::endl << std::endl;
 
-                for (size_t i = 0; i < mMeshes.size(); ++i) {
-                    const MetroMesh* mesh = mMeshes[i];
-                    if (!mesh->vertices.empty() && !mesh->faces.empty()) {
-                        mtlBuilder << "newmtl " << "Material_" << i << std::endl;
+            for (size_t i = 0; i < mMeshes.size(); ++i) {
+                const MetroMesh* mesh = mMeshes[i];
+                if (!mesh->vertices.empty() && !mesh->faces.empty()) {
+                    mtlBuilder << "newmtl " << "Material_" << i << std::endl;
 
-                        const CharString& textureName = mesh->materials.front();
+                    const CharString& textureName = mesh->materials.front();
 
-                        const CharString& sourceName = database->GetSourceName(textureName);
-                        const CharString& bumpName = database->GetSourceName(textureName);
+                    const CharString& sourceName = MetroTexturesDatabase::Get().GetSourceName(textureName);
+                    const CharString& bumpName = MetroTexturesDatabase::Get().GetSourceName(textureName);
 
-                        CharString textureTgaName = fs::path(sourceName).filename().string() + ".tga";
+                    CharString textureTgaName = fs::path(sourceName).filename().string() + ".tga";
 
-                        mtlBuilder << "Kd 1 1 1" << std::endl;
-                        mtlBuilder << "Ke 0 0 0" << std::endl;
-                        mtlBuilder << "Ns 1000" << std::endl;
-                        mtlBuilder << "illum 2" << std::endl;
-                        mtlBuilder << "map_Ka " << textureTgaName << std::endl;
-                        mtlBuilder << "map_Kd " << textureTgaName << std::endl;
+                    mtlBuilder << "Kd 1 1 1" << std::endl;
+                    mtlBuilder << "Ke 0 0 0" << std::endl;
+                    mtlBuilder << "Ns 1000" << std::endl;
+                    mtlBuilder << "illum 2" << std::endl;
+                    mtlBuilder << "map_Ka " << textureTgaName << std::endl;
+                    mtlBuilder << "map_Kd " << textureTgaName << std::endl;
 
-                        if (!bumpName.empty()) {
-                            CharString bumpTgaName = fs::path(bumpName).filename().string() + "_nm.tga";
-                            mtlBuilder << "bump " << bumpTgaName << std::endl;
-                            mtlBuilder << "map_bump " << bumpTgaName << std::endl;
-                        }
-
-                        mtlBuilder << std::endl;
+                    if (!bumpName.empty()) {
+                        CharString bumpTgaName = fs::path(bumpName).filename().string() + "_nm.tga";
+                        mtlBuilder << "bump " << bumpTgaName << std::endl;
+                        mtlBuilder << "map_bump " << bumpTgaName << std::endl;
                     }
-                }
 
-                const CharString& mtlStr = mtlBuilder.str();
-                mtlFile.write(mtlStr.c_str(), mtlStr.length());
-                mtlFile.flush();
+                    mtlBuilder << std::endl;
+                }
             }
+
+            const CharString& mtlStr = mtlBuilder.str();
+            mtlFile.write(mtlStr.c_str(), mtlStr.length());
+            mtlFile.flush();
         }
 
         result = true;
@@ -425,7 +414,7 @@ static void AddAnimTrackToScene(FbxScene* scene, const MetroMotion* motion, cons
     CorrectAnimTrackInterpolation(skelNodes, animLayer);
 }
 
-bool MetroModel::SaveAsFBX(const fs::path& filePath, VFXReader* vfxReader, MetroTexturesDatabase* database, const bool withAnims) {
+bool MetroModel::SaveAsFBX(const fs::path& filePath, const bool withAnims) {
     FbxManager* mgr = FbxManager::Create();
     if (!mgr) {
         return false;
@@ -446,8 +435,8 @@ bool MetroModel::SaveAsFBX(const fs::path& filePath, VFXReader* vfxReader, Metro
 
             auto it = fbxMaterials.find(textureName);
             if (it == fbxMaterials.end()) {
-                const CharString& sourceName = database->GetSourceName(textureName);
-                const CharString& bumpName = database->GetSourceName(textureName);
+                const CharString& sourceName = MetroTexturesDatabase::Get().GetSourceName(textureName);
+                const CharString& bumpName = MetroTexturesDatabase::Get().GetSourceName(textureName);
 
                 CharString textureTgaName = fs::path(sourceName).filename().u8string() + ".tga";
                 CharString texturePath = (modelFolder / textureTgaName).u8string();
@@ -855,7 +844,7 @@ void MetroModel::ReadSubChunks(MemStream& stream) {
                     }
                 }
 
-                if (mVFXReader && !links.empty()) {
+                if (!links.empty()) {
                     this->LoadLinkedMeshes(links);
                 }
             } break;
@@ -863,9 +852,9 @@ void MetroModel::ReadSubChunks(MemStream& stream) {
             case MC_SkeletonLink: {
                 CharString skeletonRef = stream.ReadStringZ();
                 mSkeletonPath = "content\\meshes\\" + skeletonRef + ".skeleton.bin";
-                const size_t fileIdx = mVFXReader->FindFile(mSkeletonPath);
+                const size_t fileIdx = VFXReader::Get().FindFile(mSkeletonPath);
                 if (MetroFile::InvalidFileIdx != fileIdx) {
-                    MemStream stream = mVFXReader->ExtractFile(fileIdx);
+                    MemStream stream = VFXReader::Get().ExtractFile(fileIdx);
                     if (stream) {
                         mSkeleton = new MetroSkeleton();
                         if (!mSkeleton->LoadFromData(stream)) {
@@ -901,14 +890,14 @@ void MetroModel::LoadLinkedMeshes(const StringArray& links) {
         size_t fileIdx = MetroFile::InvalidFileIdx;
 
         if (lnk[0] == '.' && lnk[1] == '\\') { // relative path
-            const MetroFile* folder = mVFXReader->GetParentFolder(mThisFileIdx);
-            fileIdx = mVFXReader->FindFile(lnk.substr(2) + ".mesh", folder);
+            const MetroFile* folder = VFXReader::Get().GetParentFolder(mThisFileIdx);
+            fileIdx = VFXReader::Get().FindFile(lnk.substr(2) + ".mesh", folder);
         } else {
             CharString meshFilePath = "content\\meshes\\" + lnk + ".mesh";
-            fileIdx = mVFXReader->FindFile(meshFilePath);
+            fileIdx = VFXReader::Get().FindFile(meshFilePath);
         }
         if (MetroFile::InvalidFileIdx != fileIdx) {
-            MemStream stream = mVFXReader->ExtractFile(fileIdx);
+            MemStream stream = VFXReader::Get().ExtractFile(fileIdx);
             if (stream) {
                 this->ReadSubChunks(stream);
             }
@@ -935,10 +924,10 @@ void MetroModel::LoadMotions() {
     for (const CharString& f : motionFolders) {
         CharString fullFolderPath = "content\\motions\\" + f + "\\";
 
-        const auto& v = mVFXReader->FindFilesInFolder(fullFolderPath, ".m2");
+        const auto& v = VFXReader::Get().FindFilesInFolder(fullFolderPath, ".m2");
 
         for (const size_t idx : v) {
-            motionPaths.push_back(fullFolderPath + mVFXReader->GetFile(idx).name);
+            motionPaths.push_back(fullFolderPath + VFXReader::Get().GetFile(idx).name);
         }
 
         motionFiles.insert(motionFiles.end(), v.begin(), v.end());
@@ -949,9 +938,9 @@ void MetroModel::LoadMotions() {
     mMotions.reserve(motionFiles.size());
     size_t i = 0;
     for (const size_t idx : motionFiles) {
-        MemStream stream = mVFXReader->ExtractFile(idx);
+        MemStream stream = VFXReader::Get().ExtractFile(idx);
         if (stream) {
-            const MetroFile& mf = mVFXReader->GetFile(idx);
+            const MetroFile& mf = VFXReader::Get().GetFile(idx);
             CharString motionName = fs::path(mf.name).stem().u8string();
 
             MetroMotion* motion = new MetroMotion(motionName);

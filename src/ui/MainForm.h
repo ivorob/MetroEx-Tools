@@ -11,8 +11,6 @@
 #include "LocalizationPanel.h"
 #include "DlgModelInfo.h"
 
-class VFXReader;
-class MetroTexturesDatabase;
 class MetroConfigsDatabase;
 
 namespace MetroEX {
@@ -83,7 +81,6 @@ namespace MetroEX {
             mSoundPanel = nullptr;
             mLocalizationPanel = nullptr;
             mDlgModelInfo = nullptr;
-            mVFXReader = nullptr;
 
             mExtractionCtx = new FileExtractionCtx;
             mExtractionProgressDlg = nullptr;
@@ -115,15 +112,12 @@ namespace MetroEX {
         MetroEX::DlgModelInfo^      mDlgModelInfo;
 
         //
-        VFXReader*                  mVFXReader;
-
         FileExtractionCtx*          mExtractionCtx;
         System::Threading::Thread^  mExtractionThread;
         IProgressDialog*            mExtractionProgressDlg;
 
         TreeNode^                   mOriginalRootNode;
 
-        MetroTexturesDatabase*      mTexturesDatabase;
         MetroConfigsDatabase*       mConfigsDatabase;
 
     protected:

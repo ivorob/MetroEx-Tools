@@ -8,7 +8,7 @@ struct Pak {
     MyArray<size_t> files;
 };
 
-class VFXReader {
+class VFXReader : public Singleton<VFXReader> {
 public:
     VFXReader();
     ~VFXReader();
@@ -16,7 +16,9 @@ public:
     bool                LoadFromFile(const fs::path& filePath);
     MemStream           ExtractFile(const size_t fileIdx, const size_t subOffset = kInvalidValue, const size_t subLength = kInvalidValue);
 
-    const CharString    GetSelfName() const;
+    bool                Good() const;
+
+    const CharString&   GetSelfName() const;
     MyArray<size_t>     GetAllFolders() const;
 
     const MetroFile*    GetFolder(const CharString& folderPath, const MetroFile* inFolder = nullptr) const;

@@ -112,13 +112,15 @@ struct MetroTextureAliasInfo {
 
 class MetroReflectionReader;
 
-class MetroTexturesDatabase {
+class MetroTexturesDatabase : public Singleton<MetroTexturesDatabase> {
 public:
     MetroTexturesDatabase();
     ~MetroTexturesDatabase();
 
     bool                    LoadFromData(MemStream& stream);
     bool                    LoadAliasesFromData(MemStream& stream);
+
+    bool                    Good() const;
 
     const MetroTextureInfo* GetInfoByName(const HashString& name) const;
     const HashString&       GetAlias(const HashString& name) const;

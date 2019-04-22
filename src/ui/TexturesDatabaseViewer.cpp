@@ -9,13 +9,9 @@ static const int kImageIdxFolderClosed = 0;
 static const int kImageIdxFolderOpen = 1;
 
 namespace MetroEX {
-    TexturesDatabaseViewer::TexturesDatabaseViewer(MainForm^ form, MetroTexturesDatabase* data, System::Windows::Forms::ImageList^ imageList) {
+    TexturesDatabaseViewer::TexturesDatabaseViewer(MainForm^ form, System::Windows::Forms::ImageList^ imageList) {
         InitializeComponent();
-        //
-        //TODO: Add the constructor code here
-        //
 
-        mDataProvider = data;
         mMainForm = form;
         mOriginalRootNode = nullptr;
         mPropertiesViewer = nullptr;
@@ -40,7 +36,7 @@ namespace MetroEX {
     }
 
     void TexturesDatabaseViewer::FillWithData() {
-        if (mDataProvider == nullptr) {
+        if (!MetroTexturesDatabase::Get().Good()) {
             return;
         }
 
@@ -53,8 +49,8 @@ namespace MetroEX {
         mOriginalRootNode->ImageIndex = kImageIdxFolderClosed;
         mOriginalRootNode->SelectedImageIndex = kImageIdxFolderClosed;
 
-        for (size_t i = 0, end = mDataProvider->GetNumTextures(); i < end; ++i) {
-            const MetroTextureInfo& texInfo = mDataProvider->GetTextureInfo(i);
+        for (size_t i = 0, end = MetroTexturesDatabase::Get().GetNumTextures(); i < end; ++i) {
+            const MetroTextureInfo& texInfo = MetroTexturesDatabase::Get().GetTextureInfo(i);
             String^ name = ToNetString(texInfo.name);
             array<String^>^ parts = name->Split('\\');
 
@@ -128,7 +124,7 @@ namespace MetroEX {
         }
 
         const size_t index = safe_cast<size_t>(e->Node->Tag);
-        const MetroTextureInfo& texInfo = mDataProvider->GetTextureInfo(index);
+        const MetroTextureInfo& texInfo = MetroTexturesDatabase::Get().GetTextureInfo(index);
         String^ realPath = this->GetRealPath(index);
 
         mPropertiesViewer->SetTextureInfo(&texInfo);
@@ -149,8 +145,8 @@ namespace MetroEX {
     }
 
     String^ TexturesDatabaseViewer::GetRealPath(const size_t index) {
-        const MetroTextureInfo& texInfo = mDataProvider->GetTextureInfo(index);
-        const CharString& sourceName = mDataProvider->GetSourceName(texInfo.name);
+        const MetroTextureInfo& texInfo = MetroTexturesDatabase::Get().GetTextureInfo(index);
+        const CharString& sourceName = MetroTexturesDatabase::Get().GetSourceName(texInfo.name);
         return ToNetString(sourceName);
     }
 

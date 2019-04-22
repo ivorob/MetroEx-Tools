@@ -10,8 +10,6 @@ class MetroModel;
 class MetroSkeleton;
 class MetroMotion;
 class MetroTexture;
-class VFXReader;
-class MetroTexturesDatabase;
 
 using namespace System;
 using namespace System::ComponentModel;
@@ -78,7 +76,7 @@ namespace MetroEX {
 
     public:
         bool        InitGraphics();
-        void        SetModel(MetroModel* model, VFXReader* vfxReader, MetroTexturesDatabase* database);
+        void        SetModel(MetroModel* model);
         MetroModel* GetModel();
         void        SetCubemap(MetroTexture* cubemap);
 
@@ -130,12 +128,10 @@ namespace MetroEX {
 
         // model viewer stuff
         MetroModel*                 mModel;
-        VFXReader*                  mVFXReader;
-        MetroTexturesDatabase*      mDatabase;
         // animations
         const MetroMotion*          mCurrentMotion;
         Animation*                  mAnimation;
-        Timer^                      mAnimTimer;
+        System::Windows::Forms::Timer^  mAnimTimer;
 
         // cubemap viewer stuff
         Camera*                     mCamera;

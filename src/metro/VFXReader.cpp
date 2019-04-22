@@ -169,7 +169,11 @@ MemStream VFXReader::ExtractFile(const size_t fileIdx, const size_t subOffset, c
     return std::move(result);
 }
 
-const CharString VFXReader::GetSelfName() const {
+bool VFXReader::Good() const {
+    return !mFiles.empty();
+}
+
+const CharString& VFXReader::GetSelfName() const {
     return mFileName;
 }
 

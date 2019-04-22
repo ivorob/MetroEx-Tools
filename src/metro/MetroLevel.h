@@ -1,8 +1,6 @@
 #pragma once
 #include "MetroTypes.h"
 
-class VFXReader;
-
 PACKED_STRUCT_BEGIN
 struct GeomObjectInfo {     // size = 28
     uint32_t    vertexType;
@@ -19,7 +17,7 @@ public:
     MetroLevel();
     ~MetroLevel();
 
-    bool                LoadFromData(const uint8_t* data, const size_t length, VFXReader* vfxReader, const size_t fileIdx);
+    bool                LoadFromData(const uint8_t* data, const size_t length, const size_t fileIdx);
 
     size_t              GetNumMeshes() const;
     const MetroMesh*    GetMesh(const size_t idx) const;

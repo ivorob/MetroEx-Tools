@@ -23,10 +23,10 @@ MetroLevel::~MetroLevel() {
     std::for_each(mMeshes.begin(), mMeshes.end(), [](MetroMesh* mesh) { delete mesh; });
 }
 
-bool MetroLevel::LoadFromData(const uint8_t* data, const size_t length, VFXReader* vfxReader, const size_t fileIdx) {
+bool MetroLevel::LoadFromData(const uint8_t* data, const size_t length, const size_t fileIdx) {
     bool result = false;
 
-    const MetroFile* folder = vfxReader->GetParentFolder(fileIdx);
+    const MetroFile* folder = VFXReader::Get().GetParentFolder(fileIdx);
     if (folder) {
         MemStream stream(data, length);
 
@@ -37,16 +37,16 @@ bool MetroLevel::LoadFromData(const uint8_t* data, const size_t length, VFXReade
 
             for (size_t i = 0; i < numMeshes; ++i) {
                 CharString partName = stream.ReadStringZ();
-                const size_t descriptionFileIdx = vfxReader->FindFile(partName, folder);
-                const size_t geometryFileIdx = vfxReader->FindFile(partName + ".geom_pc", folder);
+                const size_t descriptionFileIdx = VFXReader::Get().FindFile(partName, folder);
+                const size_t geometryFileIdx = VFXReader::Get().FindFile(partName + ".geom_pc", folder);
                 if (MetroFile::InvalidFileIdx != descriptionFileIdx && MetroFile::InvalidFileIdx != geometryFileIdx) {
                     MyArray<GeomObjectInfo> infos;
-                    MemStream stream = vfxReader->ExtractFile(descriptionFileIdx);
+                    MemStream stream = VFXReader::Get().ExtractFile(descriptionFileIdx);
                     if (stream) {
                         this->ReadGeometryDescription(stream, infos);
                     }
 
-                    if (!infos.empty() && (stream = vfxReader->ExtractFile(geometryFileIdx))) {
+                    if (!infos.empty() && (stream = VFXReader::Get().ExtractFile(geometryFileIdx))) {
                         this->ReadLevelGeometry(stream, infos);
                     }
                 }
