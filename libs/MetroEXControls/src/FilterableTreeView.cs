@@ -17,6 +17,7 @@ namespace MetroEXControls {
         private static extern Int32 SendMessage(IntPtr hWnd, int msg, int wParam, [MarshalAs(UnmanagedType.LPWStr)]string lParam);
         #endregion
 
+        public string FilterPlaceholder { get; set; } = "Search here...";
         public int FilterTimeout { get; set; } = 1000;
         public TreeView TreeView { get { return this.treeView; } }
         public TextBox FilterTextBox { get { return this.filterTextBox; } }
@@ -30,7 +31,7 @@ namespace MetroEXControls {
             InitializeComponent();
 
             //#NOTE_SK: set placeholder text for better and cooler look ;)
-            SendMessage(FilterTextBox.Handle, EM_SETCUEBANNER, 0, "Search here...");
+            SendMessage(FilterTextBox.Handle, EM_SETCUEBANNER, 0, FilterPlaceholder);
 
             mTimer = new Timer();
             mTimer.Interval = FilterTimeout;
