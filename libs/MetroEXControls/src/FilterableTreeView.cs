@@ -22,6 +22,7 @@ namespace MetroEXControls {
         public TreeView TreeView { get { return this.treeView; } }
         public TextBox FilterTextBox { get { return this.filterTextBox; } }
         public bool IsFiltering { get { return mIsFiltering; } }
+        public TreeNode SavedNode { get; private set; }
 
         private Timer mTimer;
         private TreeNode[] mOriginalRootNodes;
@@ -103,6 +104,59 @@ namespace MetroEXControls {
                 mTimer.Stop();
                 mTimer.Start();
             }
+        }
+
+        public bool FindAndSelect(string text, string[] extensions) {
+            if (mOriginalRootNodes == null) {
+                Initialize();
+            }
+
+            var textParts = text.Split('\\');
+
+            TreeNode node = null;
+            foreach(var rootNode in mOriginalRootNodes) {
+                TreeNode foundNode = null;
+
+                var nodeToSearch = rootNode;
+                for (int i = 0; i < textParts.Length; i++) {
+                    foundNode = this.FindNode(nodeToSearch, textParts[i]);
+
+                    if (i == textParts.Length - 1 && extensions != null) {
+                        for (int j = 0; j < extensions.Length; j++) {
+                            foundNode = this.FindNode(nodeToSearch, textParts[i] + extensions[j]);
+
+                            if (foundNode != null) {
+                                break;
+                            }
+                        }
+                    }
+
+                    nodeToSearch = foundNode;
+                }
+
+                if(foundNode != null)
+                {
+                    node = foundNode;
+                    break;
+                }
+            }
+
+            this.SavedNode = node;
+            this.TreeView.SelectedNode = node;
+
+            return true;
+        }
+
+        private TreeNode FindNode(TreeNode parent, string text) {
+            var term = text.ToUpper();
+
+            for (int i = 0; i < parent.Nodes.Count; i++) {
+                if (parent.Nodes[i].Text.ToUpper() == term) {
+                    return parent.Nodes[i];
+                }
+            }
+
+            return null;
         }
     }
 }

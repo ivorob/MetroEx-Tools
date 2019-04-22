@@ -160,4 +160,8 @@ namespace MetroEX {
         e->Node->SelectedImageIndex = kImageIdxFolderOpen;
     }
 
+    bool TexturesDatabaseViewer::FindAndSelect(String^ text) {
+        return this->filterableTreeView->FindAndSelect(text, nullptr);
+    }
+
 }
