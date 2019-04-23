@@ -1,22 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Drawing;
-using System.Data;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
-using System.Runtime.InteropServices;
 
 namespace MetroEXControls {
     public partial class FilterableTreeView : UserControl {
-        #region WinAPI bindings
-        private const int EM_SETCUEBANNER = 0x1501;
-        [DllImport("user32.dll", CharSet = CharSet.Auto)]
-        private static extern Int32 SendMessage(IntPtr hWnd, int msg, int wParam, [MarshalAs(UnmanagedType.LPWStr)]string lParam);
-        #endregion
-
         public string FilterPlaceholder { get; set; } = "Search here...";
         public int FilterTimeout { get; set; } = 1000;
         public TreeView TreeView { get { return this.treeView; } }
@@ -31,7 +18,7 @@ namespace MetroEXControls {
             InitializeComponent();
 
             //#NOTE_SK: set placeholder text for better and cooler look ;)
-            SendMessage(FilterTextBox.Handle, EM_SETCUEBANNER, 0, FilterPlaceholder);
+            WinApi.SendMessage(FilterTextBox.Handle, WinApi.EM_SETCUEBANNER, 0, FilterPlaceholder);
 
             mTimer = new Timer();
             mTimer.Interval = FilterTimeout;

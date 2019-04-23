@@ -61,6 +61,7 @@
     <Compile Include="src\ModelInfoPanel.Designer.cs">
       <DependentUpon>ModelInfoPanel.cs</DependentUpon>
     </Compile>
+    <Compile Include="src\WinApi.cs" />
     <Service Include="{94E38DFF-614B-4cbd-B67C-F211BB35CE8B}" />
   </ItemGroup>
   <ItemGroup>
