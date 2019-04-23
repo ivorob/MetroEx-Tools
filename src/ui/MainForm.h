@@ -165,15 +165,20 @@ namespace MetroEX {
     private: System::Windows::Forms::Panel^  pnlMetaProps;
 
 
-private: System::Windows::Forms::ToolStripButton^  toolBtnCreatePatch;
 
-private: System::Windows::Forms::ToolStripButton^  toolBtnConvertTexture;
+
+
 
     private: System::Windows::Forms::ToolStripButton^  toolBtnTexturesDatabase;
     private: System::Windows::Forms::ContextMenuStrip^  ctxMenuExportLocalization;
     private: System::Windows::Forms::ToolStripMenuItem^  saveAsExcel2003XMLToolStripMenuItem;
 private: MetroEXControls::FilterableTreeView^  filterableTreeView;
-private: System::ComponentModel::IContainer^  components;
+    private: System::Windows::Forms::ToolStripSeparator^  toolStripSeparator3;
+    private: System::Windows::Forms::ToolStripSeparator^  toolStripSeparator4;
+    private: System::Windows::Forms::ToolStripSplitButton^  toolStripSplitButton1;
+    private: System::Windows::Forms::ToolStripMenuItem^  texturesConverterToolStripMenuItem;
+    private: System::Windows::Forms::ToolStripMenuItem^  archiveToolToolStripMenuItem;
+    private: System::ComponentModel::IContainer^  components;
 
 
 
@@ -201,6 +206,7 @@ private: System::ComponentModel::IContainer^  components;
             this->statusLabel3 = (gcnew System::Windows::Forms::ToolStripStatusLabel());
             this->statusLabel4 = (gcnew System::Windows::Forms::ToolStripStatusLabel());
             this->splitContainer1 = (gcnew System::Windows::Forms::SplitContainer());
+            this->filterableTreeView = (gcnew MetroEXControls::FilterableTreeView());
             this->tableLayoutPanel2 = (gcnew System::Windows::Forms::TableLayoutPanel());
             this->pnlViewers = (gcnew System::Windows::Forms::Panel());
             this->pnlMetaProps = (gcnew System::Windows::Forms::Panel());
@@ -227,15 +233,17 @@ private: System::ComponentModel::IContainer^  components;
             this->toolBtnAbout = (gcnew System::Windows::Forms::ToolStripButton());
             this->toolStripSeparator2 = (gcnew System::Windows::Forms::ToolStripSeparator());
             this->toolBtnImgEnableAlpha = (gcnew System::Windows::Forms::ToolStripButton());
-            this->toolBtnCreatePatch = (gcnew System::Windows::Forms::ToolStripButton());
-            this->toolBtnConvertTexture = (gcnew System::Windows::Forms::ToolStripButton());
             this->toolBtnTexturesDatabase = (gcnew System::Windows::Forms::ToolStripButton());
             this->ctxMenuExportBin = (gcnew System::Windows::Forms::ContextMenuStrip(this->components));
             this->extractBinRootToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
             this->extractBinChunkToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
             this->ctxMenuExportLocalization = (gcnew System::Windows::Forms::ContextMenuStrip(this->components));
             this->saveAsExcel2003XMLToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
-            this->filterableTreeView = (gcnew MetroEXControls::FilterableTreeView());
+            this->toolStripSeparator3 = (gcnew System::Windows::Forms::ToolStripSeparator());
+            this->toolStripSeparator4 = (gcnew System::Windows::Forms::ToolStripSeparator());
+            this->toolStripSplitButton1 = (gcnew System::Windows::Forms::ToolStripSplitButton());
+            this->texturesConverterToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
+            this->archiveToolToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
             this->statusStrip1->SuspendLayout();
             (cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->splitContainer1))->BeginInit();
             this->splitContainer1->Panel1->SuspendLayout();
@@ -251,9 +259,9 @@ private: System::ComponentModel::IContainer^  components;
             this->ctxMenuExportBin->SuspendLayout();
             this->ctxMenuExportLocalization->SuspendLayout();
             this->SuspendLayout();
-            //
+            // 
             // statusStrip1
-            //
+            // 
             this->statusStrip1->Items->AddRange(gcnew cli::array< System::Windows::Forms::ToolStripItem^  >(4) {
                 this->statusLabel1, this->statusLabel2,
                     this->statusLabel3, this->statusLabel4
@@ -263,57 +271,68 @@ private: System::ComponentModel::IContainer^  components;
             this->statusStrip1->Size = System::Drawing::Size(1159, 22);
             this->statusStrip1->TabIndex = 1;
             this->statusStrip1->Text = L"statusStrip1";
-            //
+            // 
             // statusLabel1
-            //
+            // 
             this->statusLabel1->Name = L"statusLabel1";
             this->statusLabel1->Size = System::Drawing::Size(286, 17);
             this->statusLabel1->Spring = true;
             this->statusLabel1->TextAlign = System::Drawing::ContentAlignment::MiddleLeft;
-            //
+            // 
             // statusLabel2
-            //
+            // 
             this->statusLabel2->Name = L"statusLabel2";
             this->statusLabel2->Size = System::Drawing::Size(286, 17);
             this->statusLabel2->Spring = true;
             this->statusLabel2->TextAlign = System::Drawing::ContentAlignment::MiddleLeft;
-            //
+            // 
             // statusLabel3
-            //
+            // 
             this->statusLabel3->Name = L"statusLabel3";
             this->statusLabel3->Size = System::Drawing::Size(286, 17);
             this->statusLabel3->Spring = true;
             this->statusLabel3->TextAlign = System::Drawing::ContentAlignment::MiddleLeft;
-            //
+            // 
             // statusLabel4
-            //
+            // 
             this->statusLabel4->BorderStyle = System::Windows::Forms::Border3DStyle::Raised;
             this->statusLabel4->DisplayStyle = System::Windows::Forms::ToolStripItemDisplayStyle::Text;
             this->statusLabel4->Name = L"statusLabel4";
             this->statusLabel4->Size = System::Drawing::Size(286, 17);
             this->statusLabel4->Spring = true;
             this->statusLabel4->TextAlign = System::Drawing::ContentAlignment::MiddleLeft;
-            //
+            // 
             // splitContainer1
-            //
+            // 
             this->splitContainer1->Dock = System::Windows::Forms::DockStyle::Fill;
             this->splitContainer1->Location = System::Drawing::Point(0, 25);
             this->splitContainer1->Margin = System::Windows::Forms::Padding(0);
             this->splitContainer1->Name = L"splitContainer1";
-            //
+            // 
             // splitContainer1.Panel1
-            //
+            // 
             this->splitContainer1->Panel1->Controls->Add(this->filterableTreeView);
-            //
+            // 
             // splitContainer1.Panel2
-            //
+            // 
             this->splitContainer1->Panel2->Controls->Add(this->tableLayoutPanel2);
             this->splitContainer1->Size = System::Drawing::Size(1159, 672);
             this->splitContainer1->SplitterDistance = 301;
             this->splitContainer1->TabIndex = 2;
-            //
+            // 
+            // filterableTreeView
+            // 
+            this->filterableTreeView->Dock = System::Windows::Forms::DockStyle::Fill;
+            this->filterableTreeView->FilterPlaceholder = L"Search here...";
+            this->filterableTreeView->FilterTimeout = 1000;
+            this->filterableTreeView->Location = System::Drawing::Point(0, 0);
+            this->filterableTreeView->Margin = System::Windows::Forms::Padding(0);
+            this->filterableTreeView->Name = L"filterableTreeView";
+            this->filterableTreeView->Size = System::Drawing::Size(301, 672);
+            this->filterableTreeView->TabIndex = 0;
+            // 
             // tableLayoutPanel2
-            //
+            // 
             this->tableLayoutPanel2->ColumnCount = 1;
             this->tableLayoutPanel2->ColumnStyles->Add((gcnew System::Windows::Forms::ColumnStyle(System::Windows::Forms::SizeType::Percent,
                 100)));
@@ -328,18 +347,18 @@ private: System::ComponentModel::IContainer^  components;
             this->tableLayoutPanel2->RowStyles->Add((gcnew System::Windows::Forms::RowStyle(System::Windows::Forms::SizeType::Absolute, 80)));
             this->tableLayoutPanel2->Size = System::Drawing::Size(854, 672);
             this->tableLayoutPanel2->TabIndex = 0;
-            //
+            // 
             // pnlViewers
-            //
+            // 
             this->pnlViewers->Dock = System::Windows::Forms::DockStyle::Fill;
             this->pnlViewers->Location = System::Drawing::Point(0, 0);
             this->pnlViewers->Margin = System::Windows::Forms::Padding(0);
             this->pnlViewers->Name = L"pnlViewers";
             this->pnlViewers->Size = System::Drawing::Size(854, 592);
             this->pnlViewers->TabIndex = 0;
-            //
+            // 
             // pnlMetaProps
-            //
+            // 
             this->pnlMetaProps->BorderStyle = System::Windows::Forms::BorderStyle::FixedSingle;
             this->pnlMetaProps->Dock = System::Windows::Forms::DockStyle::Fill;
             this->pnlMetaProps->Location = System::Drawing::Point(0, 592);
@@ -347,9 +366,9 @@ private: System::ComponentModel::IContainer^  components;
             this->pnlMetaProps->Name = L"pnlMetaProps";
             this->pnlMetaProps->Size = System::Drawing::Size(854, 80);
             this->pnlMetaProps->TabIndex = 1;
-            //
+            // 
             // imageListMain
-            //
+            // 
             this->imageListMain->ImageStream = (cli::safe_cast<System::Windows::Forms::ImageListStreamer^>(resources->GetObject(L"imageListMain.ImageStream")));
             this->imageListMain->TransparentColor = System::Drawing::Color::Transparent;
             this->imageListMain->Images->SetKeyName(0, L"folder_closed.png");
@@ -363,142 +382,142 @@ private: System::ComponentModel::IContainer^  components;
             this->imageListMain->Images->SetKeyName(8, L"sound.png");
             this->imageListMain->Images->SetKeyName(9, L"model.png");
             this->imageListMain->Images->SetKeyName(10, L"localization.png");
-            //
+            // 
             // ctxMenuExportTexture
-            //
+            // 
             this->ctxMenuExportTexture->Items->AddRange(gcnew cli::array< System::Windows::Forms::ToolStripItem^  >(4) {
                 this->saveAsDDSToolStripMenuItem,
                     this->saveAsLegacyDDSToolStripMenuItem, this->saveAsTGAToolStripMenuItem, this->saveAsPNGToolStripMenuItem
             });
             this->ctxMenuExportTexture->Name = L"ctxMenuExportTexture";
             this->ctxMenuExportTexture->Size = System::Drawing::Size(184, 92);
-            //
+            // 
             // saveAsDDSToolStripMenuItem
-            //
+            // 
             this->saveAsDDSToolStripMenuItem->Name = L"saveAsDDSToolStripMenuItem";
             this->saveAsDDSToolStripMenuItem->Size = System::Drawing::Size(183, 22);
             this->saveAsDDSToolStripMenuItem->Text = L"Save as DDS...";
             this->saveAsDDSToolStripMenuItem->Click += gcnew System::EventHandler(this, &MainForm::saveAsDDSToolStripMenuItem_Click);
-            //
+            // 
             // saveAsLegacyDDSToolStripMenuItem
-            //
+            // 
             this->saveAsLegacyDDSToolStripMenuItem->Name = L"saveAsLegacyDDSToolStripMenuItem";
             this->saveAsLegacyDDSToolStripMenuItem->Size = System::Drawing::Size(183, 22);
             this->saveAsLegacyDDSToolStripMenuItem->Text = L"Save as legacy DDS...";
             this->saveAsLegacyDDSToolStripMenuItem->Click += gcnew System::EventHandler(this, &MainForm::saveAsLegacyDDSToolStripMenuItem_Click);
-            //
+            // 
             // saveAsTGAToolStripMenuItem
-            //
+            // 
             this->saveAsTGAToolStripMenuItem->Name = L"saveAsTGAToolStripMenuItem";
             this->saveAsTGAToolStripMenuItem->Size = System::Drawing::Size(183, 22);
             this->saveAsTGAToolStripMenuItem->Text = L"Save as TGA...";
             this->saveAsTGAToolStripMenuItem->Click += gcnew System::EventHandler(this, &MainForm::saveAsTGAToolStripMenuItem_Click);
-            //
+            // 
             // saveAsPNGToolStripMenuItem
-            //
+            // 
             this->saveAsPNGToolStripMenuItem->Name = L"saveAsPNGToolStripMenuItem";
             this->saveAsPNGToolStripMenuItem->Size = System::Drawing::Size(183, 22);
             this->saveAsPNGToolStripMenuItem->Text = L"Save as PNG...";
             this->saveAsPNGToolStripMenuItem->Click += gcnew System::EventHandler(this, &MainForm::saveAsPNGToolStripMenuItem_Click);
-            //
+            // 
             // ctxMenuExportModel
-            //
+            // 
             this->ctxMenuExportModel->Items->AddRange(gcnew cli::array< System::Windows::Forms::ToolStripItem^  >(2) {
                 this->saveAsOBJToolStripMenuItem,
                     this->saveAsFBXToolStripMenuItem
             });
             this->ctxMenuExportModel->Name = L"ctxMenuExportModel";
             this->ctxMenuExportModel->Size = System::Drawing::Size(145, 48);
-            //
+            // 
             // saveAsOBJToolStripMenuItem
-            //
+            // 
             this->saveAsOBJToolStripMenuItem->Name = L"saveAsOBJToolStripMenuItem";
             this->saveAsOBJToolStripMenuItem->Size = System::Drawing::Size(144, 22);
             this->saveAsOBJToolStripMenuItem->Text = L"Save as OBJ...";
             this->saveAsOBJToolStripMenuItem->Click += gcnew System::EventHandler(this, &MainForm::saveAsOBJToolStripMenuItem_Click);
-            //
+            // 
             // saveAsFBXToolStripMenuItem
-            //
+            // 
             this->saveAsFBXToolStripMenuItem->Name = L"saveAsFBXToolStripMenuItem";
             this->saveAsFBXToolStripMenuItem->Size = System::Drawing::Size(144, 22);
             this->saveAsFBXToolStripMenuItem->Text = L"Save as FBX...";
             this->saveAsFBXToolStripMenuItem->Click += gcnew System::EventHandler(this, &MainForm::saveAsFBXToolStripMenuItem_Click);
-            //
+            // 
             // ctxMenuExportSound
-            //
+            // 
             this->ctxMenuExportSound->Items->AddRange(gcnew cli::array< System::Windows::Forms::ToolStripItem^  >(2) {
                 this->saveAsOGGToolStripMenuItem,
                     this->saveAsWAVToolStripMenuItem
             });
             this->ctxMenuExportSound->Name = L"ctxMenuExportSound";
             this->ctxMenuExportSound->Size = System::Drawing::Size(150, 48);
-            //
+            // 
             // saveAsOGGToolStripMenuItem
-            //
+            // 
             this->saveAsOGGToolStripMenuItem->Name = L"saveAsOGGToolStripMenuItem";
             this->saveAsOGGToolStripMenuItem->Size = System::Drawing::Size(149, 22);
             this->saveAsOGGToolStripMenuItem->Text = L"Save as OGG...";
             this->saveAsOGGToolStripMenuItem->Click += gcnew System::EventHandler(this, &MainForm::saveAsOGGToolStripMenuItem_Click);
-            //
+            // 
             // saveAsWAVToolStripMenuItem
-            //
+            // 
             this->saveAsWAVToolStripMenuItem->Name = L"saveAsWAVToolStripMenuItem";
             this->saveAsWAVToolStripMenuItem->Size = System::Drawing::Size(149, 22);
             this->saveAsWAVToolStripMenuItem->Text = L"Save as WAV...";
             this->saveAsWAVToolStripMenuItem->Click += gcnew System::EventHandler(this, &MainForm::saveAsWAVToolStripMenuItem_Click);
-            //
+            // 
             // ctxMenuExportRaw
-            //
+            // 
             this->ctxMenuExportRaw->Items->AddRange(gcnew cli::array< System::Windows::Forms::ToolStripItem^  >(1) { this->extractFileToolStripMenuItem });
             this->ctxMenuExportRaw->Name = L"ctxMenuExportRaw";
             this->ctxMenuExportRaw->Size = System::Drawing::Size(138, 26);
-            //
+            // 
             // extractFileToolStripMenuItem
-            //
+            // 
             this->extractFileToolStripMenuItem->Name = L"extractFileToolStripMenuItem";
             this->extractFileToolStripMenuItem->Size = System::Drawing::Size(137, 22);
             this->extractFileToolStripMenuItem->Text = L"Extract file...";
             this->extractFileToolStripMenuItem->Click += gcnew System::EventHandler(this, &MainForm::extractFileToolStripMenuItem_Click);
-            //
+            // 
             // ctxMenuExportFolder
-            //
+            // 
             this->ctxMenuExportFolder->Items->AddRange(gcnew cli::array< System::Windows::Forms::ToolStripItem^  >(2) {
                 this->extractFolderToolStripMenuItem,
                     this->extractFolderWithConversionToolStripMenuItem
             });
             this->ctxMenuExportFolder->Name = L"ctxMenuExportFolder";
             this->ctxMenuExportFolder->Size = System::Drawing::Size(240, 48);
-            //
+            // 
             // extractFolderToolStripMenuItem
-            //
+            // 
             this->extractFolderToolStripMenuItem->Name = L"extractFolderToolStripMenuItem";
             this->extractFolderToolStripMenuItem->Size = System::Drawing::Size(239, 22);
             this->extractFolderToolStripMenuItem->Text = L"Extract folder...";
             this->extractFolderToolStripMenuItem->Click += gcnew System::EventHandler(this, &MainForm::extractFolderToolStripMenuItem_Click);
-            //
+            // 
             // extractFolderWithConversionToolStripMenuItem
-            //
+            // 
             this->extractFolderWithConversionToolStripMenuItem->Name = L"extractFolderWithConversionToolStripMenuItem";
             this->extractFolderWithConversionToolStripMenuItem->Size = System::Drawing::Size(239, 22);
             this->extractFolderWithConversionToolStripMenuItem->Text = L"Extract folder with conversion...";
             this->extractFolderWithConversionToolStripMenuItem->Click += gcnew System::EventHandler(this, &MainForm::extractFolderWithConversionToolStripMenuItem_Click);
-            //
+            // 
             // toolStrip1
-            //
+            // 
             this->toolStrip1->GripStyle = System::Windows::Forms::ToolStripGripStyle::Hidden;
-            this->toolStrip1->Items->AddRange(gcnew cli::array< System::Windows::Forms::ToolStripItem^  >(8) {
+            this->toolStrip1->Items->AddRange(gcnew cli::array< System::Windows::Forms::ToolStripItem^  >(9) {
                 this->toolBtnFileOpen,
-                    this->toolStripSeparator1, this->toolBtnAbout, this->toolStripSeparator2, this->toolBtnImgEnableAlpha, this->toolBtnCreatePatch,
-                    this->toolBtnConvertTexture, this->toolBtnTexturesDatabase
+                    this->toolStripSeparator1, this->toolBtnImgEnableAlpha, this->toolStripSeparator3, this->toolBtnTexturesDatabase, this->toolStripSeparator4,
+                    this->toolStripSplitButton1, this->toolStripSeparator2, this->toolBtnAbout
             });
             this->toolStrip1->Location = System::Drawing::Point(0, 0);
             this->toolStrip1->Name = L"toolStrip1";
             this->toolStrip1->Size = System::Drawing::Size(1159, 25);
             this->toolStrip1->TabIndex = 5;
             this->toolStrip1->Text = L"toolStrip1";
-            //
+            // 
             // toolBtnFileOpen
-            //
+            // 
             this->toolBtnFileOpen->DisplayStyle = System::Windows::Forms::ToolStripItemDisplayStyle::Image;
             this->toolBtnFileOpen->Image = (cli::safe_cast<System::Drawing::Image^>(resources->GetObject(L"toolBtnFileOpen.Image")));
             this->toolBtnFileOpen->ImageTransparentColor = System::Drawing::Color::Magenta;
@@ -506,14 +525,14 @@ private: System::ComponentModel::IContainer^  components;
             this->toolBtnFileOpen->Size = System::Drawing::Size(23, 22);
             this->toolBtnFileOpen->ToolTipText = L"Open Metro Exodus archive...";
             this->toolBtnFileOpen->Click += gcnew System::EventHandler(this, &MainForm::toolBtnFileOpen_Click);
-            //
+            // 
             // toolStripSeparator1
-            //
+            // 
             this->toolStripSeparator1->Name = L"toolStripSeparator1";
             this->toolStripSeparator1->Size = System::Drawing::Size(6, 25);
-            //
+            // 
             // toolBtnAbout
-            //
+            // 
             this->toolBtnAbout->DisplayStyle = System::Windows::Forms::ToolStripItemDisplayStyle::Image;
             this->toolBtnAbout->Image = (cli::safe_cast<System::Drawing::Image^>(resources->GetObject(L"toolBtnAbout.Image")));
             this->toolBtnAbout->ImageTransparentColor = System::Drawing::Color::Magenta;
@@ -521,14 +540,14 @@ private: System::ComponentModel::IContainer^  components;
             this->toolBtnAbout->Size = System::Drawing::Size(23, 22);
             this->toolBtnAbout->ToolTipText = L"About";
             this->toolBtnAbout->Click += gcnew System::EventHandler(this, &MainForm::toolBtnAbout_Click);
-            //
+            // 
             // toolStripSeparator2
-            //
+            // 
             this->toolStripSeparator2->Name = L"toolStripSeparator2";
             this->toolStripSeparator2->Size = System::Drawing::Size(6, 25);
-            //
+            // 
             // toolBtnImgEnableAlpha
-            //
+            // 
             this->toolBtnImgEnableAlpha->Checked = true;
             this->toolBtnImgEnableAlpha->CheckState = System::Windows::Forms::CheckState::Checked;
             this->toolBtnImgEnableAlpha->DisplayStyle = System::Windows::Forms::ToolStripItemDisplayStyle::Text;
@@ -540,41 +559,20 @@ private: System::ComponentModel::IContainer^  components;
             this->toolBtnImgEnableAlpha->Text = L"A";
             this->toolBtnImgEnableAlpha->ToolTipText = L"Enable alpha";
             this->toolBtnImgEnableAlpha->Click += gcnew System::EventHandler(this, &MainForm::toolBtnImgEnableAlpha_Click);
-            //
-            // toolBtnCreatePatch
-            //
-            this->toolBtnCreatePatch->DisplayStyle = System::Windows::Forms::ToolStripItemDisplayStyle::Image;
-            this->toolBtnCreatePatch->Image = (cli::safe_cast<System::Drawing::Image^>(resources->GetObject(L"toolBtnCreatePatch.Image")));
-            this->toolBtnCreatePatch->ImageTransparentColor = System::Drawing::Color::Magenta;
-            this->toolBtnCreatePatch->Name = L"toolBtnCreatePatch";
-            this->toolBtnCreatePatch->Size = System::Drawing::Size(23, 22);
-            this->toolBtnCreatePatch->Text = L"Create patch";
-            this->toolBtnCreatePatch->Click += gcnew System::EventHandler(this, &MainForm::toolBtnCreatePatch_Click);
-            //
-            // toolBtnConvertTexture
-            //
-            this->toolBtnConvertTexture->DisplayStyle = System::Windows::Forms::ToolStripItemDisplayStyle::Image;
-            this->toolBtnConvertTexture->Image = (cli::safe_cast<System::Drawing::Image^>(resources->GetObject(L"toolBtnConvertTexture.Image")));
-            this->toolBtnConvertTexture->ImageTransparentColor = System::Drawing::Color::Magenta;
-            this->toolBtnConvertTexture->Name = L"toolBtnConvertTexture";
-            this->toolBtnConvertTexture->Size = System::Drawing::Size(23, 22);
-            this->toolBtnConvertTexture->ToolTipText = L"Convert texture to Metro format";
-            this->toolBtnConvertTexture->Click += gcnew System::EventHandler(this, &MainForm::toolBtnConvertTexture_Click);
-            //
+            // 
             // toolBtnTexturesDatabase
-            //
+            // 
             this->toolBtnTexturesDatabase->DisplayStyle = System::Windows::Forms::ToolStripItemDisplayStyle::Image;
             this->toolBtnTexturesDatabase->Enabled = false;
             this->toolBtnTexturesDatabase->Image = (cli::safe_cast<System::Drawing::Image^>(resources->GetObject(L"toolBtnTexturesDatabase.Image")));
             this->toolBtnTexturesDatabase->ImageTransparentColor = System::Drawing::Color::Magenta;
             this->toolBtnTexturesDatabase->Name = L"toolBtnTexturesDatabase";
             this->toolBtnTexturesDatabase->Size = System::Drawing::Size(23, 22);
-            this->toolBtnTexturesDatabase->Text = L"toolStripButton1";
             this->toolBtnTexturesDatabase->ToolTipText = L"Textures Database Viewer";
             this->toolBtnTexturesDatabase->Click += gcnew System::EventHandler(this, &MainForm::toolBtnTexturesDatabase_Click);
-            //
+            // 
             // ctxMenuExportBin
-            //
+            // 
             this->ctxMenuExportBin->Items->AddRange(gcnew cli::array< System::Windows::Forms::ToolStripItem^  >(2) {
                 this->extractBinRootToolStripMenuItem,
                     this->extractBinChunkToolStripMenuItem
@@ -582,46 +580,73 @@ private: System::ComponentModel::IContainer^  components;
             this->ctxMenuExportBin->Name = L"ctxMenuExportBin";
             this->ctxMenuExportBin->RenderMode = System::Windows::Forms::ToolStripRenderMode::System;
             this->ctxMenuExportBin->Size = System::Drawing::Size(163, 48);
-            //
+            // 
             // extractBinRootToolStripMenuItem
-            //
+            // 
             this->extractBinRootToolStripMenuItem->Name = L"extractBinRootToolStripMenuItem";
             this->extractBinRootToolStripMenuItem->Size = System::Drawing::Size(162, 22);
             this->extractBinRootToolStripMenuItem->Text = L"Extract root file...";
             this->extractBinRootToolStripMenuItem->Click += gcnew System::EventHandler(this, &MainForm::extractBinRootToolStripMenuItem_Click);
-            //
+            // 
             // extractBinChunkToolStripMenuItem
-            //
+            // 
             this->extractBinChunkToolStripMenuItem->Name = L"extractBinChunkToolStripMenuItem";
             this->extractBinChunkToolStripMenuItem->Size = System::Drawing::Size(162, 22);
             this->extractBinChunkToolStripMenuItem->Text = L"Extract this file...";
             this->extractBinChunkToolStripMenuItem->Click += gcnew System::EventHandler(this, &MainForm::extractBinChunkToolStripMenuItem_Click);
-            //
+            // 
             // ctxMenuExportLocalization
-            //
+            // 
             this->ctxMenuExportLocalization->Items->AddRange(gcnew cli::array< System::Windows::Forms::ToolStripItem^  >(1) { this->saveAsExcel2003XMLToolStripMenuItem });
             this->ctxMenuExportLocalization->Name = L"ctxMenuExportLocalization";
             this->ctxMenuExportLocalization->Size = System::Drawing::Size(196, 26);
             // 
             // saveAsExcel2003XMLToolStripMenuItem
-            //
+            // 
             this->saveAsExcel2003XMLToolStripMenuItem->Name = L"saveAsExcel2003XMLToolStripMenuItem";
             this->saveAsExcel2003XMLToolStripMenuItem->Size = System::Drawing::Size(195, 22);
             this->saveAsExcel2003XMLToolStripMenuItem->Text = L"Save as Excel 2003 XML";
             this->saveAsExcel2003XMLToolStripMenuItem->Click += gcnew System::EventHandler(this, &MainForm::saveAsExcel2003XMLToolStripMenuItem_Click);
-            //
-            // filterableTreeView
-            //
-            this->filterableTreeView->Dock = System::Windows::Forms::DockStyle::Fill;
-            this->filterableTreeView->FilterTimeout = 1000;
-            this->filterableTreeView->Location = System::Drawing::Point(0, 0);
-            this->filterableTreeView->Margin = System::Windows::Forms::Padding(0);
-            this->filterableTreeView->Name = L"filterableTreeView";
-            this->filterableTreeView->Size = System::Drawing::Size(301, 672);
-            this->filterableTreeView->TabIndex = 0;
-            //
+            // 
+            // toolStripSeparator3
+            // 
+            this->toolStripSeparator3->Name = L"toolStripSeparator3";
+            this->toolStripSeparator3->Size = System::Drawing::Size(6, 25);
+            // 
+            // toolStripSeparator4
+            // 
+            this->toolStripSeparator4->Name = L"toolStripSeparator4";
+            this->toolStripSeparator4->Size = System::Drawing::Size(6, 25);
+            // 
+            // toolStripSplitButton1
+            // 
+            this->toolStripSplitButton1->DisplayStyle = System::Windows::Forms::ToolStripItemDisplayStyle::Image;
+            this->toolStripSplitButton1->DropDownItems->AddRange(gcnew cli::array< System::Windows::Forms::ToolStripItem^  >(2) {
+                this->texturesConverterToolStripMenuItem,
+                    this->archiveToolToolStripMenuItem
+            });
+            this->toolStripSplitButton1->Image = (cli::safe_cast<System::Drawing::Image^>(resources->GetObject(L"toolStripSplitButton1.Image")));
+            this->toolStripSplitButton1->ImageTransparentColor = System::Drawing::Color::Magenta;
+            this->toolStripSplitButton1->Name = L"toolStripSplitButton1";
+            this->toolStripSplitButton1->Size = System::Drawing::Size(32, 22);
+            this->toolStripSplitButton1->Text = L"Tools";
+            // 
+            // texturesConverterToolStripMenuItem
+            // 
+            this->texturesConverterToolStripMenuItem->Name = L"texturesConverterToolStripMenuItem";
+            this->texturesConverterToolStripMenuItem->Size = System::Drawing::Size(180, 22);
+            this->texturesConverterToolStripMenuItem->Text = L"Textures converter...";
+            this->texturesConverterToolStripMenuItem->Click += gcnew System::EventHandler(this, &MainForm::texturesConverterToolStripMenuItem_Click);
+            // 
+            // archiveToolToolStripMenuItem
+            // 
+            this->archiveToolToolStripMenuItem->Name = L"archiveToolToolStripMenuItem";
+            this->archiveToolToolStripMenuItem->Size = System::Drawing::Size(180, 22);
+            this->archiveToolToolStripMenuItem->Text = L"Archive tool...";
+            this->archiveToolToolStripMenuItem->Click += gcnew System::EventHandler(this, &MainForm::archiveToolToolStripMenuItem_Click);
+            // 
             // MainForm
-            //
+            // 
             this->AutoScaleDimensions = System::Drawing::SizeF(6, 13);
             this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
             this->ClientSize = System::Drawing::Size(1159, 719);
@@ -716,8 +741,8 @@ private: System::ComponentModel::IContainer^  components;
         void OnDlgModelInfo_Closed(System::Object^ sender, System::EventArgs^ e);
 
         // patch creation
-        void toolBtnCreatePatch_Click(System::Object^ sender, System::EventArgs^ e);
-        void toolBtnConvertTexture_Click(System::Object^ sender, System::EventArgs^ e);
+        void archiveToolToolStripMenuItem_Click(System::Object^ sender, System::EventArgs^ e);
+        void texturesConverterToolStripMenuItem_Click(System::Object^ sender, System::EventArgs^ e);
 
         // textures database
         void toolBtnTexturesDatabase_Click(System::Object^ sender, System::EventArgs^ e);

@@ -17,9 +17,9 @@ namespace MetroEX {
         mPropertiesViewer = nullptr;
 
         mFileExtensions = gcnew array<String^>(3);
-        mFileExtensions[0] = ".2048";
-        mFileExtensions[1] = ".1024";
-        mFileExtensions[2] = ".512";
+        mFileExtensions[0] = L".2048";
+        mFileExtensions[1] = L".1024";
+        mFileExtensions[2] = L".512";
 
         this->filterableTreeView->TreeView->ImageList = imageList;
 
@@ -45,17 +45,17 @@ namespace MetroEX {
         this->filterableTreeView->TreeView->BeginUpdate();
         this->filterableTreeView->TreeView->Nodes->Clear();
 
-        mOriginalRootNode = this->filterableTreeView->TreeView->Nodes->Add("content");
+        mOriginalRootNode = this->filterableTreeView->TreeView->Nodes->Add(L"content");
         mOriginalRootNode->ImageIndex = kImageIdxFolderClosed;
         mOriginalRootNode->SelectedImageIndex = kImageIdxFolderClosed;
 
         for (size_t i = 0, end = MetroTexturesDatabase::Get().GetNumTextures(); i < end; ++i) {
             const MetroTextureInfo& texInfo = MetroTexturesDatabase::Get().GetTextureInfo(i);
             String^ name = ToNetString(texInfo.name);
-            array<String^>^ parts = name->Split('\\');
+            array<String^>^ parts = name->Split(L'\\');
 
             TreeNode^ parentNode = mOriginalRootNode;
-            for (int i = 0; i < parts->Length - 1; i++) {
+            for (int i = 0; i < parts->Length - 1; ++i) {
                 TreeNode^ foundNode = FindNode(parentNode, parts[i]);
 
                 if (foundNode == nullptr) {
@@ -92,7 +92,7 @@ namespace MetroEX {
     TreeNode^ TexturesDatabaseViewer::FindNode(TreeNode^ parent, String^ text) {
         String^ term = text->ToUpper();
 
-        for (int i = 0; i < parent->Nodes->Count; i++) {
+        for (int i = 0; i < parent->Nodes->Count; ++i) {
             if (parent->Nodes[i]->Text->ToUpper() == term) {
                 return parent->Nodes[i];
             }
@@ -110,7 +110,7 @@ namespace MetroEX {
 
         delete nodes;
 
-        for (int i = 0; i < parent->Nodes->Count; i++) {
+        for (int i = 0; i < parent->Nodes->Count; ++i) {
             if (parent->Nodes[i]->Nodes->Count > 0) {
                 this->SortNodesRecursively(parent->Nodes[i], sorter);
             }
@@ -118,7 +118,7 @@ namespace MetroEX {
     }
 
     void TexturesDatabaseViewer::filterableTreeView_NodeMouseDoubleClick(System::Object^ sender, System::Windows::Forms::TreeNodeMouseClickEventArgs^ e) {
-        if (e->Button != System::Windows::Forms::MouseButtons::Left) {
+        if (e->Button == System::Windows::Forms::MouseButtons::Left) {
             this->SelectTexture(e->Node);
         }
     }
@@ -176,8 +176,8 @@ namespace MetroEX {
         String^ path = this->GetRealPath(index);
 
         mMainForm->ResetTreeView();
-        if (!mMainForm->FindAndSelect("content\\textures\\" + path, mFileExtensions)) {
-            mMainForm->ShowErrorMessage("Couldn't find texture!");
+        if (!mMainForm->FindAndSelect(L"content\\textures\\" + path, mFileExtensions)) {
+            mMainForm->ShowErrorMessage(L"Couldn't find texture!");
         }
     }
 

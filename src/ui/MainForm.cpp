@@ -1323,7 +1323,7 @@ namespace MetroEX {
         mModelInfoPanel->MdlPropPlayStopAnimBtnText = mRenderPanel->IsPlayingAnim() ? L"Stop" : L"Play";
     }
 
-    void MainForm::btnModelInfo_Click(System::Object^ sender) {
+    void MainForm::btnModelInfo_Click(System::Object^) {
         if (!mDlgModelInfo) {
             mDlgModelInfo = gcnew MetroEX::DlgModelInfo();
             mDlgModelInfo->Closed += gcnew System::EventHandler(this, &MetroEX::MainForm::OnDlgModelInfo_Closed);
@@ -1339,13 +1339,13 @@ namespace MetroEX {
     }
 
     // patch creation
-    void MainForm::toolBtnCreatePatch_Click(System::Object^, System::EventArgs^) {
+    void MainForm::archiveToolToolStripMenuItem_Click(System::Object^, System::EventArgs^) {
         DlgCreateArchive dlg;
         dlg.Icon = this->Icon;
         dlg.ShowDialog(this);
     }
 
-    void MainForm::toolBtnConvertTexture_Click(System::Object^, System::EventArgs^) {
+    void MainForm::texturesConverterToolStripMenuItem_Click(System::Object^, System::EventArgs^) {
         DlgConvertTextures dlg;
         dlg.Icon = this->Icon;
         dlg.ShowDialog(this);
