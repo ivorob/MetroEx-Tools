@@ -707,9 +707,6 @@ private: MetroEXControls::FilterableTreeView^  filterableTreeView;
         void extractFolderToolStripMenuItem_Click(System::Object^ sender, System::EventArgs^ e);
         void extractFolderWithConversionToolStripMenuItem_Click(System::Object^ sender, System::EventArgs^ e);
 
-    public:
-        void ShowErrorMessage(String^ message);
-        //
     private:
         void UpdateFilesList();
         void AddFoldersRecursive(const MetroFile& dir, const size_t folderIdx, TreeNode^ rootItem, const size_t configBinIdx);

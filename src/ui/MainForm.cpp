@@ -6,7 +6,6 @@
 #include "metro/MetroSkeleton.h"
 #include "metro/MetroMotion.h"
 #include "metro/MetroLocalization.h"
-#include "metro/MetroPatchTool.h"
 
 #include <fstream>
 
@@ -188,7 +187,7 @@ namespace MetroEX {
         mRenderPanel->Size = System::Drawing::Size(528, 386);
 
         if (!mRenderPanel->InitGraphics()) {
-            this->ShowErrorMessage("Failed to initialize DirectX 11 graphics!\n3D viewer will be unavailable.");
+            MetroEX::ShowErrorMessageBox(this, L"Failed to initialize DirectX 11 graphics!\n3D viewer will be unavailable.");
         }
 
         // Create info panels
@@ -422,7 +421,7 @@ namespace MetroEX {
     //
     void MainForm::extractFileToolStripMenuItem_Click(System::Object^, System::EventArgs^) {
         if (!this->ExtractFile(*mExtractionCtx, fs::path())) {
-            this->ShowErrorMessage("Failed to extract file!");
+            MetroEX::ShowErrorMessageBox(this, L"Failed to extract file!");
         }
     }
 
@@ -431,7 +430,7 @@ namespace MetroEX {
         mExtractionCtx->txUseBC3 = false;
 
         if (!this->ExtractTexture(*mExtractionCtx, fs::path())) {
-            this->ShowErrorMessage("Failed to extract texture!");
+            MetroEX::ShowErrorMessageBox(this, L"Failed to extract texture!");
         }
     }
 
@@ -440,7 +439,7 @@ namespace MetroEX {
         mExtractionCtx->txUseBC3 = true;
 
         if (!this->ExtractTexture(*mExtractionCtx, fs::path())) {
-            this->ShowErrorMessage("Failed to extract texture!");
+            MetroEX::ShowErrorMessageBox(this, L"Failed to extract texture!");
         }
     }
 
@@ -448,7 +447,7 @@ namespace MetroEX {
         mExtractionCtx->txSaveAsTga = true;
 
         if (!this->ExtractTexture(*mExtractionCtx, fs::path())) {
-            this->ShowErrorMessage("Failed to extract texture!");
+            MetroEX::ShowErrorMessageBox(this, L"Failed to extract texture!");
         }
     }
 
@@ -456,7 +455,7 @@ namespace MetroEX {
         mExtractionCtx->txSaveAsPng = true;
 
         if (!this->ExtractTexture(*mExtractionCtx, fs::path())) {
-            this->ShowErrorMessage("Failed to extract texture!");
+            MetroEX::ShowErrorMessageBox(this, L"Failed to extract texture!");
         }
     }
 
@@ -464,7 +463,7 @@ namespace MetroEX {
         mExtractionCtx->mdlSaveAsObj = true;
 
         if (!this->ExtractModel(*mExtractionCtx, fs::path())) {
-            this->ShowErrorMessage("Failed to extract model!");
+            MetroEX::ShowErrorMessageBox(this, L"Failed to extract model!");
         }
     }
 
@@ -473,7 +472,7 @@ namespace MetroEX {
         mExtractionCtx->mdlSaveWithAnims = true;
 
         if (!this->ExtractModel(*mExtractionCtx, fs::path())) {
-            this->ShowErrorMessage("Failed to extract model!");
+            MetroEX::ShowErrorMessageBox(this, L"Failed to extract model!");
         }
     }
 
@@ -481,7 +480,7 @@ namespace MetroEX {
         mExtractionCtx->sndSaveAsOgg = true;
 
         if (!this->ExtractSound(*mExtractionCtx, fs::path())) {
-            this->ShowErrorMessage("Failed to extract sound!");
+            MetroEX::ShowErrorMessageBox(this, L"Failed to extract sound!");
         }
     }
 
@@ -489,13 +488,13 @@ namespace MetroEX {
         mExtractionCtx->sndSaveAsWav = true;
 
         if (!this->ExtractSound(*mExtractionCtx, fs::path())) {
-            this->ShowErrorMessage("Failed to extract sound!");
+            MetroEX::ShowErrorMessageBox(this, L"Failed to extract sound!");
         }
     }
 
     void MainForm::saveAsExcel2003XMLToolStripMenuItem_Click(System::Object^, System::EventArgs^) {
         if (!this->ExtractLocalization(*mExtractionCtx, fs::path())) {
-            this->ShowErrorMessage("Failed to extract localization!");
+            MetroEX::ShowErrorMessageBox(this, L"Failed to extract localization!");
         }
     }
 
@@ -509,7 +508,7 @@ namespace MetroEX {
 
     void MainForm::extractBinChunkToolStripMenuItem_Click(System::Object^, System::EventArgs^) {
         if (!this->ExtractFile(*mExtractionCtx, fs::path())) {
-            this->ShowErrorMessage("Failed to extract bin file chunk!");
+            MetroEX::ShowErrorMessageBox(this, L"Failed to extract bin file chunk!");
         }
     }
 
@@ -578,12 +577,6 @@ namespace MetroEX {
                 mExtractionThread->Start(PathToString(folderPath));
             }
         }
-    }
-
-    void MainForm::ShowErrorMessage(String^ message) {
-        System::Windows::Forms::MessageBoxButtons buttons = System::Windows::Forms::MessageBoxButtons::OK;
-        System::Windows::Forms::MessageBoxIcon mbicon = System::Windows::Forms::MessageBoxIcon::Error;
-        System::Windows::Forms::MessageBox::Show(message, this->Text, buttons, mbicon);
     }
 
     void MainForm::UpdateFilesList() {
@@ -1268,21 +1261,25 @@ namespace MetroEX {
                 } else {
                     fs::path filePath = curPath / this->MakeFileOutputName(mf, tmpCtx);
                     switch (tmpCtx.type) {
-                    case FileType::Texture: {
-                        this->ExtractTexture(tmpCtx, filePath);
-                    } break;
+                        case FileType::Texture: {
+                            this->ExtractTexture(tmpCtx, filePath);
+                        } break;
 
-                    case FileType::Model: {
-                        this->ExtractModel(tmpCtx, filePath);
-                    } break;
+                        case FileType::Model: {
+                            this->ExtractModel(tmpCtx, filePath);
+                        } break;
 
-                    case FileType::Sound: {
-                        this->ExtractSound(tmpCtx, filePath);
-                    } break;
+                        case FileType::Sound: {
+                            this->ExtractSound(tmpCtx, filePath);
+                        } break;
 
-                    default: {
-                        this->ExtractFile(tmpCtx, filePath);
-                    } break;
+                        case FileType::Localization: {
+                            this->ExtractLocalization(tmpCtx, filePath);
+                        } break;
+
+                        default: {
+                            this->ExtractFile(tmpCtx, filePath);
+                        } break;
                     }
                 }
 
@@ -1290,7 +1287,6 @@ namespace MetroEX {
                 if (mExtractionProgressDlg) {
                     mExtractionProgressDlg->SetProgress64(mExtractionCtx->progress, mExtractionCtx->numFilesTotal);
                 }
-
             } else {
                 this->ExtractFolderComplete(tmpCtx, curPath);
             }

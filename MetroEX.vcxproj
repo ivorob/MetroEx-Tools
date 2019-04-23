@@ -144,7 +144,6 @@
     <ClCompile Include="src\metro\MetroMaterialsDatabase.cpp" />
     <ClCompile Include="src\metro\MetroModel.cpp" />
     <ClCompile Include="src\metro\MetroMotion.cpp" />
-    <ClCompile Include="src\metro\MetroPatchTool.cpp" />
     <ClCompile Include="src\metro\MetroSkeleton.cpp" />
     <ClCompile Include="src\metro\MetroSound.cpp" />
     <ClCompile Include="src\metro\MetroTexture.cpp" />
@@ -186,7 +185,6 @@
     <ClInclude Include="src\metro\MetroMaterialsDatabase.h" />
     <ClInclude Include="src\metro\MetroModel.h" />
     <ClInclude Include="src\metro\MetroMotion.h" />
-    <ClInclude Include="src\metro\MetroPatchTool.h" />
     <ClInclude Include="src\metro\MetroReflection.h" />
     <ClInclude Include="src\metro\MetroSkeleton.h" />
     <ClInclude Include="src\metro\MetroSound.h" />

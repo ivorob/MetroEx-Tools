@@ -1,4 +1,6 @@
 #include "mycommon.h"
+#include "metro/MetroCompression.h"
+
 #include <fstream>
 
 #include "DlgCreateArchive.h"
@@ -23,9 +25,7 @@ namespace MetroEX {
             if (sourceFolder.exists() && sourceFolder.is_directory() && folderPath.stem() == L"content") {
                 this->txtSourceFolder->Text = PathToString(folderPath);
             } else {
-                System::Windows::Forms::MessageBoxButtons buttons = System::Windows::Forms::MessageBoxButtons::OK;
-                System::Windows::Forms::MessageBoxIcon mbicon = System::Windows::Forms::MessageBoxIcon::Error;
-                System::Windows::Forms::MessageBox::Show(L"Please choose directory named \"content\"", this->Text, buttons, mbicon);
+                MetroEX::ShowErrorMessageBox(this, L"Please choose directory named \"content\" !");
             }
         }
     }
@@ -35,6 +35,7 @@ namespace MetroEX {
             SaveFileDialog sfd;
             sfd.Title = L"Save vfx archive...";
             sfd.Filter = L"Archive description (*.vfx)|*.vfx";
+            sfd.FileName = L"patch_00.vfx";
             sfd.FilterIndex = 0;
             sfd.RestoreDirectory = true;
             sfd.OverwritePrompt = true;
@@ -66,7 +67,19 @@ namespace MetroEX {
 
         MyArray<DirEntry> allFiles;
         this->CollectFilesAndFolders(sourcePath, allFiles);
-        this->WriteFilesBlob(vfsPath, allFiles);
+        bool success = this->WriteFilesBlob(vfsPath, allFiles);
+
+        if (success) {
+            if (this->radioCreateNewArchive->Checked) {
+                success = this->WriteArchiveDescriptionFile(vfxPath, vfsName.u8string(), allFiles);
+            }
+        }
+
+        if (!success) {
+            MetroEX::ShowErrorMessageBox(this, L"Operation failed :(");
+        } else {
+            MetroEX::ShowInfoMessageBox(this, L"Operation succeeded :)");
+        }
     }
 
     void DlgCreateArchive::CheckAndUnlockCreateBtn() {
@@ -88,7 +101,7 @@ namespace MetroEX {
         this->btnCreateArchive->Enabled = sourceValid && targetValid;
     }
 
-#pragma region Helper functios
+    #pragma region Helper functions
 
     MyArray<fs::directory_entry> CollectDirectoryContent(const fs::path dirPath) {
         MyArray<fs::directory_entry> result;
@@ -147,7 +160,53 @@ namespace MetroEX {
         return std::move(result);
     }
 
-#pragma endregion
+    void CopyFileContent(std::ifstream& src, std::ofstream& dst) {
+#if 0
+            std::copy(std::istreambuf_iterator<char>(src), {}, std::ostreambuf_iterator<char>(dst));
+#else
+        const size_t kBufferSize = 64 * 1024;
+        char buffer[kBufferSize];
+
+        while (!src.eof()) {
+            src.read(buffer, kBufferSize);
+            const size_t bytesRead = src.gcount();
+            dst.write(buffer, bytesRead);
+        }
+#endif
+    }
+
+    void WriteStringZ(std::ofstream& stream, const CharString& str) {
+        stream.write(str.data(), str.length() + 1);
+    }
+
+    void WriteStringXored(std::ofstream& stream, const CharString& str) {
+        static const char sEmpty[3] = { 1, 0, 0 };
+        if (str.empty()) {
+            stream.write(sEmpty, sizeof(sEmpty));
+        } else {
+            BytesArray temp(str.length() + 1);
+            memcpy(temp.data(), str.data(), temp.size());
+
+            const uint8_t xorMask = scast<uint8_t>(rand() % 235) + 15;
+            for (size_t i = 0, end = temp.size() - 1; i < end; ++i) {
+                temp[i] ^= xorMask;
+            }
+
+            const uint16_t header = (scast<uint16_t>(xorMask) << 8) | scast<uint16_t>(temp.size() & 0xFF);
+            stream.write(rcast<const char*>(&header), sizeof(header));
+            stream.write(rcast<const char*>(temp.data()), temp.size());
+        }
+    }
+
+    void WriteU16(std::ofstream& stream, const uint16_t value) {
+        stream.write(rcast<const char*>(&value), sizeof(value));
+    }
+
+    void WriteU32(std::ofstream& stream, const uint32_t value) {
+        stream.write(rcast<const char*>(&value), sizeof(value));
+    }
+
+    #pragma endregion
 
     void DlgCreateArchive::CollectFilesAndFolders(const fs::path& path, MyArray<DirEntry>& result) {
         DirEntry content;
@@ -160,6 +219,9 @@ namespace MetroEX {
         size_t nextIdx = 1;
 
         result = CollectDirectoryRecursive(content, nextIdx);
+        if (!result.empty()) {
+            result.insert(result.begin(), content);
+        }
     }
 
     bool DlgCreateArchive::WriteFilesBlob(const fs::path& path, MyArray<DirEntry>& files) {
@@ -177,7 +239,9 @@ namespace MetroEX {
                         const size_t fileSize = srcFile.tellg();
                         srcFile.seekg(0, std::ios::beg);
 
-                        std::copy(std::istreambuf_iterator<char>(srcFile), {}, std::ostreambuf_iterator<char>(file));
+                        //#NOTE_SK: no compression atm
+                        //#TODO_SK: add compression based on filters
+                        CopyFileContent(srcFile, file);
 
                         e.file.sizeCompressed = fileSize;
                         e.file.sizeUncompressed = fileSize;
@@ -186,6 +250,60 @@ namespace MetroEX {
                     }
                 }
             }
+
+            file.flush();
+            file.close();
+
+            result = true;
+        }
+
+        return result;
+    }
+
+    bool DlgCreateArchive::WriteArchiveDescriptionFile(const fs::path& path, const CharString& vfsName, const MyArray<DirEntry>& files) {
+        bool result = false;
+
+        const CharString contentVersion = "492798"; // "491177"
+        const MetroGuid guid = { 0x9FE25B12, 0xF276, 0x40F4, 0xEAB8, { 0x0F, 0xE1, 0xA4, 0xC6, 0x9E, 0x7A } };
+        size_t numFiles = files.size();
+
+        std::ofstream vfxFile(path, std::ofstream::binary);
+        if (vfxFile.good()) {
+            // write header
+            WriteU32(vfxFile, scast<uint32_t>(3));
+            WriteU32(vfxFile, scast<uint32_t>(MetroCompression::Type_LZ4));
+            WriteStringZ(vfxFile, contentVersion);
+            vfxFile.write(rcast<const char*>(&guid), sizeof(guid));
+            WriteU32(vfxFile, 1);                           // num packages
+            WriteU32(vfxFile, scast<uint32_t>(numFiles));   // num files
+            WriteU32(vfxFile, 0);                           // unknown
+
+            // write package
+            WriteStringZ(vfxFile, vfsName);
+            WriteU32(vfxFile, 0);                           // num levels
+            WriteU32(vfxFile, 2);                           // chunk
+
+            size_t vfsOffset = 0;
+            for (auto& e : files) {
+                const MetroFile& mf = e.file;
+
+                WriteU16(vfxFile, scast<uint16_t>(mf.flags));
+                if (mf.IsFile()) {
+                    WriteU16(vfxFile, scast<uint16_t>(mf.pakIdx));
+                    WriteU32(vfxFile, scast<uint32_t>(mf.offset));
+                    WriteU32(vfxFile, scast<uint32_t>(mf.sizeUncompressed));
+                    WriteU32(vfxFile, scast<uint32_t>(mf.sizeCompressed));
+                } else {
+                    WriteU16(vfxFile, scast<uint16_t>(mf.numFiles));
+                    WriteU32(vfxFile, scast<uint32_t>(mf.firstFile));
+                }
+                WriteStringXored(vfxFile, mf.name);
+            }
+            WriteU32(vfxFile, 0);
+            WriteU32(vfxFile, 0);
+
+            vfxFile.flush();
+            vfxFile.close();
 
             result = true;
         }

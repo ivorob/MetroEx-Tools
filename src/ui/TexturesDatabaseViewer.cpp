@@ -177,7 +177,7 @@ namespace MetroEX {
 
         mMainForm->ResetTreeView();
         if (!mMainForm->FindAndSelect(L"content\\textures\\" + path, mFileExtensions)) {
-            mMainForm->ShowErrorMessage(L"Couldn't find texture!");
+            MetroEX::ShowErrorMessageBox(this, L"Couldn't find texture!");
         }
     }
 
