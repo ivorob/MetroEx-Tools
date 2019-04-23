@@ -27,6 +27,8 @@ VFXReader::~VFXReader() {
 bool VFXReader::LoadFromFile(const fs::path& filePath) {
     bool result = false;
 
+    this->Close();
+
     LogPrint(LogLevel::Info, "loading vfx file...");
 
     std::ifstream file(filePath, std::ifstream::binary);
@@ -130,6 +132,12 @@ bool VFXReader::LoadFromFile(const fs::path& filePath) {
     }
 
     return result;
+}
+
+void VFXReader::Close() {
+    mPaks.resize(0);
+    mFiles.resize(0);
+    mFolders.resize(0);
 }
 
 MemStream VFXReader::ExtractFile(const size_t fileIdx, const size_t subOffset, const size_t subLength) {

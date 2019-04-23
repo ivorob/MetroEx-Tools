@@ -14,6 +14,8 @@ public:
     ~VFXReader();
 
     bool                LoadFromFile(const fs::path& filePath);
+    void                Close();
+
     MemStream           ExtractFile(const size_t fileIdx, const size_t subOffset = kInvalidValue, const size_t subLength = kInvalidValue);
 
     bool                Good() const;
