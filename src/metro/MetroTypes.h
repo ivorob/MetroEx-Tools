@@ -52,7 +52,7 @@ public:
     static const size_t InvalidFileIdx = kInvalidValue;
 
     inline bool IsFile() const {
-        return 0 == (this->flags & 8);
+        return !TestBit<size_t>(this->flags, Flag_Folder);
     }
 
     inline bool ContainsFile(const size_t fileIdx) const {
@@ -82,6 +82,10 @@ public:
     // dir fields
     size_t      firstFile;
     size_t      numFiles;
+
+    // duplication
+    size_t      baseIdx;
+    size_t      duplicates;
 };
 
 

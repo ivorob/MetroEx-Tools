@@ -1,5 +1,6 @@
 #include "mycommon.h"
 #include "metro/MetroCompression.h"
+#include "metro/VFXReader.h"
 
 #include <fstream>
 
@@ -72,6 +73,8 @@ namespace MetroEX {
         if (success) {
             if (this->radioCreateNewArchive->Checked) {
                 success = this->WriteArchiveDescriptionFile(vfxPath, vfsName.u8string(), allFiles);
+            } else {
+                success = this->ModifyArchiveDescriptionFile(vfxPath, vfsName.u8string(), allFiles);
             }
         }
 
@@ -306,6 +309,17 @@ namespace MetroEX {
             vfxFile.close();
 
             result = true;
+        }
+
+        return result;
+    }
+
+    bool DlgCreateArchive::ModifyArchiveDescriptionFile(const fs::path& path, const CharString& vfsName, const MyArray<DirEntry>& files) {
+        bool result = false;
+
+        VFXReader vfx;
+        if (vfx.LoadFromFile(path)) {
+            //#SK_TODO: finish!
         }
 
         return result;

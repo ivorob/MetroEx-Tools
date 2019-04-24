@@ -262,5 +262,6 @@ namespace MetroEX {
         void CollectFilesAndFolders(const fs::path& path, MyArray<DirEntry>& result);
         bool WriteFilesBlob(const fs::path& path, MyArray<DirEntry>& files);
         bool WriteArchiveDescriptionFile(const fs::path& path, const CharString& vfsName, const MyArray<DirEntry>& files);
+        bool ModifyArchiveDescriptionFile(const fs::path& path, const CharString& vfsName, const MyArray<DirEntry>& files);
     };
 }

@@ -3,12 +3,6 @@
 
 #include <fstream>
 
-static const size_t kVFXVersionUnknown      = 0;
-static const size_t kVFXVersion2033Redux    = 1;
-static const size_t kVFXVersionArktika1     = 2;
-static const size_t kVFXVersionExodus       = 3;
-static const size_t kVFXVersionMax          = 4;
-
 static const CharString sGameVersions[] = {
     "Unknown",
     "Redux (2033 / Last Light)",
@@ -43,48 +37,29 @@ bool VFXReader::LoadFromFile(const fs::path& filePath) {
 
         MemStream stream(fileData.data(), fileData.size());
 
-        auto readCharStringXored = [&stream]() -> CharString {
-            CharString result;
+        mVersion = stream.ReadTyped<uint32_t>();
+        mCompressionType = stream.ReadTyped<uint32_t>();
 
-            const uint16_t stringHeader = stream.ReadTyped<uint16_t>();
-            const size_t stringLen = (stringHeader & 0xFF);
-            const char xorMask = scast<char>((stringHeader >> 8) & 0xFF);
+        LogPrint(LogLevel::Info, "vfx version = " + std::to_string(mVersion) + ", compression = " + std::to_string(mCompressionType));
 
-            result.reserve(stringLen);
-            for (size_t i = 1; i < stringLen; ++i) {
-                const char ch = stream.ReadTyped<char>();
-                result.push_back(ch ^ xorMask);
-            }
-
-            stream.ReadTyped<char>(); // terminating null
-
-            return result;
-        };
-
-
-        const size_t version = stream.ReadTyped<uint32_t>();
-        const size_t compressionType = stream.ReadTyped<uint32_t>();
-
-        LogPrint(LogLevel::Info, "vfx version = " + std::to_string(version) + ", compression = " + std::to_string(compressionType));
-
-        if ((version > kVFXVersionUnknown && version < kVFXVersionMax) && compressionType == MetroCompression::Type_LZ4) {
-            if (version >= kVFXVersionExodus) {
+        if ((mVersion > kVFXVersionUnknown && mVersion < kVFXVersionMax) && mCompressionType == MetroCompression::Type_LZ4) {
+            if (mVersion >= kVFXVersionExodus) {
                 mContentVersion = stream.ReadStringZ();
             }
             stream.ReadStruct(mGUID); // guid, seems to be static across the game
             const size_t numVFS = stream.ReadTyped<uint32_t>();
             const size_t numFiles = stream.ReadTyped<uint32_t>();
-            const size_t unknown_0 = stream.ReadTyped<uint32_t>();
+            const size_t numDuplicates = stream.ReadTyped<uint32_t>();
 
-            LogPrint(LogLevel::Info, "game version = " + sGameVersions[version]);
+            LogPrint(LogLevel::Info, "game version = " + sGameVersions[mVersion]);
             LogPrint(LogLevel::Info, "vfx content version = " + mContentVersion);
             LogPrintF(LogLevel::Info, "vfx guid = %08x-%04x-%04x-%04x-%02x%02x%02x%02x%02x%02x",
                 mGUID.a, mGUID.b, mGUID.c, mGUID.d, mGUID.e[0], mGUID.e[1], mGUID.e[2], mGUID.e[3], mGUID.e[4], mGUID.e[5]);
 
-            LogPrintF(LogLevel::Info, "packages = %lld, files = %lld", numVFS, numFiles);
+            LogPrintF(LogLevel::Info, "packages = %lld, files = %lld, duplicates = %lld", numVFS, numFiles, numDuplicates);
 
             mPaks.resize(numVFS);
-            for (Pak& pak : mPaks) {
+            for (Package& pak : mPaks) {
                 pak.name = stream.ReadStringZ();
 
                 const uint32_t numStrings = stream.ReadTyped<uint32_t>();
@@ -100,23 +75,28 @@ bool VFXReader::LoadFromFile(const fs::path& filePath) {
             size_t fileIdx = 0;
             for (MetroFile& mf : mFiles) {
                 mf.idx = fileIdx;
-                mf.flags = stream.ReadTyped<uint16_t>();
 
-                if (mf.IsFile()) {
-                    mf.pakIdx = stream.ReadTyped<uint16_t>();
-                    mf.offset = stream.ReadTyped<uint32_t>();
-                    mf.sizeUncompressed = stream.ReadTyped<uint32_t>();
-                    mf.sizeCompressed = stream.ReadTyped<uint32_t>();
-                    mf.name = readCharStringXored();
-                } else {
-                    mf.numFiles = stream.ReadTyped<uint16_t>();
-                    mf.firstFile = stream.ReadTyped<uint32_t>();
-                    mf.name = readCharStringXored();
+                this->ReadFileDescription(mf, stream);
 
+                if (!mf.IsFile()) {
                     mFolders.push_back(fileIdx);
                 }
 
                 ++fileIdx;
+            }
+
+            mDuplicates.resize(numDuplicates);
+            size_t duplicateIdx = 0;
+            for (MetroFile& mf : mDuplicates) {
+                this->ReadFileDescription(mf, stream, true);
+
+                MetroFile& baseMf = mFiles[mf.baseIdx];
+                mf.duplicates = baseMf.duplicates;
+                baseMf.duplicates = duplicateIdx;
+
+                mf.name = baseMf.name;
+
+                ++duplicateIdx;
             }
 
             mBasePath = filePath.parent_path();
@@ -138,13 +118,22 @@ void VFXReader::Close() {
     mPaks.resize(0);
     mFiles.resize(0);
     mFolders.resize(0);
+    mDuplicates.resize(0);
+}
+
+const CharString& VFXReader::GetContentVersion() const {
+    return mContentVersion;
+}
+
+size_t VFXReader::GetVersion() const {
+    return mVersion;
 }
 
 MemStream VFXReader::ExtractFile(const size_t fileIdx, const size_t subOffset, const size_t subLength) {
     MemStream result;
 
     const MetroFile& mf = mFiles[fileIdx];
-    const Pak& pak = mPaks[mf.pakIdx];
+    const Package& pak = mPaks[mf.pakIdx];
 
     fs::path pakPath = mBasePath / pak.name;
     std::ifstream file(pakPath, std::ifstream::binary);
@@ -185,7 +174,15 @@ const CharString& VFXReader::GetSelfName() const {
     return mFileName;
 }
 
-MyArray<size_t> VFXReader::GetAllFolders() const {
+const MyArray<Package>& VFXReader::GetAllPacks() const {
+    return mPaks;
+}
+
+const MyArray<MetroFile>& VFXReader::GetFiles() const {
+    return mFiles;
+}
+
+const MyArray<size_t>& VFXReader::GetAllFolders() const {
     return mFolders;
 }
 
@@ -313,4 +310,46 @@ MyArray<size_t> VFXReader::FindFilesInFolder(const CharString& folder, const Cha
     }
 
     return std::move(result);
+}
+
+static CharString ReadEncryptedFileName(MemStream& stream) {
+    CharString result;
+
+    const uint16_t stringHeader = stream.ReadTyped<uint16_t>();
+    const size_t stringLen = (stringHeader & 0xFF);
+    const char xorMask = scast<char>((stringHeader >> 8) & 0xFF);
+
+    result.reserve(stringLen);
+    for (size_t i = 1; i < stringLen; ++i) {
+        const char ch = stream.ReadTyped<char>();
+        result.push_back(ch ^ xorMask);
+    }
+
+    stream.ReadTyped<char>(); // terminating null
+
+    return result;
+};
+
+void VFXReader::ReadFileDescription(MetroFile& mf, MemStream& stream, const bool isDuplicate) {
+    mf.flags = stream.ReadTyped<uint16_t>();
+
+    if (mf.IsFile()) {
+        mf.pakIdx = stream.ReadTyped<uint16_t>();
+        mf.offset = stream.ReadTyped<uint32_t>();
+        mf.sizeUncompressed = stream.ReadTyped<uint32_t>();
+        mf.sizeCompressed = stream.ReadTyped<uint32_t>();
+
+        if (isDuplicate) {
+            mf.baseIdx = stream.ReadTyped<uint32_t>();
+        }
+
+        mf.duplicates = kInvalidValue;
+    } else {
+        mf.numFiles = stream.ReadTyped<uint16_t>();
+        mf.firstFile = stream.ReadTyped<uint32_t>();
+    }
+
+    if (!isDuplicate) {
+        mf.name = ReadEncryptedFileName(stream);
+    }
 }
