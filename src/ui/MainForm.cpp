@@ -1346,4 +1346,37 @@ namespace MetroEX {
         dlg.Icon = this->Icon;
         dlg.ShowDialog(this);
     }
+
+    void MainForm::localizationConversionToolStripMenuItem_Click(System::Object^ sender, System::EventArgs^ e) {
+        OpenFileDialog ofd;
+        ofd.Title = L"Choose localization file to convert";
+        ofd.Filter = L"Excel 2003 XML files (*.xml)|*.xml";
+        ofd.FilterIndex = 0;
+        ofd.CheckFileExists = true;
+        ofd.RestoreDirectory = true;
+        if (ofd.ShowDialog(this) == System::Windows::Forms::DialogResult::OK) {
+            fs::path srcPath = StringToPath(ofd.FileName);
+
+            MetroLocalization loc;
+            if (loc.LoadFromExcel2003(srcPath)) {
+                String^ fileName = PathToString(srcPath.stem().native() + L".lng");
+
+                SaveFileDialog sfd;
+                sfd.Title = L"Where to save Metro localization...";
+                sfd.Filter = L"Metro localization (*.lng)|*.lng";
+                sfd.FileName = fileName;
+                sfd.RestoreDirectory = true;
+                sfd.OverwritePrompt = true;
+                if (sfd.ShowDialog(this) == System::Windows::Forms::DialogResult::OK) {
+                    if (loc.Save(StringToPath(sfd.FileName))) {
+                        MetroEX::ShowInfoMessageBox(this, L"Conversion succeeded!");
+                    } else {
+                        MetroEX::ShowErrorMessageBox(this, L"Failed to save " + sfd.FileName);
+                    }
+                }
+            } else {
+                MetroEX::ShowErrorMessageBox(this, L"Failed to open " + ofd.FileName);
+            }
+        }
+    }
 }

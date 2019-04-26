@@ -1,6 +1,8 @@
 #include "MetroLocalization.h"
 #include "pugixml.hpp"
 
+#include <fstream>
+
 
 static CharString WideToUtf8(const WideString& wstr) {
     CharString result;
@@ -18,8 +20,45 @@ static CharString WideToUtf8(const WideString& wstr) {
         }
     }
 
-    return result;
+    return std::move(result);
 }
+
+static WideString Utf8ToWide(const CharString& u8str) {
+    WideString result;
+
+    const uint8_t* src = rcast<const uint8_t*>(u8str.data());
+    const uint8_t* end = src + u8str.length();
+    while (src < end) {
+        const uint8_t lead = *src;
+        wchar_t cp = scast<wchar_t>(lead);
+        if (lead < 0x80) {
+            // nothing
+        } else if ((lead >> 5) == 0x6) {
+            ++src;
+            cp = ((cp << 6) & 0x7ff) + ((*src) & 0x3f);
+        } else if ((lead >> 4) == 0xe) {
+            ++src;
+            cp = ((cp << 12) & 0xffff) + (((*src) << 6) & 0xfff);
+            ++src;
+            cp += (*src) & 0x3f;
+        } else if ((lead >> 3) == 0x1e) {
+            ++src;
+            cp = ((cp << 18) & 0x1fffff) + (((*src) << 12) & 0x3ffff);
+            ++src;
+            cp += ((*src) << 6) & 0xfff;
+            ++src;
+            cp += (*src) & 0x3f;
+        } else {
+            break;
+        }
+
+        result.push_back(cp);
+        ++src;
+    }
+
+    return std::move(result);
+}
+
 
 enum LocalizationChunk : size_t {
     LC_CharsTable   = 0x00000001,
@@ -77,6 +116,67 @@ bool MetroLocalization::LoadFromData(MemStream stream) {
     return !mStrings.empty();
 }
 
+bool MetroLocalization::LoadFromExcel2003(const fs::path& path) {
+    bool result = false;
+
+    mStrings.clear();
+
+    std::ifstream file(path);
+    if (file.good()) {
+        pugi::xml_document doc;
+        const uint32_t options = pugi::parse_pi | pugi::parse_default;
+        pugi::xml_parse_result parseResult = doc.load(file, options);
+        if (parseResult) {
+            pugi::xml_node decl = doc.child("mso-application");
+            if (decl && decl.value() == CharString(R"(progid="Excel.Sheet")")) {
+                pugi::xml_node workbook, worksheet, table;
+                workbook = doc.child("Workbook");
+                if (workbook) {
+                    worksheet = workbook.child("Worksheet");
+                }
+                if (worksheet) {
+                    table = worksheet.child("Table");
+                }
+                if (table) {
+                    static CharString kRowStr = "Row";
+                    static CharString kCellStr = "Cell";
+
+                    for (pugi::xml_node child = table.first_child(); child; child = child.next_sibling()) {
+                        if (child.name() == kRowStr) {
+                            LocPair lp;
+
+                            pugi::xml_node cell, data;
+                            cell = child.first_child();
+                            if (cell && cell.name() == kCellStr) {
+                                data = cell.child("Data");
+                            }
+                            if (data) {
+                                lp.key = data.text().get();
+                            }
+
+                            cell = cell.next_sibling();
+                            if (cell && cell.name() == kCellStr) {
+                                data = cell.child("Data");
+                            }
+                            if (data) {
+                                lp.value = Utf8ToWide(data.text().get());
+                            }
+
+                            if (!lp.key.empty() && !lp.value.empty()) {
+                                mStrings.emplace_back(lp);
+                            }
+                        }
+                    }
+
+                    result = !mStrings.empty();
+                }
+            }
+        }
+    }
+
+    return result;
+}
+
 bool MetroLocalization::SaveToExcel2003(const fs::path& path) {
     pugi::xml_document doc;
     // add a custom declaration nodes
@@ -124,6 +224,58 @@ bool MetroLocalization::SaveToExcel2003(const fs::path& path) {
     return doc.save_file(path.native().c_str(), "", pugi::format_default, pugi::encoding_utf8);
 }
 
+static void WriteU32(std::ofstream& s, const uint32_t v) {
+    s.write(rcast<const char*>(&v), sizeof(v));
+}
+
+bool MetroLocalization::Save(const fs::path& path) {
+    bool result = false;
+
+    std::ofstream file(path, std::ofstream::binary);
+    if (file.good()) {
+        // first chunk, dunno why it's there
+        WriteU32(file, 0);
+        WriteU32(file, 4);
+        WriteU32(file, 0);
+
+        // chars table
+        MyArray<wchar_t> chars = this->CollectUniqueChars();
+        WriteU32(file, scast<uint32_t>(LC_CharsTable));
+        WriteU32(file, scast<uint32_t>(chars.size() * sizeof(wchar_t)));
+        file.write(rcast<const char*>(chars.data()), chars.size() * sizeof(wchar_t));
+
+        // pairs
+        const size_t dataSize = this->CalculateDataSize();
+        WriteU32(file, scast<uint32_t>(LC_StringsTable));
+        WriteU32(file, scast<uint32_t>(dataSize));
+
+        auto encodeString = [&chars](const WideString& s)->MyArray<uint8_t> {
+            MyArray<uint8_t> result;
+            for (wchar_t c : s) {
+                auto it = std::find(chars.begin(), chars.end(), c);
+                const size_t pos = std::distance(chars.begin(), it);
+                assert(pos <= 255);
+                result.push_back(scast<uint8_t>(pos & 0xFF));
+            }
+            result.push_back(0);
+            return std::move(result);
+        };
+
+        for (const LocPair& lp : mStrings) {
+            file.write(lp.key.c_str(), lp.key.length() + 1);
+            MyArray<uint8_t> encoded = encodeString(lp.value);
+            file.write(rcast<const char*>(encoded.data()), encoded.size());
+        }
+
+        file.flush();
+        file.close();
+
+        result = true;
+    }
+
+    return result;
+}
+
 
 size_t MetroLocalization::GetNumStrings() const {
     return mStrings.size();
@@ -135,4 +287,33 @@ const CharString& MetroLocalization::GetKey(const size_t idx) const {
 
 const WideString& MetroLocalization::GetValue(const size_t idx) const {
     return mStrings[idx].value;
+}
+
+MyArray<wchar_t> MetroLocalization::CollectUniqueChars() const {
+    MyDict<wchar_t, bool> dict;
+    MyArray<wchar_t> result;
+
+    result.push_back(0);
+    for (const LocPair& lp : mStrings) {
+        for (const wchar_t c : lp.value) {
+            auto it = dict.find(c);
+            if (it == dict.end()) {
+                dict.insert({ c, true });
+                result.push_back(c);
+            }
+        }
+    }
+
+    return std::move(result);
+}
+
+size_t MetroLocalization::CalculateDataSize() const {
+    size_t result = 0;
+
+    for (const LocPair& lp : mStrings) {
+        result += lp.key.length() + 1;
+        result += lp.value.length() + 1;
+    }
+
+    return result;
 }
