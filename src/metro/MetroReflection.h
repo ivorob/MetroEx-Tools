@@ -1,7 +1,6 @@
 #pragma once
 #include "mycommon.h"
 #include "mymath.h"
-#include "hashing.h"
 
 struct MetroReflectionFlags {
     static const uint8_t None           = 0;

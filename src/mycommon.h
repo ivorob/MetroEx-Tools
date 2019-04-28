@@ -9,9 +9,6 @@
 #include <algorithm>
 #include <cassert>
 
-#include "xxhash.h"
-
-
 #define STRINGIFY_UTIL_(s) #s
 #define STRINGIFY(s) STRINGIFY_UTIL_(s)
 
@@ -42,6 +39,13 @@ static const CharString kEmptyString;
 #define PACKED_STRUCT_END __pragma(pack(pop))
 #endif
 
+// hashing
+uint32_t Hash_CalculateCRC32(const uint8_t* data, const size_t dataLength);
+uint32_t Hash_CalculateCRC32(const CharString& str);
+uint32_t Hash_CalculateXX(const uint8_t* data, const size_t dataLength);
+uint32_t Hash_CalculateXX(const CharString& str);
+
+
 struct StringsTable {
     const char* GetString(const size_t idx) const {
         return this->strings[idx];
@@ -52,24 +56,13 @@ struct StringsTable {
 };
 
 
-struct Hasher {
-    static uint32_t FromData(const void* data, const size_t length) {
-        return XXH32(data, length, 0);
-    }
-
-    static uint32_t FromString(const CharString& str) {
-        return XXH32(str.data(), str.length(), 0);
-    }
-};
-
-
 struct HashString {
     HashString() : hash(0u) {}
     HashString(const HashString& other) : hash(other.hash), str(other.str) {}
     HashString(const CharString& other) { *this = other; }
 
     inline void operator =(const HashString& other) { hash = other.hash; str = other.str; }
-    inline void operator =(const CharString& other) { str = other; hash = Hasher::FromString(other); }
+    inline void operator =(const CharString& other) { str = other; hash = Hash_CalculateXX(other); }
 
     inline bool operator ==(const HashString& other) const { return hash == other.hash; }
     inline bool operator !=(const HashString& other) const { return hash != other.hash; }

@@ -26,7 +26,7 @@ MetroMotion::MetroMotion(const CharString& name)
     , mSpeed(0.0f)
     , mAccrue(0.0f)
     , mFalloff(0.0f)
-    , mNumKeys(0)
+    , mNumFrames(0)
     , mJumpFrame(0)
     , mLandFrame(0)
     , mAffectedBones()
@@ -38,6 +38,52 @@ MetroMotion::MetroMotion(const CharString& name)
 }
 MetroMotion::~MetroMotion() {
 
+}
+
+bool MetroMotion::LoadHeader(MemStream& stream) {
+    size_t chunksFound = 0;
+
+    while (!stream.Ended()) {
+        const size_t chunkId = stream.ReadTyped<uint32_t>();
+        const size_t chunkSize = stream.ReadTyped<uint32_t>();
+        const size_t chunkEnd = stream.GetCursor() + chunkSize;
+
+        switch (chunkId) {
+            case MC_HeaderChunk: {
+                mVersion = stream.ReadTyped<uint32_t>();
+                mBonesCRC = stream.ReadTyped<uint32_t>();
+                mNumBones = stream.ReadTyped<uint16_t>();
+                mNumLocators = stream.ReadTyped<uint16_t>();
+
+                ++chunksFound;
+            } break;
+
+            case MC_InfoChunk: {
+                mFlags = stream.ReadTyped<uint16_t>();
+
+                mSpeed = stream.ReadTyped<float>();
+                mAccrue = stream.ReadTyped<float>();
+                mFalloff = stream.ReadTyped<float>();
+
+                mNumFrames = stream.ReadTyped<uint32_t>();
+                mJumpFrame = stream.ReadTyped<uint16_t>();
+                mLandFrame = stream.ReadTyped<uint16_t>();
+
+                stream.ReadStruct(mAffectedBones);
+
+                mMotionsDataSize = stream.ReadTyped<uint32_t>();
+                mMotionsOffsetsSize = stream.ReadTyped<uint32_t>();
+
+                stream.ReadStruct(mHighQualityBones);
+
+                ++chunksFound;
+            } break;
+        }
+
+        stream.SetCursor(chunkEnd);
+    }
+
+    return chunksFound == 2;
 }
 
 bool MetroMotion::LoadFromData(MemStream& stream) {
@@ -65,7 +111,7 @@ bool MetroMotion::LoadFromData(MemStream& stream) {
                 mAccrue = stream.ReadTyped<float>();
                 mFalloff = stream.ReadTyped<float>();
 
-                mNumKeys = stream.ReadTyped<uint32_t>();
+                mNumFrames = stream.ReadTyped<uint32_t>();
                 mJumpFrame = stream.ReadTyped<uint16_t>();
                 mLandFrame = stream.ReadTyped<uint16_t>();
 
@@ -98,16 +144,8 @@ bool MetroMotion::LoadFromData(MemStream& stream) {
     return result;
 }
 
-void MetroMotion::SetPath(const CharString& path) {
-    mPath = path;
-}
-
 const CharString& MetroMotion::GetName() const {
     return mName;
-}
-
-const CharString& MetroMotion::GetPath() const {
-    return mPath;
 }
 
 size_t MetroMotion::GetBonesCRC() const {
@@ -122,12 +160,12 @@ size_t MetroMotion::GetNumLocators() const {
     return mNumLocators;
 }
 
-size_t MetroMotion::GetNumKeys() const {
-    return mNumKeys;
+size_t MetroMotion::GetNumFrames() const {
+    return mNumFrames;
 }
 
 float MetroMotion::GetMotionTimeInSeconds() const {
-    return scast<float>(mNumKeys) / 30.0f;
+    return scast<float>(mNumFrames) / scast<float>(kFrameRate);
 }
 
 bool MetroMotion::IsBoneAnimated(const size_t boneIdx) const {
@@ -147,7 +185,7 @@ quat MetroMotion::GetBoneRotation(const size_t boneIdx, const size_t key) const 
         if (curve.points.size() == 1) { // constant value
             result = *rcast<const quat*>(&curve.points.front().value);
         } else {
-            const float timing = scast<float>(key) / 30.0f;
+            const float timing = scast<float>(key) / scast<float>(kFrameRate);
 
             const size_t numPoints = curve.points.size();
             size_t pointA = numPoints, pointB = numPoints;
@@ -192,7 +230,7 @@ vec3 MetroMotion::GetBonePosition(const size_t boneIdx, const size_t key) const 
         if (curve.points.size() == 1) { // constant value
             result = *rcast<const vec3*>(&curve.points.front().value);
         } else {
-            const float timing = scast<float>(key) / 30.0f;
+            const float timing = scast<float>(key) / scast<float>(kFrameRate);
 
             const size_t numPoints = curve.points.size();
             size_t pointA = numPoints, pointB = numPoints;

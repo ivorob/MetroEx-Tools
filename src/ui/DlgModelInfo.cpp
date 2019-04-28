@@ -35,12 +35,10 @@ namespace MetroEX {
             }
 
             for (size_t i = 0; i < model->GetNumMotions(); ++i) {
-                const MetroMotion* motion = model->GetMotion(i);
-
                 MotionInfo^ mi = gcnew MotionInfo();
-                mi->name = ToNetString(motion->GetName());
-                mi->path = ToNetString(motion->GetPath());
-                mi->duration = motion->GetMotionTimeInSeconds();
+                mi->name = ToNetString(model->GetMotionName(i));
+                mi->path = ToNetString(model->GetMotionPath(i));
+                mi->duration = model->GetMotionDuration(i);
 
                 mModelInfo->motions.Add(mi);
             }

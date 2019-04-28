@@ -46,9 +46,6 @@
     <ClCompile Include="src\metro\MetroTexturesDatabase.cpp">
       <Filter>src\metro</Filter>
     </ClCompile>
-    <ClCompile Include="src\ui\ExtractionOptionsDgl.cpp">
-      <Filter>src\ui</Filter>
-    </ClCompile>
     <ClCompile Include="src\metro\MetroSound.cpp">
       <Filter>src\metro</Filter>
     </ClCompile>
@@ -118,6 +115,12 @@
     <ClCompile Include="src\ui\tools\DlgCreateArchive.cpp">
       <Filter>src\ui\tools</Filter>
     </ClCompile>
+    <ClCompile Include="src\mex_settings.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ui\DlgSettings.cpp">
+      <Filter>src\ui</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\ui\RenderPanel.h">
@@ -153,9 +156,6 @@
     <ClInclude Include="src\dds_utils.h">
       <Filter>src</Filter>
     </ClInclude>
-    <ClInclude Include="src\hashing.h">
-      <Filter>src</Filter>
-    </ClInclude>
     <ClInclude Include="src\metro\MetroLevel.h">
       <Filter>src\metro</Filter>
     </ClInclude>
@@ -173,9 +173,6 @@
     </ClInclude>
     <ClInclude Include="src\metro\MetroTypes.h">
       <Filter>src\metro</Filter>
-    </ClInclude>
-    <ClInclude Include="src\ui\ExtractionOptionsDgl.h">
-      <Filter>src\ui</Filter>
     </ClInclude>
     <ClInclude Include="src\metro\MetroSound.h">
       <Filter>src\metro</Filter>
@@ -255,6 +252,12 @@
     <ClInclude Include="src\ui\tools\DlgCreateArchive.h">
       <Filter>src\ui\tools</Filter>
     </ClInclude>
+    <ClInclude Include="src\mex_settings.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ui\DlgSettings.h">
+      <Filter>src\ui</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="src\ui\ImagePanel.resx">
@@ -264,9 +267,6 @@
       <Filter>src\ui</Filter>
     </EmbeddedResource>
     <EmbeddedResource Include="src\ui\MainForm.resx">
-      <Filter>src\ui</Filter>
-    </EmbeddedResource>
-    <EmbeddedResource Include="src\ui\ExtractionOptionsDgl.resx">
       <Filter>src\ui</Filter>
     </EmbeddedResource>
     <EmbeddedResource Include="src\ui\AboutDlg.resx">
@@ -287,6 +287,9 @@
     <EmbeddedResource Include="src\ui\tools\DlgCreateArchive.resx">
       <Filter>src\ui\tools</Filter>
     </EmbeddedResource>
+    <EmbeddedResource Include="src\ui\DlgSettings.resx">
+      <Filter>src\ui</Filter>
+      </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="src">

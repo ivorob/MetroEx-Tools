@@ -1,11 +1,7 @@
 #pragma once
 #include "mycommon.h"
-#include "hashing.h"
 
-/*
- Contains known file names and it's hash from config.bin 
-*/
-
+// Contains known file names and it's hash from config.bin 
 class ConfigNamesDB {
 public:
     MyDict<uint32_t, CharString>  mCRC32ToPath;

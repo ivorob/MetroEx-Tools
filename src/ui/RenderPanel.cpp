@@ -635,7 +635,7 @@ namespace MetroEX {
                 mAnimation->time -= animLen;
             }
 
-            const size_t key = scast<size_t>(std::floorf((mAnimation->time / animLen) * mCurrentMotion->GetNumKeys()));
+            const size_t key = scast<size_t>(std::floorf((mAnimation->time / animLen) * mCurrentMotion->GetNumFrames()));
 
             const MetroSkeleton* skeleton = mModel->GetSkeleton();
 

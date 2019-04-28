@@ -1,0 +1,56 @@
+#pragma once
+#include "mycommon.h"
+#include "pugixml.hpp"
+
+class MEXSettings : public Singleton<MEXSettings> {
+public:
+    MEXSettings();
+    ~MEXSettings();
+
+    void    SetFolder(const fs::path& folder);
+
+    bool    Load();
+    bool    Save();
+
+private:
+    void    InitDefaults();
+
+    // loading
+    bool    LoadExtraction(pugi::xml_document& doc);
+
+    // saving
+    bool    SaveExtraction(pugi::xml_document& doc);
+
+public:
+    //// Extraction options
+    struct Extraction {
+        enum class MdlFormat : size_t {
+            Obj,
+            Fbx
+        };
+        enum class TexFormat : size_t {
+            Dds,        // Dx10+
+            LegacyDds,  // Dx9
+            Tga,
+            Png
+        };
+        enum class SndFormat : size_t {
+            Ogg,
+            Wav
+        };
+
+        // models
+        MdlFormat   modelFormat;
+        bool        modelSaveWithAnims;
+        bool        modelAnimsSeparate;
+        // textures
+        TexFormat   textureFormat;
+        // sounds
+        SndFormat   soundFormat;
+        // stuff
+        bool        askEveryTime;
+    } extraction;
+
+private:
+    fs::path    mFolder;
+};

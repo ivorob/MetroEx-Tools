@@ -149,10 +149,11 @@
     <ClCompile Include="src\metro\MetroTexture.cpp" />
     <ClCompile Include="src\metro\MetroTexturesDatabase.cpp" />
     <ClCompile Include="src\metro\VFXReader.cpp" />
+    <ClCompile Include="src\mex_settings.cpp" />
     <ClCompile Include="src\ui\AboutDlg.cpp" />
     <ClCompile Include="src\ui\ChooseFolderDlg.cpp" />
     <ClCompile Include="src\ui\DlgModelInfo.cpp" />
-    <ClCompile Include="src\ui\ExtractionOptionsDgl.cpp" />
+    <ClCompile Include="src\ui\DlgSettings.cpp" />
     <ClCompile Include="src\ui\ImagePanel.cpp" />
     <ClCompile Include="src\ui\LocalizationPanel.cpp" />
     <ClCompile Include="src\ui\MainForm.cpp" />
@@ -178,7 +179,6 @@
     <ClInclude Include="src\metro\MetroConfigNames.h" />
     <ClInclude Include="src\camera.h" />
     <ClInclude Include="src\dds_utils.h" />
-    <ClInclude Include="src\hashing.h" />
     <ClInclude Include="src\metro\MetroConfigDatabase.h" />
     <ClInclude Include="src\metro\MetroLevel.h" />
     <ClInclude Include="src\metro\MetroLocalization.h" />
@@ -192,6 +192,7 @@
     <ClInclude Include="src\metro\MetroTexturesDatabase.h" />
     <ClInclude Include="src\metro\MetroTypes.h" />
     <ClInclude Include="src\metro\VFXReader.h" />
+    <ClInclude Include="src\mex_settings.h" />
     <ClInclude Include="src\mycommon.h" />
     <ClInclude Include="src\mymath.h" />
     <ClInclude Include="src\ui\AboutDlg.h">
@@ -201,7 +202,7 @@
     <ClInclude Include="src\ui\DlgModelInfo.h">
       <FileType>CppForm</FileType>
     </ClInclude>
-    <ClInclude Include="src\ui\ExtractionOptionsDgl.h">
+    <ClInclude Include="src\ui\DlgSettings.h">
       <FileType>CppForm</FileType>
     </ClInclude>
     <ClInclude Include="src\ui\ImagePanel.h">
@@ -231,11 +232,6 @@
     <ClInclude Include="src\ui\UIHelpers.h" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="src\ui\ExtractionOptionsDgl.resx">
-      <DependentUpon>src\ui\ExtractionOptionsDgl.h</DependentUpon>
-      <LogicalName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">MetroEX.ExtractionOptionsDgl.resources</LogicalName>
-      <LogicalName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">MetroEX.ExtractionOptionsDgl.resources</LogicalName>
-    </EmbeddedResource>
     <EmbeddedResource Include="src\ui\ImagePanel.resx">
       <DependentUpon>src\ui\ImagePanel.h</DependentUpon>
       <LogicalName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">MetroEX.ImagePanel.resources</LogicalName>
@@ -280,6 +276,11 @@
       <DependentUpon>src\ui\tools\DlgCreateArchive.h</DependentUpon>
       <LogicalName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">MetroEX.DlgCreateArchive.resources</LogicalName>
       <LogicalName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">MetroEX.DlgCreateArchive.resources</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="src\ui\DlgSettings.resx">
+      <DependentUpon>src\ui\DlgSettings.h</DependentUpon>
+      <LogicalName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">MetroEX.DlgSettings.resources</LogicalName>
+      <LogicalName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">MetroEX.DlgSettings.resources</LogicalName>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

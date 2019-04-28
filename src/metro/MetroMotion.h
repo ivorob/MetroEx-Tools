@@ -12,19 +12,21 @@ struct AttributeCurve {
 
 class MetroMotion {
 public:
+    static const size_t kFrameRate = 30;
+
+public:
     MetroMotion(const CharString& name = "");
     ~MetroMotion();
 
+    bool                    LoadHeader(MemStream& stream);
     bool                    LoadFromData(MemStream& stream);
-    void                    SetPath(const CharString& path);
+
     const CharString&       GetName() const;
-    const CharString&       GetPath() const;
-    
 
     size_t                  GetBonesCRC() const;
     size_t                  GetNumBones() const;
     size_t                  GetNumLocators() const;
-    size_t                  GetNumKeys() const;
+    size_t                  GetNumFrames() const;
     float                   GetMotionTimeInSeconds() const;
 
     bool                    IsBoneAnimated(const size_t boneIdx) const;
@@ -37,7 +39,6 @@ public:
 
 //private:
     CharString              mName;
-    CharString              mPath;
 
     // header
     size_t                  mVersion;
@@ -49,7 +50,7 @@ public:
     float                   mSpeed;
     float                   mAccrue;
     float                   mFalloff;
-    size_t                  mNumKeys;
+    size_t                  mNumFrames;
     size_t                  mJumpFrame;
     size_t                  mLandFrame;
     Bitset256               mAffectedBones;

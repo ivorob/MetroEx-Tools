@@ -1,5 +1,4 @@
 #pragma once
-
 #include "mycommon.h"
 #include "metro/MetroTypes.h"
 
@@ -48,6 +47,7 @@ namespace MetroEX {
         bool        mdlSaveAsObj;
         bool        mdlSaveAsFbx;
         bool        mdlSaveWithAnims;
+        bool        mdlAnimsSeparate;
         // textures
         bool        txUseBC3;
         bool        txSaveAsDds;
@@ -72,8 +72,7 @@ namespace MetroEX {
     using namespace System::Drawing;
 
 
-    public ref class MainForm : public System::Windows::Forms::Form
-    {
+    public ref class MainForm : public System::Windows::Forms::Form {
     public:
         MainForm() {
             mImagePanel = nullptr;
@@ -180,6 +179,8 @@ private: MetroEXControls::FilterableTreeView^  filterableTreeView;
     private: System::Windows::Forms::ToolStripMenuItem^  archiveToolToolStripMenuItem;
 private: System::Windows::Forms::ToolStripMenuItem^  localizationConversionToolStripMenuItem;
 private: System::Windows::Forms::ToolStripSeparator^  toolStripSeparator5;
+private: System::Windows::Forms::ToolStripButton^  toolBtnSettings;
+private: System::Windows::Forms::ToolStripSeparator^  toolStripSeparator6;
     private: System::ComponentModel::IContainer^  components;
 
 
@@ -238,6 +239,8 @@ private: System::Windows::Forms::ToolStripSeparator^  toolStripSeparator5;
             this->toolStripSeparator4 = (gcnew System::Windows::Forms::ToolStripSeparator());
             this->toolStripSplitButton1 = (gcnew System::Windows::Forms::ToolStripSplitButton());
             this->texturesConverterToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
+            this->localizationConversionToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
+            this->toolStripSeparator5 = (gcnew System::Windows::Forms::ToolStripSeparator());
             this->archiveToolToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
             this->toolStripSeparator2 = (gcnew System::Windows::Forms::ToolStripSeparator());
             this->toolBtnAbout = (gcnew System::Windows::Forms::ToolStripButton());
@@ -246,8 +249,8 @@ private: System::Windows::Forms::ToolStripSeparator^  toolStripSeparator5;
             this->extractBinChunkToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
             this->ctxMenuExportLocalization = (gcnew System::Windows::Forms::ContextMenuStrip(this->components));
             this->saveAsExcel2003XMLToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
-            this->toolStripSeparator5 = (gcnew System::Windows::Forms::ToolStripSeparator());
-            this->localizationConversionToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
+            this->toolStripSeparator6 = (gcnew System::Windows::Forms::ToolStripSeparator());
+            this->toolBtnSettings = (gcnew System::Windows::Forms::ToolStripButton());
             this->statusStrip1->SuspendLayout();
             (cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->splitContainer1))->BeginInit();
             this->splitContainer1->Panel1->SuspendLayout();
@@ -509,10 +512,10 @@ private: System::Windows::Forms::ToolStripSeparator^  toolStripSeparator5;
             // toolStrip1
             // 
             this->toolStrip1->GripStyle = System::Windows::Forms::ToolStripGripStyle::Hidden;
-            this->toolStrip1->Items->AddRange(gcnew cli::array< System::Windows::Forms::ToolStripItem^  >(9) {
+            this->toolStrip1->Items->AddRange(gcnew cli::array< System::Windows::Forms::ToolStripItem^  >(11) {
                 this->toolBtnFileOpen,
                     this->toolStripSeparator1, this->toolBtnImgEnableAlpha, this->toolStripSeparator3, this->toolBtnTexturesDatabase, this->toolStripSeparator4,
-                    this->toolStripSplitButton1, this->toolStripSeparator2, this->toolBtnAbout
+                    this->toolStripSplitButton1, this->toolStripSeparator2, this->toolBtnSettings, this->toolStripSeparator6, this->toolBtnAbout
             });
             this->toolStrip1->Location = System::Drawing::Point(0, 0);
             this->toolStrip1->Name = L"toolStrip1";
@@ -590,6 +593,18 @@ private: System::Windows::Forms::ToolStripSeparator^  toolStripSeparator5;
             this->texturesConverterToolStripMenuItem->Text = L"Textures converter...";
             this->texturesConverterToolStripMenuItem->Click += gcnew System::EventHandler(this, &MainForm::texturesConverterToolStripMenuItem_Click);
             // 
+            // localizationConversionToolStripMenuItem
+            // 
+            this->localizationConversionToolStripMenuItem->Name = L"localizationConversionToolStripMenuItem";
+            this->localizationConversionToolStripMenuItem->Size = System::Drawing::Size(207, 22);
+            this->localizationConversionToolStripMenuItem->Text = L"Localization conversion...";
+            this->localizationConversionToolStripMenuItem->Click += gcnew System::EventHandler(this, &MainForm::localizationConversionToolStripMenuItem_Click);
+            // 
+            // toolStripSeparator5
+            // 
+            this->toolStripSeparator5->Name = L"toolStripSeparator5";
+            this->toolStripSeparator5->Size = System::Drawing::Size(204, 6);
+            // 
             // archiveToolToolStripMenuItem
             // 
             this->archiveToolToolStripMenuItem->Name = L"archiveToolToolStripMenuItem";
@@ -649,17 +664,20 @@ private: System::Windows::Forms::ToolStripSeparator^  toolStripSeparator5;
             this->saveAsExcel2003XMLToolStripMenuItem->Text = L"Save as Excel 2003 XML";
             this->saveAsExcel2003XMLToolStripMenuItem->Click += gcnew System::EventHandler(this, &MainForm::saveAsExcel2003XMLToolStripMenuItem_Click);
             // 
-            // toolStripSeparator5
+            // toolStripSeparator6
             // 
-            this->toolStripSeparator5->Name = L"toolStripSeparator5";
-            this->toolStripSeparator5->Size = System::Drawing::Size(204, 6);
+            this->toolStripSeparator6->Name = L"toolStripSeparator6";
+            this->toolStripSeparator6->Size = System::Drawing::Size(6, 25);
             // 
-            // localizationConversionToolStripMenuItem
+            // toolBtnSettings
             // 
-            this->localizationConversionToolStripMenuItem->Name = L"localizationConversionToolStripMenuItem";
-            this->localizationConversionToolStripMenuItem->Size = System::Drawing::Size(207, 22);
-            this->localizationConversionToolStripMenuItem->Text = L"Localization conversion...";
-            this->localizationConversionToolStripMenuItem->Click += gcnew System::EventHandler(this, &MainForm::localizationConversionToolStripMenuItem_Click);
+            this->toolBtnSettings->DisplayStyle = System::Windows::Forms::ToolStripItemDisplayStyle::Image;
+            this->toolBtnSettings->Image = (cli::safe_cast<System::Drawing::Image^>(resources->GetObject(L"toolBtnSettings.Image")));
+            this->toolBtnSettings->ImageTransparentColor = System::Drawing::Color::Magenta;
+            this->toolBtnSettings->Name = L"toolBtnSettings";
+            this->toolBtnSettings->Size = System::Drawing::Size(23, 22);
+            this->toolBtnSettings->Text = L"Settings";
+            this->toolBtnSettings->Click += gcnew System::EventHandler(this, &MainForm::toolBtnSettings_Click);
             // 
             // MainForm
             // 
@@ -736,6 +754,7 @@ private: System::Windows::Forms::ToolStripSeparator^  toolStripSeparator5;
         void SwitchInfoPanel(PanelType t);
 
         // extraction
+        bool EnsureExtractionOptions();
         CharString MakeFileOutputName(const MetroFile& mf, const FileExtractionCtx& ctx);
         void TextureSaveHelper(const fs::path& folderPath, const FileExtractionCtx& ctx, const CharString& name);
         bool ExtractFile(const FileExtractionCtx& ctx, const fs::path& outPath);
@@ -760,6 +779,9 @@ private: System::Windows::Forms::ToolStripSeparator^  toolStripSeparator5;
 
         // textures database
         void toolBtnTexturesDatabase_Click(System::Object^ sender, System::EventArgs^ e);
+
+        // settings
+        void toolBtnSettings_Click(System::Object^ sender, System::EventArgs^ e);
 
     public:
         void ResetTreeView();

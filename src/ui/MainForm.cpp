@@ -7,15 +7,17 @@
 #include "metro/MetroMotion.h"
 #include "metro/MetroLocalization.h"
 
+#include "mex_settings.h"
+
 #include <fstream>
 
 #include "ChooseFolderDlg.h"
 
 #include "MainForm.h"
-#include "ExtractionOptionsDgl.h"
 #include "AboutDlg.h"
 #include "TexturesDatabaseViewer.h"
 #include "NodeSorter.h"
+#include "DlgSettings.h"
 
 #include "ui/tools/DlgConvertTextures.h"
 #include "ui/tools/DlgCreateArchive.h"
@@ -45,21 +47,21 @@ static const size_t kFolderSortedFlag       = size_t(1) << ((sizeof(size_t) * 8)
 
 namespace MetroEX {
     ref struct FileTagData {
-        FileType fileType; // type of file
-        size_t   fileIdx; // index inside .vfx
-        size_t   subFileIdx; // index inside .bin database
+        FileType fileType;      // type of file
+        size_t   fileIdx;       // index inside .vfx
+        size_t   subFileIdx;    // index inside .bin database
 
-        FileTagData(const FileType _fileType, const size_t _fileIdx, const size_t _subFileIdx) {
-            fileType = _fileType;
-            fileIdx = _fileIdx;
-            subFileIdx = _subFileIdx;
-        }
+        FileTagData(const FileType _fileType, const size_t _fileIdx, const size_t _subFileIdx)
+            : fileType(_fileType)
+            , fileIdx(_fileIdx)
+            , subFileIdx(_subFileIdx)
+        { }
     };
 
     static FileType DetectFileType(const MetroFile& mf) {
         FileType result = FileType::Unknown;
 
-        String^ name = ToNetString(mf.name.c_str());
+        String^ name = ToNetString(mf.name);
 
         if (name->EndsWith(L".dds") ||
             name->EndsWith(L".512") ||
@@ -90,8 +92,7 @@ namespace MetroEX {
         Node->ImageIndex = kImageIdxFile;
         Node->SelectedImageIndex = kImageIdxFile;
 
-        switch (fileType)
-        {
+        switch (fileType) {
             case FileType::Unknown: {
             } break;
 
@@ -256,6 +257,13 @@ namespace MetroEX {
             wnd.Icon = this->Icon;
             wnd.ShowDialog(this);
         }
+    }
+
+    // settings
+    void MainForm::toolBtnSettings_Click(System::Object^ sender, System::EventArgs^ e) {
+        DlgSettings dlg;
+        dlg.Icon = this->Icon;
+        dlg.ShowDialog(this);
     }
 
     // treeview
@@ -537,45 +545,25 @@ namespace MetroEX {
 
     void MainForm::extractFolderWithConversionToolStripMenuItem_Click(System::Object^ sender, System::EventArgs^ e) {
         fs::path folderPath = ChooseFolderDialog::ChooseFolder("Choose output directory...", this->Handle.ToPointer());
-        if (!folderPath.empty()) {
-            ExtractionOptionsDgl dlgOptions;
-            dlgOptions.Icon = this->Icon;
-            if (dlgOptions.ShowDialog(this) == System::Windows::Forms::DialogResult::OK) {
-                mExtractionCtx->batch = true;
-                mExtractionCtx->raw = false;
+        if (!folderPath.empty() && this->EnsureExtractionOptions()) {
+            mExtractionCtx->batch = true;
+            mExtractionCtx->raw = false;
 
-                // textures
-                mExtractionCtx->txSaveAsDds = dlgOptions.IsTexturesAsDds();
-                mExtractionCtx->txSaveAsTga = dlgOptions.IsTexturesAsTga();
-                mExtractionCtx->txSaveAsPng = dlgOptions.IsTexturesAsPng();
-                if (dlgOptions.IsTexturesAsLegacyDds()) {
-                    mExtractionCtx->txSaveAsDds = true;
-                    mExtractionCtx->txUseBC3 = true;
-                }
-                // models
-                mExtractionCtx->mdlSaveAsObj = dlgOptions.IsModelsAsObj();
-                mExtractionCtx->mdlSaveAsFbx = dlgOptions.IsModelsAsFbx();
-                mExtractionCtx->mdlSaveWithAnims = dlgOptions.IsModelsWithAnims();
-                // sounds
-                mExtractionCtx->sndSaveAsOgg = dlgOptions.IsSoundsAsOgg();
-                mExtractionCtx->sndSaveAsWav = dlgOptions.IsSoundsAsWav();
+            mExtractionCtx->numFilesTotal = VFXReader::Get().CountFilesInFolder(mExtractionCtx->fileIdx);
+            mExtractionCtx->progress = 0;
 
-                mExtractionCtx->numFilesTotal = VFXReader::Get().CountFilesInFolder(mExtractionCtx->fileIdx);
-                mExtractionCtx->progress = 0;
-
-                pin_ptr<IProgressDialog*> ipdPtr(&mExtractionProgressDlg);
-                HRESULT hr = ::CoCreateInstance(CLSID_ProgressDialog, NULL, CLSCTX_INPROC_SERVER, __uuidof(IProgressDialog), (void**)ipdPtr);
-                if (SUCCEEDED(hr)) {
-                    mExtractionProgressDlg->SetTitle(L"Extracting files...");
-                    mExtractionProgressDlg->SetLine(0, L"Please wait while your files are being extracted...", FALSE, nullptr);
-                    mExtractionProgressDlg->StartProgressDialog(rcast<HWND>(this->Handle.ToPointer()), nullptr,
-                        PROGDLG_NORMAL | PROGDLG_MODAL | PROGDLG_AUTOTIME | PROGDLG_NOMINIMIZE | PROGDLG_NOCANCEL,
-                        nullptr);
-                }
-
-                mExtractionThread = gcnew System::Threading::Thread(gcnew System::Threading::ParameterizedThreadStart(this, &MainForm::ExtractionProcessFunc));
-                mExtractionThread->Start(PathToString(folderPath));
+            pin_ptr<IProgressDialog*> ipdPtr(&mExtractionProgressDlg);
+            HRESULT hr = ::CoCreateInstance(CLSID_ProgressDialog, NULL, CLSCTX_INPROC_SERVER, __uuidof(IProgressDialog), (void**)ipdPtr);
+            if (SUCCEEDED(hr)) {
+                mExtractionProgressDlg->SetTitle(L"Extracting files...");
+                mExtractionProgressDlg->SetLine(0, L"Please wait while your files are being extracted...", FALSE, nullptr);
+                mExtractionProgressDlg->StartProgressDialog(rcast<HWND>(this->Handle.ToPointer()), nullptr,
+                    PROGDLG_NORMAL | PROGDLG_MODAL | PROGDLG_AUTOTIME | PROGDLG_NOMINIMIZE | PROGDLG_NOCANCEL,
+                    nullptr);
             }
+
+            mExtractionThread = gcnew System::Threading::Thread(gcnew System::Threading::ParameterizedThreadStart(this, &MainForm::ExtractionProcessFunc));
+            mExtractionThread->Start(PathToString(folderPath));
         }
     }
 
@@ -766,15 +754,17 @@ namespace MetroEX {
                 if (mdl->IsAnimated()) {
                     const size_t numMotions = mdl->GetNumMotions();
                     for (size_t i = 0; i < numMotions; ++i) {
-                        const MetroMotion* motion = mdl->GetMotion(i);
-                        mModelInfoPanel->AddMotionToList(ToNetString(motion->GetName()));
+                        const CharString& motionName = mdl->GetMotionName(i);
+                        mModelInfoPanel->AddMotionToList(ToNetString(motionName));
                     }
 
                     mModelInfoPanel->MdlPropTypeText = L"Animated";
                     mModelInfoPanel->MdlPropJointsText = mdl->GetSkeleton()->GetNumBones().ToString();
+                    mModelInfoPanel->MdlPropNumAnimsText = numMotions.ToString();
                 } else {
                     mModelInfoPanel->MdlPropTypeText = L"Static";
                     mModelInfoPanel->MdlPropJointsText = L"0";
+                    mModelInfoPanel->MdlPropNumAnimsText = L"0";
                 }
 
                 size_t numVertices = 0, numTriangles = 0;
@@ -893,6 +883,37 @@ namespace MetroEX {
     }
 
     // extraction
+    bool MainForm::EnsureExtractionOptions() {
+        bool result = true;
+
+        MEXSettings& s = MEXSettings::Get();
+
+        if (s.extraction.askEveryTime) {
+            DlgSettings dlg;
+            dlg.Icon = this->Icon;
+            auto dlgResult = dlg.ShowDialog(this);
+            if (dlgResult == System::Windows::Forms::DialogResult::Cancel) {
+                result = false;
+            }
+        }
+
+        // models
+        mExtractionCtx->mdlSaveAsObj = (s.extraction.modelFormat == MEXSettings::Extraction::MdlFormat::Obj);
+        mExtractionCtx->mdlSaveAsFbx = (s.extraction.modelFormat == MEXSettings::Extraction::MdlFormat::Fbx);
+        mExtractionCtx->mdlSaveWithAnims = s.extraction.modelSaveWithAnims;
+        mExtractionCtx->mdlAnimsSeparate = s.extraction.modelAnimsSeparate;
+        // textures
+        mExtractionCtx->txSaveAsDds = (s.extraction.textureFormat == MEXSettings::Extraction::TexFormat::Dds || s.extraction.textureFormat == MEXSettings::Extraction::TexFormat::LegacyDds);
+        mExtractionCtx->txUseBC3 = (s.extraction.textureFormat == MEXSettings::Extraction::TexFormat::LegacyDds);
+        mExtractionCtx->txSaveAsTga = (s.extraction.textureFormat == MEXSettings::Extraction::TexFormat::Tga);
+        mExtractionCtx->txSaveAsPng = (s.extraction.textureFormat == MEXSettings::Extraction::TexFormat::Png);
+        // sounds
+        mExtractionCtx->sndSaveAsOgg = (s.extraction.soundFormat == MEXSettings::Extraction::SndFormat::Ogg);
+        mExtractionCtx->sndSaveAsWav = (s.extraction.soundFormat == MEXSettings::Extraction::SndFormat::Wav);
+
+        return result;
+    }
+
     CharString MainForm::MakeFileOutputName(const MetroFile& mf, const FileExtractionCtx& ctx) {
         CharString name = mf.name;
 
@@ -1124,7 +1145,23 @@ namespace MetroEX {
                     if (ctx.mdlSaveAsObj) {
                         mdl.SaveAsOBJ(resultPath);
                     } else {
-                        mdl.SaveAsFBX(resultPath, ctx.mdlSaveWithAnims);
+                        size_t fbxOptions = MetroModel::FBX_Export_Mesh | MetroModel::FBX_Export_Skeleton;
+                        if (MEXSettings::Get().extraction.modelSaveWithAnims && !MEXSettings::Get().extraction.modelAnimsSeparate) {
+                            fbxOptions |= MetroModel::FBX_Export_Animation;
+                        }
+
+                        mdl.SaveAsFBX(resultPath, fbxOptions);
+
+                        if (MEXSettings::Get().extraction.modelSaveWithAnims && MEXSettings::Get().extraction.modelAnimsSeparate) {
+                            fbxOptions = MetroModel::FBX_Export_Skeleton | MetroModel::FBX_Export_Animation;
+
+                            fs::path modelBasePath = resultPath.parent_path() / resultPath.stem();
+                            for (size_t motionIdx = 0; motionIdx != mdl.GetNumMotions(); ++motionIdx) {
+                                const MetroMotion* motion = mdl.GetMotion(motionIdx);
+                                fs::path animPath = modelBasePath.native() + fs::path("@" + motion->GetName()).native() + L".fbx";
+                                mdl.SaveAsFBX(animPath, fbxOptions, motionIdx);
+                            }
+                        }
                     }
 
                     if (!ctx.batch) {

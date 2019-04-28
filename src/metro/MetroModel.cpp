@@ -72,7 +72,7 @@ MetroModel::MetroModel()
 }
 MetroModel::~MetroModel() {
     std::for_each(mMeshes.begin(), mMeshes.end(), [](MetroMesh* mesh) { delete mesh; });
-    std::for_each(mMotions.begin(), mMotions.end(), [](MetroMotion* motion) { delete motion; });
+    std::for_each(mMotions.begin(), mMotions.end(), [](MetroModel::MotionInfo& mi) { MySafeDelete(mi.motion); });
     MySafeDelete(mSkeleton);
 }
 
@@ -414,11 +414,49 @@ static void AddAnimTrackToScene(FbxScene* scene, const MetroMotion* motion, cons
     CorrectAnimTrackInterpolation(skelNodes, animLayer);
 }
 
-bool MetroModel::SaveAsFBX(const fs::path& filePath, const bool withAnims) {
+static bool SaveFBXScene(FbxManager* mgr, FbxScene* scene, FbxIOSettings* ios, const fs::path& path, const bool saveMesh, const bool saveAnim) {
+    // now export all this
+    FbxGlobalSettings& settings = scene->GetGlobalSettings();
+    settings.SetAxisSystem(FbxAxisSystem(FbxAxisSystem::eOpenGL));
+    settings.SetOriginalUpAxis(FbxAxisSystem(FbxAxisSystem::eOpenGL));
+    settings.SetSystemUnit(FbxSystemUnit(1.0f));
+
+    // export
+    FbxExporter* exp = FbxExporter::Create(mgr, "");
+    const int format = mgr->GetIOPluginRegistry()->GetNativeWriterFormat();
+
+    exp->SetFileExportVersion(FBX_2011_00_COMPATIBLE);
+
+    ios->SetBoolProp(EXP_FBX_MATERIAL, saveMesh);
+    ios->SetBoolProp(EXP_FBX_TEXTURE, saveMesh);
+    ios->SetBoolProp(EXP_FBX_EMBEDDED, false);
+    ios->SetBoolProp(EXP_FBX_SHAPE, saveMesh);
+    ios->SetBoolProp(EXP_FBX_GOBO, saveMesh);
+    ios->SetBoolProp(EXP_FBX_MODEL, saveMesh);
+    ios->SetBoolProp(EXP_FBX_ANIMATION, saveAnim);
+    ios->SetBoolProp(EXP_FBX_GLOBAL_SETTINGS, true);
+
+    if (exp->Initialize(path.u8string().c_str(), format, ios)) {
+        if (!exp->Export(scene)) {
+            exp->Destroy(true);
+            return false;
+        }
+    }
+
+    exp->Destroy(true);
+
+    return true;
+}
+
+bool MetroModel::SaveAsFBX(const fs::path& filePath, const size_t options, const size_t motionIdx) {
     FbxManager* mgr = FbxManager::Create();
     if (!mgr) {
         return false;
     }
+
+    const bool exportMesh = TestBit(options, MetroModel::FBX_Export_Mesh);
+    const bool exportSkeleton = TestBit(options, MetroModel::FBX_Export_Skeleton);
+    const bool exportAnimation = TestBit(options, MetroModel::FBX_Export_Animation);
 
     fs::path modelFolder = filePath.parent_path();
 
@@ -426,124 +464,135 @@ bool MetroModel::SaveAsFBX(const fs::path& filePath, const bool withAnims) {
     mgr->SetIOSettings(ios);
 
     FbxScene* scene = FbxScene::Create(mgr, "Metro model");
+    FbxDocumentInfo* info = scene->GetSceneInfo();
+    if (info) {
+        info->Original_ApplicationVendor = FbxString("iOrange");
+        info->Original_ApplicationName = FbxString("MetroEX");
+        info->mTitle = FbxString("Metro Exodus model");
+        info->mComment = FbxString("Exported using MetroEX created by iOrange");
+    }
 
     MyDict<CharString, FbxSurfacePhong*> fbxMaterials;
-    for (size_t i = 0; i < mMeshes.size(); ++i) {
-        const MetroMesh* mesh = mMeshes[i];
-        if (!mesh->vertices.empty() && !mesh->faces.empty()) {
-            const CharString& textureName = mesh->materials.front();
+    if (exportMesh) {
+        for (size_t i = 0; i < mMeshes.size(); ++i) {
+            const MetroMesh* mesh = mMeshes[i];
+            if (!mesh->vertices.empty() && !mesh->faces.empty()) {
+                const CharString& textureName = mesh->materials.front();
 
-            auto it = fbxMaterials.find(textureName);
-            if (it == fbxMaterials.end()) {
-                const CharString& sourceName = MetroTexturesDatabase::Get().GetSourceName(textureName);
-                const CharString& bumpName = MetroTexturesDatabase::Get().GetSourceName(textureName);
+                auto it = fbxMaterials.find(textureName);
+                if (it == fbxMaterials.end()) {
+                    const CharString& sourceName = MetroTexturesDatabase::Get().GetSourceName(textureName);
+                    const CharString& bumpName = MetroTexturesDatabase::Get().GetSourceName(textureName);
 
-                CharString textureTgaName = fs::path(sourceName).filename().u8string() + ".tga";
-                CharString texturePath = (modelFolder / textureTgaName).u8string();
+                    CharString textureTgaName = fs::path(sourceName).filename().u8string() + ".tga";
+                    CharString texturePath = (modelFolder / textureTgaName).u8string();
 
-                FbxFileTexture* texture = FbxFileTexture::Create(mgr, textureName.c_str());
-                texture->SetFileName(texturePath.c_str());
-                texture->SetTextureUse(FbxTexture::eStandard);
-                texture->SetMappingType(FbxTexture::eUV);
-                texture->SetMaterialUse(FbxFileTexture::eModelMaterial);
-                texture->UVSwap = false;
-                texture->SetTranslation(0.0, 0.0);
-                texture->SetScale(1.0, 1.0);
-                texture->SetRotation(0.0, 0.0);
-                texture->SetAlphaSource(FbxTexture::eBlack);
+                    FbxFileTexture* texture = FbxFileTexture::Create(mgr, textureName.c_str());
+                    texture->SetFileName(texturePath.c_str());
+                    texture->SetTextureUse(FbxTexture::eStandard);
+                    texture->SetMappingType(FbxTexture::eUV);
+                    texture->SetMaterialUse(FbxFileTexture::eModelMaterial);
+                    texture->UVSwap = false;
+                    texture->SetTranslation(0.0, 0.0);
+                    texture->SetScale(1.0, 1.0);
+                    texture->SetRotation(0.0, 0.0);
+                    texture->SetAlphaSource(FbxTexture::eBlack);
 
-                FbxFileTexture* bump = nullptr;
-                if (!bumpName.empty()) {
-                    CharString bumpTgaName = fs::path(bumpName).filename().u8string() + "_nm.tga";
-                    CharString bumpPath = (modelFolder / bumpTgaName).u8string();
+                    FbxFileTexture* bump = nullptr;
+                    if (!bumpName.empty()) {
+                        CharString bumpTgaName = fs::path(bumpName).filename().u8string() + "_nm.tga";
+                        CharString bumpPath = (modelFolder / bumpTgaName).u8string();
 
-                    bump = FbxFileTexture::Create(mgr, bumpName.c_str());
-                    bump->SetFileName(bumpPath.c_str());
-                    bump->SetTextureUse(FbxTexture::eBumpNormalMap);
-                    bump->SetMappingType(FbxTexture::eUV);
-                    bump->SetMaterialUse(FbxFileTexture::eModelMaterial);
-                    bump->UVSwap = false;
-                    bump->SetTranslation(0.0, 0.0);
-                    bump->SetScale(1.0, 1.0);
-                    bump->SetRotation(0.0, 0.0);
+                        bump = FbxFileTexture::Create(mgr, bumpName.c_str());
+                        bump->SetFileName(bumpPath.c_str());
+                        bump->SetTextureUse(FbxTexture::eBumpNormalMap);
+                        bump->SetMappingType(FbxTexture::eUV);
+                        bump->SetMaterialUse(FbxFileTexture::eModelMaterial);
+                        bump->UVSwap = false;
+                        bump->SetTranslation(0.0, 0.0);
+                        bump->SetScale(1.0, 1.0);
+                        bump->SetRotation(0.0, 0.0);
+                    }
+
+                    FbxSurfacePhong* material = FbxSurfacePhong::Create(mgr, textureName.c_str());
+                    material->Emissive = FbxDouble3(0.0, 0.0, 0.0);
+                    material->Diffuse.ConnectSrcObject(texture);
+                    material->Specular = FbxDouble3(1.0, 1.0, 1.0);
+                    material->SpecularFactor = 0.0;
+                    material->Shininess = 0.0; // simple diffuse
+
+                    if (bump) {
+                        material->Bump.ConnectSrcObject(bump);
+                        material->BumpFactor = 1.0;
+                    }
+
+                    fbxMaterials[textureName] = material;
                 }
-
-                FbxSurfacePhong* material = FbxSurfacePhong::Create(mgr, textureName.c_str());
-                material->Emissive = FbxDouble3(0.0, 0.0, 0.0);
-                material->Diffuse.ConnectSrcObject(texture);
-                material->Specular = FbxDouble3(1.0, 1.0, 1.0);
-                material->SpecularFactor = 0.0;
-                material->Shininess = 0.0; // simple diffuse
-
-                if (bump) {
-                    material->Bump.ConnectSrcObject(bump);
-                    material->BumpFactor = 1.0;
-                }
-
-                fbxMaterials[textureName] = material;
             }
         }
     }
 
     MyArray<FbxNode*> meshNodes;
     MyArray<FbxMesh*> fbxMeshes;
-    for (size_t i = 0; i < mMeshes.size(); ++i) {
-        const MetroMesh* mesh = this->GetMesh(i);
-        CharString meshName = CharString("mesh_") + std::to_string(i);
+    if (exportMesh) {
+        for (size_t i = 0; i < mMeshes.size(); ++i) {
+            const MetroMesh* mesh = this->GetMesh(i);
+            CharString meshName = CharString("mesh_") + std::to_string(i);
 
-        FbxMesh* fbxMesh = FbxMesh::Create(scene, meshName.c_str());
+            FbxMesh* fbxMesh = FbxMesh::Create(scene, meshName.c_str());
 
-        // assign vertices
-        fbxMesh->InitControlPoints(scast<int>(mesh->vertices.size()));
-        FbxVector4* ptrCtrlPoints = fbxMesh->GetControlPoints();
+            // assign vertices
+            fbxMesh->InitControlPoints(scast<int>(mesh->vertices.size()));
+            FbxVector4* ptrCtrlPoints = fbxMesh->GetControlPoints();
 
-        FbxGeometryElementNormal* normalElement = fbxMesh->CreateElementNormal();
-        normalElement->SetMappingMode(FbxGeometryElement::eByControlPoint);
-        normalElement->SetReferenceMode(FbxGeometryElement::eDirect);
+            FbxGeometryElementNormal* normalElement = fbxMesh->CreateElementNormal();
+            normalElement->SetMappingMode(FbxGeometryElement::eByControlPoint);
+            normalElement->SetReferenceMode(FbxGeometryElement::eDirect);
 
-        FbxGeometryElementUV* uvElement = fbxMesh->CreateElementUV("uv0");
-        uvElement->SetMappingMode(FbxGeometryElement::eByControlPoint);
-        uvElement->SetReferenceMode(FbxGeometryElement::eDirect);
+            FbxGeometryElementUV* uvElement = fbxMesh->CreateElementUV("uv0");
+            uvElement->SetMappingMode(FbxGeometryElement::eByControlPoint);
+            uvElement->SetReferenceMode(FbxGeometryElement::eDirect);
 
-        for (const MetroVertex& v : mesh->vertices) {
-            *ptrCtrlPoints = MetroVecToFbxVec(v.pos);
-            normalElement->GetDirectArray().Add(MetroVecToFbxVec(v.normal));
-            uvElement->GetDirectArray().Add(FbxVector2(v.uv0.x, 1.0f - v.uv0.y));
+            for (const MetroVertex& v : mesh->vertices) {
+                *ptrCtrlPoints = MetroVecToFbxVec(v.pos);
+                normalElement->GetDirectArray().Add(MetroVecToFbxVec(v.normal));
+                uvElement->GetDirectArray().Add(FbxVector2(v.uv0.x, 1.0f - v.uv0.y));
 
-            ++ptrCtrlPoints;
+                ++ptrCtrlPoints;
+            }
+
+            FbxGeometryElementMaterial* materialElement = fbxMesh->CreateElementMaterial();
+            materialElement->SetMappingMode(FbxGeometryElement::eAllSame);
+            materialElement->SetReferenceMode(FbxGeometryElement::eIndexToDirect);
+            materialElement->GetIndexArray().Add(0);
+
+            // build polygons
+            for (const MetroFace& face : mesh->faces) {
+                fbxMesh->BeginPolygon();
+                fbxMesh->AddPolygon(scast<int>(face.c));
+                fbxMesh->AddPolygon(scast<int>(face.b));
+                fbxMesh->AddPolygon(scast<int>(face.a));
+                fbxMesh->EndPolygon();
+            }
+
+            FbxNode* meshNode = FbxNode::Create(scene, meshName.c_str());
+            meshNode->SetNodeAttribute(fbxMesh);
+            scene->GetRootNode()->AddChild(meshNode);
+
+            const CharString& textureName = mesh->materials.front();
+            auto it = fbxMaterials.find(textureName);
+            if (it != fbxMaterials.end()) {
+                meshNode->SetShadingMode(FbxNode::eTextureShading);
+                meshNode->AddMaterial(it->second);
+            }
+
+            fbxMeshes.push_back(fbxMesh);
+            meshNodes.push_back(meshNode);
         }
-
-        FbxGeometryElementMaterial* materialElement = fbxMesh->CreateElementMaterial();
-        materialElement->SetMappingMode(FbxGeometryElement::eAllSame);
-        materialElement->SetReferenceMode(FbxGeometryElement::eIndexToDirect);
-        materialElement->GetIndexArray().Add(0);
-
-        // build polygons
-        for (const MetroFace& face : mesh->faces) {
-            fbxMesh->BeginPolygon();
-            fbxMesh->AddPolygon(scast<int>(face.c));
-            fbxMesh->AddPolygon(scast<int>(face.b));
-            fbxMesh->AddPolygon(scast<int>(face.a));
-            fbxMesh->EndPolygon();
-        }
-
-        FbxNode* meshNode = FbxNode::Create(scene, meshName.c_str());
-        meshNode->SetNodeAttribute(fbxMesh);
-        scene->GetRootNode()->AddChild(meshNode);
-
-        const CharString& textureName = mesh->materials.front();
-        auto it = fbxMaterials.find(textureName);
-        if (it != fbxMaterials.end()) {
-            meshNode->SetShadingMode(FbxNode::eTextureShading);
-            meshNode->AddMaterial(it->second);
-        }
-
-        fbxMeshes.push_back(fbxMesh);
-        meshNodes.push_back(meshNode);
     }
 
-    if (mSkeleton) {
-        MyArray<FbxNode*> boneNodes;
+    MyArray<FbxNode*> boneNodes;
+    if (mSkeleton && (exportSkeleton || exportAnimation)) {
         FbxNode* rootBoneNode = CreateFBXSkeleton(scene, mSkeleton, boneNodes);
         scene->GetRootNode()->AddChild(rootBoneNode);
 
@@ -587,54 +636,25 @@ bool MetroModel::SaveAsFBX(const fs::path& filePath, const bool withAnims) {
         }
 
         scene->AddPose(bindPose);
+    }
 
-        if (withAnims) {
-            for (size_t i = 0; i < mMotions.size(); ++i) {
-                const MetroMotion* motion = mMotions[i];
+    if (exportAnimation) {
+        if (motionIdx != kInvalidValue) {
+            const MetroMotion* motion = this->GetMotion(motionIdx);
+            AddAnimTrackToScene(scene, motion, motion->GetName(), boneNodes);
+        } else {
+            for (size_t i = 0; i < this->GetNumMotions(); ++i) {
+                const MetroMotion* motion = this->GetMotion(i);
                 AddAnimTrackToScene(scene, motion, motion->GetName(), boneNodes);
             }
         }
     }
 
-    // now export all this
-    FbxDocumentInfo* info = scene->GetSceneInfo();
-    if (info) {
-        info->Original_ApplicationVendor = FbxString("iOrange");
-        info->Original_ApplicationName = FbxString("MetroEX");
-        info->mTitle = FbxString("Metro Exodus model");
-        info->mComment = FbxString("Exported using MetroEX created by iOrange");
+    if (!SaveFBXScene(mgr, scene, ios, filePath, exportMesh, exportSkeleton || exportAnimation)) {
+        return false;
     }
 
-    FbxGlobalSettings& settings = scene->GetGlobalSettings();
-    settings.SetAxisSystem(FbxAxisSystem(FbxAxisSystem::eOpenGL));
-    settings.SetOriginalUpAxis(FbxAxisSystem(FbxAxisSystem::eOpenGL));
-    settings.SetSystemUnit(FbxSystemUnit(1.0f));
-
-    // export
-    FbxExporter* exp = FbxExporter::Create(mgr, "");
-    const int format = mgr->GetIOPluginRegistry()->GetNativeWriterFormat();
-
-    exp->SetFileExportVersion(FBX_2011_00_COMPATIBLE);
-
-    ios->SetBoolProp(EXP_FBX_MATERIAL, true);
-    ios->SetBoolProp(EXP_FBX_TEXTURE, true);
-    ios->SetBoolProp(EXP_FBX_EMBEDDED, false);
-    ios->SetBoolProp(EXP_FBX_SHAPE, true);
-    ios->SetBoolProp(EXP_FBX_GOBO, true);
-    ios->SetBoolProp(EXP_FBX_ANIMATION, withAnims);
-    ios->SetBoolProp(EXP_FBX_GLOBAL_SETTINGS, true);
-
-    if (exp->Initialize(filePath.u8string().c_str(), format, ios)) {
-        if (!exp->Export(scene)) {
-            //FbxStatus& status = exp->GetStatus();
-            //std::cerr << status.GetErrorString() << std::endl;
-            return false;
-        }
-    }
-
-    exp->Destroy();
     mgr->Destroy();
-
     return true;
 }
 
@@ -670,8 +690,37 @@ size_t MetroModel::GetNumMotions() const {
     return mMotions.size();
 }
 
-const MetroMotion* MetroModel::GetMotion(const size_t idx) const {
-    return mMotions[idx];
+CharString MetroModel::GetMotionName(const size_t idx) const {
+    const size_t fileIdx = mMotions[idx].fileIdx;
+    const MetroFile& mf = VFXReader::Get().GetFile(fileIdx);
+
+    CharString name = mf.name.substr(0, mf.name.length() - 3);
+    return name;
+}
+
+const CharString& MetroModel::GetMotionPath(const size_t idx) const {
+    return mMotions[idx].path;
+}
+
+float MetroModel::GetMotionDuration(const size_t idx) const {
+    return scast<float>(mMotions[idx].numFrames) / scast<float>(MetroMotion::kFrameRate);
+}
+
+const MetroMotion* MetroModel::GetMotion(const size_t idx) {
+    MetroMotion* motion = mMotions[idx].motion;
+
+    if (!motion) {
+        const CharString& name = this->GetMotionName(idx);
+        const size_t fileIdx = mMotions[idx].fileIdx;
+
+        motion = new MetroMotion(name);
+        MemStream stream = VFXReader::Get().ExtractFile(fileIdx);
+        motion->LoadFromData(stream);
+
+        mMotions[idx].motion = motion;
+    }
+
+    return motion;
 }
 
 const CharString& MetroModel::GetComment() const {
@@ -940,15 +989,9 @@ void MetroModel::LoadMotions() {
     for (const size_t idx : motionFiles) {
         MemStream stream = VFXReader::Get().ExtractFile(idx);
         if (stream) {
-            const MetroFile& mf = VFXReader::Get().GetFile(idx);
-            CharString motionName = fs::path(mf.name).stem().u8string();
-
-            MetroMotion* motion = new MetroMotion(motionName);
-            motion->SetPath(motionPaths[i]);
-            if (motion->LoadFromData(stream) && motion->GetNumBones() == numBones) {
-                mMotions.push_back(motion);
-            } else {
-                MySafeDelete(motion);
+            MetroMotion motion(kEmptyString);
+            if (motion.LoadHeader(stream) && motion.GetNumBones() == numBones) {
+                mMotions.push_back({idx, motion.GetNumFrames(), motionPaths[i], nullptr});
             }
         }
         ++i;

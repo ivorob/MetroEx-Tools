@@ -6,12 +6,18 @@ class MetroMotion;
 
 class MetroModel {
 public:
+    static const size_t FBX_Export_None      = 0;
+    static const size_t FBX_Export_Mesh      = 1;
+    static const size_t FBX_Export_Skeleton  = 2;
+    static const size_t FBX_Export_Animation = 4;
+
+public:
     MetroModel();
     ~MetroModel();
 
     bool                    LoadFromData(MemStream& stream, const size_t fileIdx);
     bool                    SaveAsOBJ(const fs::path& filePath);
-    bool                    SaveAsFBX(const fs::path& filePath, const bool withAnims);
+    bool                    SaveAsFBX(const fs::path& filePath, const size_t options, const size_t motionIdx = kInvalidValue);
 
     bool                    IsAnimated() const;
     const AABBox&           GetBBox() const;
@@ -22,7 +28,10 @@ public:
     const CharString&       GetSkeletonPath() const;
     const MetroSkeleton*    GetSkeleton() const;
     size_t                  GetNumMotions() const;
-    const MetroMotion*      GetMotion(const size_t idx) const;
+    CharString              GetMotionName(const size_t idx) const;
+    const CharString&       GetMotionPath(const size_t idx) const;
+    float                   GetMotionDuration(const size_t idx) const;
+    const MetroMotion*      GetMotion(const size_t idx);
 
     const CharString&       GetComment() const;
 
@@ -32,12 +41,19 @@ private:
     void                    LoadMotions();
 
 private:
+    struct MotionInfo {
+        size_t          fileIdx;
+        size_t          numFrames;
+        CharString      path;
+        MetroMotion*    motion;
+    };
+
     AABBox                  mBBox;
     vec4                    mBSphere;
     MyArray<MetroMesh*>     mMeshes;
     CharString              mSkeletonPath;
     MetroSkeleton*          mSkeleton;
-    MyArray<MetroMotion*>   mMotions;
+    MyArray<MotionInfo>     mMotions;
     CharString              mComment;
 
     // these are temp pointers, invalid after loading

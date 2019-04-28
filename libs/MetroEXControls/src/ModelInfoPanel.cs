@@ -53,6 +53,12 @@ namespace MetroEXControls {
             }
         }
 
+        public String MdlPropNumAnimsText {
+            set {
+                this.lblMdlPropNumAnims.Text = value;
+            }
+        }
+
         public String MdlPropPlayStopAnimBtnText {
             set {
                 this.btnMdlPropPlayStopAnim.Text = value;

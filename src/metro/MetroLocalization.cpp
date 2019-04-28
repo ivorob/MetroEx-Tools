@@ -1,4 +1,5 @@
 #include "MetroLocalization.h"
+
 #include "pugixml.hpp"
 
 #include <fstream>
@@ -221,7 +222,7 @@ bool MetroLocalization::SaveToExcel2003(const fs::path& path) {
         nodeValue.text() = WideToUtf8(p.value).c_str();
     }
 
-    return doc.save_file(path.native().c_str(), "", pugi::format_default, pugi::encoding_utf8);
+    return doc.save_file(path.native().c_str(), "  ", pugi::format_default, pugi::encoding_utf8);
 }
 
 static void WriteU32(std::ofstream& s, const uint32_t v) {

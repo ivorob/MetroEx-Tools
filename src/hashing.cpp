@@ -1,4 +1,5 @@
-#include "hashing.h"
+#include "mycommon.h"
+#include "xxhash.h"
 
 static uint32_t sCRC32Table[256] = {
     0x00000000u, 0x77073096u, 0xee0e612cu, 0x990951bau,
@@ -79,4 +80,12 @@ uint32_t Hash_CalculateCRC32(const uint8_t* data, const size_t dataLength) {
 
 uint32_t Hash_CalculateCRC32(const CharString& str) {
     return Hash_CalculateCRC32(rcast<const uint8_t*>(str.data()), str.length());
+}
+
+uint32_t Hash_CalculateXX(const uint8_t* data, const size_t dataLength) {
+    return XXH32(data, dataLength, 0);
+}
+
+uint32_t Hash_CalculateXX(const CharString& str) {
+    return XXH32(str.data(), str.length(), 0);
 }

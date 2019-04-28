@@ -26,6 +26,8 @@
         /// </summary>
         private void InitializeComponent() {
             this.pnlMdlProps = new System.Windows.Forms.Panel();
+            this.lblMdlPropNumAnims = new System.Windows.Forms.Label();
+            this.label1 = new System.Windows.Forms.Label();
             this.btnModelInfo = new System.Windows.Forms.Button();
             this.btnMdlPropPlayStopAnim = new System.Windows.Forms.Button();
             this.lstMdlPropMotions = new System.Windows.Forms.ListBox();
@@ -42,6 +44,8 @@
             // 
             // pnlMdlProps
             // 
+            this.pnlMdlProps.Controls.Add(this.lblMdlPropNumAnims);
+            this.pnlMdlProps.Controls.Add(this.label1);
             this.pnlMdlProps.Controls.Add(this.btnModelInfo);
             this.pnlMdlProps.Controls.Add(this.btnMdlPropPlayStopAnim);
             this.pnlMdlProps.Controls.Add(this.lstMdlPropMotions);
@@ -59,6 +63,24 @@
             this.pnlMdlProps.Name = "pnlMdlProps";
             this.pnlMdlProps.Size = new System.Drawing.Size(577, 84);
             this.pnlMdlProps.TabIndex = 2;
+            // 
+            // lblMdlPropNumAnims
+            // 
+            this.lblMdlPropNumAnims.AutoSize = true;
+            this.lblMdlPropNumAnims.Location = new System.Drawing.Point(68, 63);
+            this.lblMdlPropNumAnims.Name = "lblMdlPropNumAnims";
+            this.lblMdlPropNumAnims.Size = new System.Drawing.Size(43, 13);
+            this.lblMdlPropNumAnims.TabIndex = 12;
+            this.lblMdlPropNumAnims.Text = "100500";
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(4, 63);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(61, 13);
+            this.label1.TabIndex = 11;
+            this.label1.Text = "Animations:";
             // 
             // btnModelInfo
             // 
@@ -93,7 +115,7 @@
             // lblMdlPropJoints
             // 
             this.lblMdlPropJoints.AutoSize = true;
-            this.lblMdlPropJoints.Location = new System.Drawing.Point(68, 53);
+            this.lblMdlPropJoints.Location = new System.Drawing.Point(68, 48);
             this.lblMdlPropJoints.Name = "lblMdlPropJoints";
             this.lblMdlPropJoints.Size = new System.Drawing.Size(43, 13);
             this.lblMdlPropJoints.TabIndex = 7;
@@ -102,7 +124,7 @@
             // label9
             // 
             this.label9.AutoSize = true;
-            this.label9.Location = new System.Drawing.Point(4, 53);
+            this.label9.Location = new System.Drawing.Point(4, 48);
             this.label9.Name = "label9";
             this.label9.Size = new System.Drawing.Size(37, 13);
             this.label9.TabIndex = 6;
@@ -111,7 +133,7 @@
             // lblMdlPropTriangles
             // 
             this.lblMdlPropTriangles.AutoSize = true;
-            this.lblMdlPropTriangles.Location = new System.Drawing.Point(68, 37);
+            this.lblMdlPropTriangles.Location = new System.Drawing.Point(68, 32);
             this.lblMdlPropTriangles.Name = "lblMdlPropTriangles";
             this.lblMdlPropTriangles.Size = new System.Drawing.Size(43, 13);
             this.lblMdlPropTriangles.TabIndex = 5;
@@ -120,7 +142,7 @@
             // label8
             // 
             this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(4, 37);
+            this.label8.Location = new System.Drawing.Point(4, 32);
             this.label8.Name = "label8";
             this.label8.Size = new System.Drawing.Size(53, 13);
             this.label8.TabIndex = 4;
@@ -129,7 +151,7 @@
             // lblMdlPropVertices
             // 
             this.lblMdlPropVertices.AutoSize = true;
-            this.lblMdlPropVertices.Location = new System.Drawing.Point(68, 21);
+            this.lblMdlPropVertices.Location = new System.Drawing.Point(68, 17);
             this.lblMdlPropVertices.Name = "lblMdlPropVertices";
             this.lblMdlPropVertices.Size = new System.Drawing.Size(43, 13);
             this.lblMdlPropVertices.TabIndex = 3;
@@ -138,7 +160,7 @@
             // label7
             // 
             this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(4, 21);
+            this.label7.Location = new System.Drawing.Point(4, 17);
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(48, 13);
             this.label7.TabIndex = 2;
@@ -147,7 +169,7 @@
             // lblMdlPropType
             // 
             this.lblMdlPropType.AutoSize = true;
-            this.lblMdlPropType.Location = new System.Drawing.Point(68, 5);
+            this.lblMdlPropType.Location = new System.Drawing.Point(68, 2);
             this.lblMdlPropType.Name = "lblMdlPropType";
             this.lblMdlPropType.Size = new System.Drawing.Size(51, 13);
             this.lblMdlPropType.TabIndex = 1;
@@ -156,7 +178,7 @@
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(4, 5);
+            this.label3.Location = new System.Drawing.Point(4, 2);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(34, 13);
             this.label3.TabIndex = 0;
@@ -190,5 +212,7 @@
         private System.Windows.Forms.Label label7;
         private System.Windows.Forms.Label lblMdlPropType;
         private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.Label lblMdlPropNumAnims;
+        private System.Windows.Forms.Label label1;
     }
 }
