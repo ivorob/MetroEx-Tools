@@ -53,7 +53,8 @@ namespace MetroEX {
         , mCubemapViewerVS(nullptr)
         , mCubemapViewerPS(nullptr)
         //
-        , mViewingParams(nullptr)
+        , mLastLMPos(0.0f, 0.0f)
+        , mZoom(1.0f)
         , mConstantBufferData(nullptr)
     {
         this->components = gcnew System::ComponentModel::Container();
@@ -181,12 +182,6 @@ namespace MetroEX {
             return false;
         }
 
-        mViewingParams = new ViewingParams;
-        mViewingParams->rotation = vec2(0.0f);
-        mViewingParams->offset = vec2(0.0f);
-        mViewingParams->nearFar = vec2(0.001f, 50.0f);
-        mViewingParams->zoom = 1.0f;
-
         mConstantBufferData = new ConstantBufferData;
         mConstantBufferData->modelBSphere = vec4(1.0f);
         mConstantBufferData->matModel = MatIdentity;
@@ -247,10 +242,12 @@ namespace MetroEX {
             mModel = model;
             mCurrentMotion = nullptr;
 
+            mCamera->SwitchMode(Camera::Mode::Arcball);
+
             this->ResetAnimation();
             this->CreateModelGeometries();
             this->CreateTextures();
-            this->UpdateProjectionAndReset();
+            this->ResetCamera();
             this->Render();
         }
     }
@@ -356,33 +353,27 @@ namespace MetroEX {
         return true;
     }
 
-    void RenderPanel::UpdateModelMatrix() {
-        mConstantBufferData->matModel = MatRotate(Deg2Rad(mViewingParams->rotation.x), 0.0f, 1.0f, 0.0f) * MatRotate(-Deg2Rad(mViewingParams->rotation.y), 0.0f, 0.0f, 1.0f);
-        mConstantBufferData->matModel[3] = vec4(mViewingParams->offset.x, mViewingParams->offset.y, 0.0f, 1.0f);
-    }
-
-    void RenderPanel::UpdateViewMatrix() {
+    void RenderPanel::UpdateCamera() {
         if (mModel) {
-            const float r = mConstantBufferData->modelBSphere.w * mViewingParams->zoom;
-            mConstantBufferData->matView = MatLookAt(vec3(-r, r, r), vec3(0.0f), vec3(0.0f, 1.0f, 0.0f));
+            const float r = mConstantBufferData->modelBSphere.w * mZoom;
+            vec3 invDir = -mCamera->GetDirection();
+            mCamera->InitArcball(invDir * r, vec3(0.0f));
         }
     }
 
-    void RenderPanel::UpdateProjectionAndReset() {
-        mViewingParams->zoom = 1.0f;
+    void RenderPanel::ResetCamera() {
+        mZoom = 2.0f;
 
         const float r = mConstantBufferData->modelBSphere.w;
-        this->UpdateViewMatrix();
+        const float nearZ = r * 0.05f;
+        const float farZ = r * 100.0f;
 
-        mViewingParams->nearFar = vec2(r * 0.001f, r * 100.0f);
+        mCamera->LookAt(vec3(-r, r, r), vec3(0.0f));
 
-        const int w = this->Width;
-        const int h = this->Height;
-        mConstantBufferData->matProjection = MatPerspective(Deg2Rad(60.0f), scast<float>(w) / scast<float>(h), mViewingParams->nearFar.x, mViewingParams->nearFar.y);
+        this->UpdateCamera();
+        mCamera->SetViewPlanes(nearZ, farZ);
 
         mConstantBufferData->matModel = MatIdentity;
-        mViewingParams->rotation = vec2(0.0f);
-        mViewingParams->offset = vec2(0.0f);
     }
 
     void RenderPanel::CreateModelGeometries() {
@@ -673,16 +664,13 @@ namespace MetroEX {
             mDeviceContext->ClearRenderTargetView(mRenderTargetView, clearColor);
             mDeviceContext->ClearDepthStencilView(mDepthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0);
 
-            if (mModel) {
-                mat4 modelView = mConstantBufferData->matView * mConstantBufferData->matModel;
-                mConstantBufferData->matModelViewProj = mConstantBufferData->matProjection * modelView;
-            } else if (mCubemap) {
-                mat4 modelView = mCamera->GetTransform();
-                mConstantBufferData->matView = modelView;
-                mConstantBufferData->matModelViewProj = mCamera->GetProjection() * modelView;
-                mConstantBufferData->camParams.x = Deg2Rad(mCamera->GetFovY());
-                mConstantBufferData->camParams.y = scast<float>(this->Size.Width) / scast<float>(this->Size.Height);
-            }
+            mat4 modelView = mCamera->GetTransform();
+            mat4 projMat = mCamera->GetProjection();
+            mConstantBufferData->matView = modelView;
+            mConstantBufferData->matProjection = projMat;
+            mConstantBufferData->matModelViewProj = projMat * modelView;
+            mConstantBufferData->camParams.x = Deg2Rad(mCamera->GetFovY());
+            mConstantBufferData->camParams.y = mCamera->GetAspect();
 
             D3D11_MAPPED_SUBRESOURCE subRes = {};
             mDeviceContext->Map(mModelConstantBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &subRes);
@@ -751,8 +739,6 @@ namespace MetroEX {
             if (SUCCEEDED(hr)) {
                 this->CreateRenderTargets();
             }
-
-            mConstantBufferData->matProjection = MatPerspective(Deg2Rad(60.0f), scast<float>(w) / scast<float>(h), mViewingParams->nearFar.x, mViewingParams->nearFar.y);
         }
     }
 
@@ -761,43 +747,25 @@ namespace MetroEX {
     }
 
     void RenderPanel::OnMouseDown(System::Windows::Forms::MouseEventArgs^ e) {
-        vec2 mp(scast<float>(e->X), scast<float>(e->Y));
+        PointF mp(scast<float>(e->X), scast<float>(e->Y));
 
         if (e->Button == System::Windows::Forms::MouseButtons::Left) {
-            mViewingParams->lastLMPos = mp;
-        } else if (e->Button == System::Windows::Forms::MouseButtons::Right) {
-            mViewingParams->lastRMPos = mp;
+            mLastLMPos = mp;
         }
 
         Panel::OnMouseDown(e);
     }
 
     void RenderPanel::OnMouseMove(System::Windows::Forms::MouseEventArgs^ e) {
-        vec2 mp(scast<float>(e->X), scast<float>(e->Y));
+        PointF mp(scast<float>(e->X), scast<float>(e->Y));
 
         if (e->Button == System::Windows::Forms::MouseButtons::Left) {
-            vec2 delta = mp - mViewingParams->lastLMPos;
-            mViewingParams->lastLMPos = mp;
+            PointF delta = PointF(mp.X - mLastLMPos.X, mp.Y - mLastLMPos.Y);
+            mLastLMPos = mp;
 
-            mViewingParams->rotation += delta * 0.3f;
+            mCamera->Rotate(-delta.X * 0.1f, -delta.Y * 0.1f);
 
-            if (mViewingParams->rotation.x < 0.0f) {
-                mViewingParams->rotation.x += 360.0f;
-            } else if (mViewingParams->rotation.x > 360.0f) {
-                mViewingParams->rotation.x -= 360.0f;
-            }
-
-            if (mViewingParams->rotation.y < 0.0f) {
-                mViewingParams->rotation.y += 360.0f;
-            } else if (mViewingParams->rotation.y > 360.0f) {
-                mViewingParams->rotation.y -= 360.0f;
-            }
-
-            mCamera->Rotate(delta.x * 0.1f, delta.y * 0.1f);
-
-            this->UpdateModelMatrix();
             this->Render();
-
         }
 
         Panel::OnMouseMove(e);
@@ -805,12 +773,12 @@ namespace MetroEX {
 
     void RenderPanel::OnMouseWheel(System::Windows::Forms::MouseEventArgs^ e) {
         if (e->Delta > 0) {
-            mViewingParams->zoom = std::min<float>(mViewingParams->zoom + 0.1f, 5.0f);
+            mZoom = std::min<float>(mZoom + 0.1f, 5.0f);
         } else if (e->Delta < 0) {
-            mViewingParams->zoom = std::max<float>(mViewingParams->zoom - 0.1f, 0.1f);
+            mZoom = std::max<float>(mZoom - 0.1f, 0.1f);
         }
 
-        this->UpdateViewMatrix();
+        this->UpdateCamera();
         this->Render();
     }
 

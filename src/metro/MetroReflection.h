@@ -205,7 +205,6 @@ public:
                 (*this) >> flags;
 
                 const size_t dataSize = sectionSize - 1;
-                //#TODO_SK: replace with constants
                 MetroReflectionReader result(mStream.Substream(dataSize), flags);
                 result.SetSTable(mSTable);
 

@@ -33,10 +33,8 @@ namespace MetroEX {
     };
 
     struct ViewingParams {
-        vec2  nearFar;
         vec2  lastLMPos;
         vec2  lastRMPos;
-        vec2  rotation;
         vec2  offset;
         float zoom;
     };
@@ -86,9 +84,8 @@ namespace MetroEX {
 
     private:
         bool        CreateRenderTargets();
-        void        UpdateModelMatrix();
-        void        UpdateViewMatrix();
-        void        UpdateProjectionAndReset();
+        void        UpdateCamera();
+        void        ResetCamera();
         void        CreateModelGeometries();
         void        CreateTextures();
         void        CreateRenderTexture(const MetroTexture* srcTexture, RenderTexture* rt);
@@ -140,7 +137,8 @@ namespace MetroEX {
         ID3D11VertexShader*         mCubemapViewerVS;
         ID3D11PixelShader*          mCubemapViewerPS;
 
-        ViewingParams*              mViewingParams;
+        PointF                      mLastLMPos;
+        float                       mZoom;
         ConstantBufferData*         mConstantBufferData;
     };
 

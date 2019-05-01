@@ -289,7 +289,7 @@
     </EmbeddedResource>
     <EmbeddedResource Include="src\ui\DlgSettings.resx">
       <Filter>src\ui</Filter>
-      </EmbeddedResource>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="src">
@@ -342,5 +342,10 @@
     <FxCompile Include="src\shaders\CubemapViewerVS.hlsl">
       <Filter>src\shaders</Filter>
     </FxCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="src\shaders\common.hlsli">
+      <Filter>src\shaders</Filter>
+    </None>
   </ItemGroup>
 </Project>

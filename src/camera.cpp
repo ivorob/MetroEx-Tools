@@ -3,12 +3,13 @@
 static const vec3 sCameraUp(0.0f, 1.0f, 0.0f);
 
 Camera::Camera()
-    : mFovY(65.0f)
+    : mMode(Camera::Mode::FirstPerson)
+    , mFovY(65.0f)
     , mNearZ(1.0f)
     , mFarZ(1000.0f)
+    , mZoom(1.0f)
     , mPosition(0.0f, 0.0f, 0.0f)
-    , mDirection(0.0f, 0.0f, 1.0f)
-{
+    , mDirection(0.0f, 0.0f, 1.0f) {
 }
 
 Camera::~Camera() {
@@ -30,9 +31,28 @@ void Camera::SetViewPlanes(const float nearZ, const float farZ) {
     this->MakeProjection();
 }
 
+void Camera::SetZoom(const float zoom, const bool reset) {
+    if (mZoom != zoom) {
+        vec3 lookAtPoint = mPosition + mDirection * mZoom;
+        mPosition = lookAtPoint - (mDirection * zoom);
+        mZoom = zoom;
+
+        this->MakeTransform();
+    }
+}
+
 void Camera::SetPosition(const vec3& pos) {
     mPosition = pos;
     this->MakeTransform();
+}
+
+void Camera::SwitchMode(Mode mode) {
+    mMode = mode;
+}
+
+void Camera::InitArcball(const vec3& pos, const vec3& target) {
+    mZoom = Length(target - pos);
+    this->LookAt(pos, target);
 }
 
 void Camera::LookAt(const vec3& pos, const vec3& target) {
@@ -52,15 +72,30 @@ void Camera::Move(const float side, const float direction) {
 }
 
 void Camera::Rotate(const float angleX, const float angleY) {
-    vec3 side = cross(mDirection, sCameraUp);
-    quat pitchQ = QuatAngleAxis(Deg2Rad(angleY), side);
-    quat headingQ = QuatAngleAxis(Deg2Rad(angleX), sCameraUp);
-    //add the two quaternions
-    quat temp = normalize(pitchQ * headingQ);
-    // finally rotate our direction
-    mDirection = normalize(QuatRotate(temp, mDirection));
+    if (Camera::Mode::FirstPerson == mMode) {
+        vec3 side = cross(mDirection, sCameraUp);
+        quat pitchQ = QuatAngleAxis(Deg2Rad(angleY), side);
+        quat headingQ = QuatAngleAxis(Deg2Rad(angleX), sCameraUp);
+        quat temp = normalize(pitchQ * headingQ);
+        mDirection = normalize(QuatRotate(temp, mDirection));
 
-    this->MakeTransform();
+        this->MakeTransform();
+    } else {
+        vec3 targetPoint = mPosition + mDirection * mZoom;
+        vec3 dirToCam = -mDirection;
+
+        vec3 side = this->GetSide();
+        vec3 up = this->GetUp();
+
+        quat pitchQ = QuatAngleAxis(Deg2Rad(angleY), side);
+        quat headingQ = QuatAngleAxis(Deg2Rad(angleX), up);
+
+        quat temp = normalize(pitchQ * headingQ);
+
+        dirToCam = normalize(QuatRotate(temp, dirToCam));
+
+        this->LookAt(targetPoint + dirToCam * mZoom, targetPoint);
+    }
 }
 
 float Camera::GetNearPlane() const {
@@ -71,8 +106,17 @@ float Camera::GetFarPlane() const {
     return mFarZ;
 }
 
+float Camera::GetAspect() const {
+    const float aspect = scast<float>(mViewport.z - mViewport.x) / scast<float>(mViewport.w - mViewport.y);
+    return aspect;
+}
+
 float Camera::GetFovY() const {
     return mFovY;
+}
+
+float Camera::GetZoom() const {
+    return mZoom;
 }
 
 const mat4& Camera::GetProjection() const {
@@ -100,7 +144,7 @@ const vec3 Camera::GetSide() const {
 }
 
 void Camera::MakeProjection() {
-    const float aspect = static_cast<float>(mViewport.z - mViewport.x) / static_cast<float>(mViewport.w - mViewport.y);
+    const float aspect = this->GetAspect();
     mProjection = MatPerspective(Deg2Rad(mFovY), aspect, mNearZ, mFarZ);
 }
 
