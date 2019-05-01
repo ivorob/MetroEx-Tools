@@ -2,11 +2,14 @@
 #include "mycommon.h"
 #include "pugixml.hpp"
 
-class MEXSettings : public Singleton<MEXSettings> {
-public:
+class MEXSettings {
+    IMPL_SINGLETON(MEXSettings)
+
+protected:
     MEXSettings();
     ~MEXSettings();
 
+public:
     void    SetFolder(const fs::path& folder);
 
     bool    Load();

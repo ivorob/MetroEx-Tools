@@ -144,6 +144,9 @@ inline quat QuatSlerp(const quat& a, const quat& b, const float t) {
 inline vec3 QuatToEuler(const quat& q) {
     return glm::eulerAngles(q);
 }
+inline quat QuatFromEuler(const vec3& euler) {
+    return quat(euler);
+}
 
 inline mat4 MatRotate(const float angle, const float x, const float y, const float z) {
     return glm::rotate(angle, vec3(x, y, z));

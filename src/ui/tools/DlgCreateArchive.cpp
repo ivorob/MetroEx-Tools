@@ -279,7 +279,7 @@ namespace MetroEX {
             vfxFile.write(rcast<const char*>(&guid), sizeof(guid));
             WriteU32(vfxFile, 1);                           // num packages
             WriteU32(vfxFile, scast<uint32_t>(numFiles));   // num files
-            WriteU32(vfxFile, 0);                           // unknown
+            WriteU32(vfxFile, 0);                           // duplicates
 
             // write package
             WriteStringZ(vfxFile, vfsName);

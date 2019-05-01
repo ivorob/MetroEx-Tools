@@ -5,10 +5,9 @@ struct Package {
     CharString      name;
     StringArray     levels;
     size_t          chunk;
-    MyArray<size_t> files;
 };
 
-class VFXReader : public Singleton<VFXReader> {
+class VFXReader {
 public:
     static const size_t kVFXVersionUnknown      = 0;
     static const size_t kVFXVersion2033Redux    = 1;
@@ -16,10 +15,14 @@ public:
     static const size_t kVFXVersionExodus       = 3;
     static const size_t kVFXVersionMax          = 4;
 
+    IMPL_SINGLETON(VFXReader)
+
+    //#NOTE_SK: not the best design choice, but I need to be able to instantiate additional vfx readers as I need
 public:
     VFXReader();
     ~VFXReader();
 
+public:
     bool                        LoadFromFile(const fs::path& filePath);
     void                        Close();
 
@@ -33,7 +36,7 @@ public:
     const CharString&           GetSelfName() const;
 
     const MyArray<Package>&     GetAllPacks() const;
-    const MyArray<MetroFile>&   GetFiles() const;
+    const MyArray<MetroFile>&   GetAllFiles() const;
     const MyArray<size_t>&      GetAllFolders() const;
 
     const MetroFile*            GetFolder(const CharString& folderPath, const MetroFile* inFolder = nullptr) const;
@@ -45,6 +48,11 @@ public:
 
     MyArray<size_t>             FindFilesInFolder(const size_t folderIdx, const CharString& extension, const bool withSubfolders = true);
     MyArray<size_t>             FindFilesInFolder(const CharString& folder, const CharString& extension, const bool withSubfolders = true);
+
+    // modification
+    void                        AddPackage(const Package& pak);
+    void                        ReplaceFileInfo(const size_t idx, const MetroFile& newFile);
+    void                        AppendFolder(const MetroFile& folder);
 
 private:
     void                        ReadFileDescription(MetroFile& mf, MemStream& stream, const bool isDuplicate = false);

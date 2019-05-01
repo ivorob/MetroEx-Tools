@@ -337,17 +337,15 @@ struct Bitset256 {
     }
 #endif
 
-template <typename T>
-class Singleton {
-protected:
-    Singleton() {}
-    ~Singleton() {}
 
-public:
-    static T& Get() {
-        static T _instance;
-        return _instance;
-    }
-};
+#define IMPL_SINGLETON(T)           \
+public:                             \
+T(T const&) = delete;               \
+void operator=(T const&) = delete;  \
+static T& Get() {                   \
+    static T _instance;             \
+    return _instance;               \
+}
+
 
 #include "log.h"

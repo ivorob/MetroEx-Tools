@@ -112,11 +112,14 @@ struct MetroTextureAliasInfo {
 
 class MetroReflectionReader;
 
-class MetroTexturesDatabase : public Singleton<MetroTexturesDatabase> {
-public:
+class MetroTexturesDatabase {
+    IMPL_SINGLETON(MetroTexturesDatabase)
+
+protected:
     MetroTexturesDatabase();
     ~MetroTexturesDatabase();
 
+public:
     bool                    LoadFromData(MemStream& stream);
     bool                    LoadAliasesFromData(MemStream& stream);
 
@@ -129,6 +132,7 @@ public:
 
     const size_t            GetNumTextures() const;
     const MetroTextureInfo& GetTextureInfo(const size_t idx) const;
+
 private:
     MyArray<MetroTextureInfo>             mPool;
     MyDict<HashString, MetroTextureInfo*> mDatabase;

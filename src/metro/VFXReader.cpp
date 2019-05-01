@@ -178,7 +178,7 @@ const MyArray<Package>& VFXReader::GetAllPacks() const {
     return mPaks;
 }
 
-const MyArray<MetroFile>& VFXReader::GetFiles() const {
+const MyArray<MetroFile>& VFXReader::GetAllFiles() const {
     return mFiles;
 }
 
@@ -310,6 +310,24 @@ MyArray<size_t> VFXReader::FindFilesInFolder(const CharString& folder, const Cha
     }
 
     return std::move(result);
+}
+
+// modification
+void VFXReader::AddPackage(const Package& pak) {
+    mPaks.push_back(pak);
+}
+
+void VFXReader::ReplaceFileInfo(const size_t idx, const MetroFile& newFile) {
+    mFiles[idx] = newFile;
+}
+
+void VFXReader::AppendFolder(const MetroFile& folder) {
+    mFiles.push_back(folder);
+
+    const size_t firstIdx = mFiles.size();
+    MetroFile& mf = mFiles.back();
+    mf.firstFile = firstIdx;
+    mf.numFiles = 0;
 }
 
 static CharString ReadEncryptedFileName(MemStream& stream) {

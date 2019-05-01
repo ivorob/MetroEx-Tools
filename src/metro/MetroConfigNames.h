@@ -3,14 +3,10 @@
 
 // Contains known file names and it's hash from config.bin 
 class ConfigNamesDB {
+    IMPL_SINGLETON(ConfigNamesDB)
+
 public:
     MyDict<uint32_t, CharString>  mCRC32ToPath;
-
-    // Get DB
-    static ConfigNamesDB& Get()	{
-        static ConfigNamesDB instance;
-        return instance;
-    }
 
     // Convert file path to CRC32 hash, add it to DB
     void AddName(const CharString& path) {
@@ -20,19 +16,13 @@ public:
 
     // Find file path by it's CRC32 hash name
     const CharString& FindByCRC32(const uint32_t pathCRC) {
-        static CharString sEmptyString;
-
         auto it = mCRC32ToPath.find(pathCRC);
         if (it != mCRC32ToPath.end()) {
             return it->second;
         }
 
-        return sEmptyString;
+        return kEmptyString;
     }
-
-    // Disable object copy / assignment 
-    ConfigNamesDB(ConfigNamesDB const&) = delete;
-    void operator=(ConfigNamesDB const&) = delete;
 
 private:
     ConfigNamesDB()	{

@@ -21,6 +21,9 @@ namespace MetroEX {
     public:
         DlgCreateArchive() {
             InitializeComponent();
+
+            //#NOTE_SK: disabled for now
+            this->groupBox1->Enabled = false;
         }
 
     protected:
