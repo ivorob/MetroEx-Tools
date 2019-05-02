@@ -389,13 +389,13 @@ namespace MetroEX {
     }
 
     void RenderPanel::ResetCamera() {
-        mZoom = 2.0f;
+        mZoom = 1.5f;
 
         const float r = mConstantBufferData->modelBSphere.w;
         const float nearZ = r * 0.05f;
         const float farZ = r * 100.0f;
 
-        mCamera->LookAt(vec3(-r, r, r), vec3(0.0f));
+        mCamera->LookAt(vec3(0, r, r), vec3(0.0f));
 
         this->UpdateCamera();
         mCamera->SetViewPlanes(nearZ, farZ);
