@@ -181,6 +181,7 @@ private: System::Windows::Forms::ToolStripMenuItem^  localizationConversionToolS
 private: System::Windows::Forms::ToolStripSeparator^  toolStripSeparator5;
 private: System::Windows::Forms::ToolStripButton^  toolBtnSettings;
 private: System::Windows::Forms::ToolStripSeparator^  toolStripSeparator6;
+private: System::Windows::Forms::ToolStripButton^  toolBtnMdlShowWireframe;
     private: System::ComponentModel::IContainer^  components;
 
 
@@ -234,6 +235,7 @@ private: System::Windows::Forms::ToolStripSeparator^  toolStripSeparator6;
             this->toolBtnFileOpen = (gcnew System::Windows::Forms::ToolStripButton());
             this->toolStripSeparator1 = (gcnew System::Windows::Forms::ToolStripSeparator());
             this->toolBtnImgEnableAlpha = (gcnew System::Windows::Forms::ToolStripButton());
+            this->toolBtnMdlShowWireframe = (gcnew System::Windows::Forms::ToolStripButton());
             this->toolStripSeparator3 = (gcnew System::Windows::Forms::ToolStripSeparator());
             this->toolBtnTexturesDatabase = (gcnew System::Windows::Forms::ToolStripButton());
             this->toolStripSeparator4 = (gcnew System::Windows::Forms::ToolStripSeparator());
@@ -243,14 +245,14 @@ private: System::Windows::Forms::ToolStripSeparator^  toolStripSeparator6;
             this->toolStripSeparator5 = (gcnew System::Windows::Forms::ToolStripSeparator());
             this->archiveToolToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
             this->toolStripSeparator2 = (gcnew System::Windows::Forms::ToolStripSeparator());
+            this->toolBtnSettings = (gcnew System::Windows::Forms::ToolStripButton());
+            this->toolStripSeparator6 = (gcnew System::Windows::Forms::ToolStripSeparator());
             this->toolBtnAbout = (gcnew System::Windows::Forms::ToolStripButton());
             this->ctxMenuExportBin = (gcnew System::Windows::Forms::ContextMenuStrip(this->components));
             this->extractBinRootToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
             this->extractBinChunkToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
             this->ctxMenuExportLocalization = (gcnew System::Windows::Forms::ContextMenuStrip(this->components));
             this->saveAsExcel2003XMLToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
-            this->toolStripSeparator6 = (gcnew System::Windows::Forms::ToolStripSeparator());
-            this->toolBtnSettings = (gcnew System::Windows::Forms::ToolStripButton());
             this->statusStrip1->SuspendLayout();
             (cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->splitContainer1))->BeginInit();
             this->splitContainer1->Panel1->SuspendLayout();
@@ -512,10 +514,11 @@ private: System::Windows::Forms::ToolStripSeparator^  toolStripSeparator6;
             // toolStrip1
             // 
             this->toolStrip1->GripStyle = System::Windows::Forms::ToolStripGripStyle::Hidden;
-            this->toolStrip1->Items->AddRange(gcnew cli::array< System::Windows::Forms::ToolStripItem^  >(11) {
+            this->toolStrip1->Items->AddRange(gcnew cli::array< System::Windows::Forms::ToolStripItem^  >(12) {
                 this->toolBtnFileOpen,
-                    this->toolStripSeparator1, this->toolBtnImgEnableAlpha, this->toolStripSeparator3, this->toolBtnTexturesDatabase, this->toolStripSeparator4,
-                    this->toolStripSplitButton1, this->toolStripSeparator2, this->toolBtnSettings, this->toolStripSeparator6, this->toolBtnAbout
+                    this->toolStripSeparator1, this->toolBtnImgEnableAlpha, this->toolBtnMdlShowWireframe, this->toolStripSeparator3, this->toolBtnTexturesDatabase,
+                    this->toolStripSeparator4, this->toolStripSplitButton1, this->toolStripSeparator2, this->toolBtnSettings, this->toolStripSeparator6,
+                    this->toolBtnAbout
             });
             this->toolStrip1->Location = System::Drawing::Point(0, 0);
             this->toolStrip1->Name = L"toolStrip1";
@@ -551,6 +554,18 @@ private: System::Windows::Forms::ToolStripSeparator^  toolStripSeparator6;
             this->toolBtnImgEnableAlpha->Text = L"A";
             this->toolBtnImgEnableAlpha->ToolTipText = L"Enable alpha";
             this->toolBtnImgEnableAlpha->Click += gcnew System::EventHandler(this, &MainForm::toolBtnImgEnableAlpha_Click);
+            // 
+            // toolBtnMdlShowWireframe
+            // 
+            this->toolBtnMdlShowWireframe->DisplayStyle = System::Windows::Forms::ToolStripItemDisplayStyle::Text;
+            this->toolBtnMdlShowWireframe->Font = (gcnew System::Drawing::Font(L"Segoe UI", 9, static_cast<System::Drawing::FontStyle>((System::Drawing::FontStyle::Bold | System::Drawing::FontStyle::Underline))));
+            this->toolBtnMdlShowWireframe->Image = (cli::safe_cast<System::Drawing::Image^>(resources->GetObject(L"toolBtnMdlShowWireframe.Image")));
+            this->toolBtnMdlShowWireframe->ImageTransparentColor = System::Drawing::Color::Magenta;
+            this->toolBtnMdlShowWireframe->Name = L"toolBtnMdlShowWireframe";
+            this->toolBtnMdlShowWireframe->Size = System::Drawing::Size(23, 22);
+            this->toolBtnMdlShowWireframe->Text = L"W";
+            this->toolBtnMdlShowWireframe->ToolTipText = L"Show wireframe";
+            this->toolBtnMdlShowWireframe->Click += gcnew System::EventHandler(this, &MainForm::toolBtnMdlShowWireframe_Click);
             // 
             // toolStripSeparator3
             // 
@@ -617,6 +632,21 @@ private: System::Windows::Forms::ToolStripSeparator^  toolStripSeparator6;
             this->toolStripSeparator2->Name = L"toolStripSeparator2";
             this->toolStripSeparator2->Size = System::Drawing::Size(6, 25);
             // 
+            // toolBtnSettings
+            // 
+            this->toolBtnSettings->DisplayStyle = System::Windows::Forms::ToolStripItemDisplayStyle::Image;
+            this->toolBtnSettings->Image = (cli::safe_cast<System::Drawing::Image^>(resources->GetObject(L"toolBtnSettings.Image")));
+            this->toolBtnSettings->ImageTransparentColor = System::Drawing::Color::Magenta;
+            this->toolBtnSettings->Name = L"toolBtnSettings";
+            this->toolBtnSettings->Size = System::Drawing::Size(23, 22);
+            this->toolBtnSettings->Text = L"Settings";
+            this->toolBtnSettings->Click += gcnew System::EventHandler(this, &MainForm::toolBtnSettings_Click);
+            // 
+            // toolStripSeparator6
+            // 
+            this->toolStripSeparator6->Name = L"toolStripSeparator6";
+            this->toolStripSeparator6->Size = System::Drawing::Size(6, 25);
+            // 
             // toolBtnAbout
             // 
             this->toolBtnAbout->DisplayStyle = System::Windows::Forms::ToolStripItemDisplayStyle::Image;
@@ -664,21 +694,6 @@ private: System::Windows::Forms::ToolStripSeparator^  toolStripSeparator6;
             this->saveAsExcel2003XMLToolStripMenuItem->Text = L"Save as Excel 2003 XML";
             this->saveAsExcel2003XMLToolStripMenuItem->Click += gcnew System::EventHandler(this, &MainForm::saveAsExcel2003XMLToolStripMenuItem_Click);
             // 
-            // toolStripSeparator6
-            // 
-            this->toolStripSeparator6->Name = L"toolStripSeparator6";
-            this->toolStripSeparator6->Size = System::Drawing::Size(6, 25);
-            // 
-            // toolBtnSettings
-            // 
-            this->toolBtnSettings->DisplayStyle = System::Windows::Forms::ToolStripItemDisplayStyle::Image;
-            this->toolBtnSettings->Image = (cli::safe_cast<System::Drawing::Image^>(resources->GetObject(L"toolBtnSettings.Image")));
-            this->toolBtnSettings->ImageTransparentColor = System::Drawing::Color::Magenta;
-            this->toolBtnSettings->Name = L"toolBtnSettings";
-            this->toolBtnSettings->Size = System::Drawing::Size(23, 22);
-            this->toolBtnSettings->Text = L"Settings";
-            this->toolBtnSettings->Click += gcnew System::EventHandler(this, &MainForm::toolBtnSettings_Click);
-            // 
             // MainForm
             // 
             this->AutoScaleDimensions = System::Drawing::SizeF(6, 13);
@@ -719,6 +734,7 @@ private: System::Windows::Forms::ToolStripSeparator^  toolStripSeparator6;
         void toolBtnFileOpen_Click(System::Object^ sender, System::EventArgs^ e);
         void toolBtnAbout_Click(System::Object^ sender, System::EventArgs^ e);
         void toolBtnImgEnableAlpha_Click(System::Object^  sender, System::EventArgs^ e);
+        void toolBtnMdlShowWireframe_Click(System::Object^ sender, System::EventArgs^ e);
         // treeview
         void filterableTreeView_AfterSelect(System::Object^ sender, System::Windows::Forms::TreeViewEventArgs^ e);
         void filterableTreeView_AfterCollapse(System::Object^ sender, System::Windows::Forms::TreeViewEventArgs^ e);

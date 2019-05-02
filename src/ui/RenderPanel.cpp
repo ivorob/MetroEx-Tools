@@ -15,6 +15,7 @@
 // model viewer shaders
 #include "shaders/ModelViewerVS.hlsl.h"
 #include "shaders/ModelViewerPS.hlsl.h"
+#include "shaders/ModelViewerWireframePS.hlsl.h"
 
 // cubemap viewer shaders
 #include "shaders/CubemapViewerVS.hlsl.h"
@@ -34,9 +35,11 @@ namespace MetroEX {
         , mDepthStencilState(nullptr)
         , mDepthStencilView(nullptr)
         , mRasterState(nullptr)
+        , mRasterStateWireframe(nullptr)
         // model viewer
         , mModelViewerVS(nullptr)
         , mModelViewerPS(nullptr)
+        , mModelViewerWireframePS(nullptr)
         , mModelInputLayout(nullptr)
         , mModelConstantBuffer(nullptr)
         , mModelGeometries(nullptr)
@@ -55,6 +58,7 @@ namespace MetroEX {
         //
         , mLastLMPos(0.0f, 0.0f)
         , mZoom(1.0f)
+        , mShowWireframe(false)
         , mConstantBufferData(nullptr)
     {
         this->components = gcnew System::ComponentModel::Container();
@@ -142,6 +146,16 @@ namespace MetroEX {
             return false;
         }
 
+        rasterDesc.DepthBias = -1000;
+        rasterDesc.DepthBiasClamp = 0.001f;
+        rasterDesc.SlopeScaledDepthBias = 0.01f;
+        rasterDesc.FillMode = D3D11_FILL_WIREFRAME;
+        pin_ptr<ID3D11RasterizerState*> rsWirePtr(&mRasterStateWireframe);
+        result = mDevice->CreateRasterizerState(&rasterDesc, rsWirePtr);
+        if (FAILED(result)) {
+            return false;
+        }
+
         mDeviceContext->RSSetState(mRasterState);
 
         depthStencilDesc.DepthEnable = true;
@@ -165,6 +179,12 @@ namespace MetroEX {
 
         pin_ptr<ID3D11PixelShader*> psPtr(&mModelViewerPS);
         result = mDevice->CreatePixelShader(sModelViewerPSData, sizeof(sModelViewerPSData), nullptr, psPtr);
+        if (FAILED(result)) {
+            return false;
+        }
+
+        pin_ptr<ID3D11PixelShader*> psWirePtr(&mModelViewerWireframePS);
+        result = mDevice->CreatePixelShader(sModelViewerWireframePSData, sizeof(sModelViewerWireframePSData), nullptr, psWirePtr);
         if (FAILED(result)) {
             return false;
         }
@@ -266,6 +286,13 @@ namespace MetroEX {
         this->Render();
     }
 
+    void RenderPanel::SetShowWireframe(const bool wireframe) {
+        if (mShowWireframe != wireframe) {
+            mShowWireframe = wireframe;
+            this->Render();
+        }
+    }
+
     void RenderPanel::SwitchMotion(const size_t idx) {
         if (mModel && mModel->IsAnimated()) {
             mCurrentMotion = mModel->GetMotion(idx);
@@ -314,7 +341,7 @@ namespace MetroEX {
         depthBufferDesc.Height = this->Size.Height;
         depthBufferDesc.MipLevels = 1;
         depthBufferDesc.ArraySize = 1;
-        depthBufferDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
+        depthBufferDesc.Format = DXGI_FORMAT_D32_FLOAT;
         depthBufferDesc.SampleDesc.Count = 1;
         depthBufferDesc.SampleDesc.Quality = 0;
         depthBufferDesc.Usage = D3D11_USAGE_DEFAULT;
@@ -327,7 +354,7 @@ namespace MetroEX {
             return false;
         }
 
-        depthStencilViewDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
+        depthStencilViewDesc.Format = depthBufferDesc.Format;
         depthStencilViewDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
 
         pin_ptr<ID3D11DepthStencilView*> dsvPtr(&mDepthStencilView);
@@ -689,25 +716,36 @@ namespace MetroEX {
             if (mModel) {
                 mDeviceContext->IASetInputLayout(mModelInputLayout);
                 mDeviceContext->VSSetShader(mModelViewerVS, nullptr, 0);
-                mDeviceContext->PSSetShader(mModelViewerPS, nullptr, 0);
 
-                if (mModelGeometries) {
-                    for each (RenderGeometry* rg in mModelGeometries) {
-                        if (rg) {
-                            ID3D11ShaderResourceView* texSRV = (rg->texture) ? rg->texture->srv : nullptr;
-                            pin_ptr<ID3D11ShaderResourceView*> srvPtr(&texSRV);
-                            mDeviceContext->PSSetShaderResources(0, 1, srvPtr);
+                ID3D11PixelShader* pixelShaders[2] = { mModelViewerPS, mModelViewerWireframePS };
+                ID3D11RasterizerState* rsStates[2] = { mRasterState, mRasterStateWireframe };
 
-                            const UINT stride = sizeof(MetroVertex);
-                            const UINT offset = 0;
-                            mDeviceContext->IASetVertexBuffers(0, 1, &rg->vb, &stride, &offset);
-                            mDeviceContext->IASetIndexBuffer(rg->ib, DXGI_FORMAT_R16_UINT, 0);
+                const size_t numPasses = 1 + scast<size_t>(mShowWireframe);
 
-                            mDeviceContext->DrawIndexed(scast<UINT>(rg->numFaces * 3), 0, 0);
+                for (size_t pass = 0; pass < numPasses; ++pass) {
+                    mDeviceContext->RSSetState(rsStates[pass]);
+                    mDeviceContext->PSSetShader(pixelShaders[pass], nullptr, 0);
+
+                    if (mModelGeometries) {
+                        for each (RenderGeometry* rg in mModelGeometries) {
+                            if (rg) {
+                                ID3D11ShaderResourceView* texSRV = (rg->texture) ? rg->texture->srv : nullptr;
+                                pin_ptr<ID3D11ShaderResourceView*> srvPtr(&texSRV);
+                                mDeviceContext->PSSetShaderResources(0, 1, srvPtr);
+
+                                const UINT stride = sizeof(MetroVertex);
+                                const UINT offset = 0;
+                                mDeviceContext->IASetVertexBuffers(0, 1, &rg->vb, &stride, &offset);
+                                mDeviceContext->IASetIndexBuffer(rg->ib, DXGI_FORMAT_R16_UINT, 0);
+
+                                mDeviceContext->DrawIndexed(scast<UINT>(rg->numFaces * 3), 0, 0);
+                            }
                         }
                     }
                 }
             } else if (mCubemap) {
+                mDeviceContext->RSSetState(mRasterState);
+
                 mDeviceContext->IASetInputLayout(nullptr);
                 mDeviceContext->VSSetShader(mCubemapViewerVS, nullptr, 0);
                 mDeviceContext->PSSetShader(mCubemapViewerPS, nullptr, 0);
@@ -763,7 +801,7 @@ namespace MetroEX {
             PointF delta = PointF(mp.X - mLastLMPos.X, mp.Y - mLastLMPos.Y);
             mLastLMPos = mp;
 
-            mCamera->Rotate(-delta.X * 0.1f, -delta.Y * 0.1f);
+            mCamera->Rotate(-delta.X * 0.2f, -delta.Y * 0.2f);
 
             this->Render();
         }

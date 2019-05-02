@@ -131,6 +131,9 @@ namespace MetroEX {
             this->lblNumBones = (gcnew System::Windows::Forms::Label());
             this->txtSkeletonPath = (gcnew System::Windows::Forms::TextBox());
             this->label2 = (gcnew System::Windows::Forms::Label());
+            this->panel1 = (gcnew System::Windows::Forms::Panel());
+            this->txtModelComment = (gcnew System::Windows::Forms::TextBox());
+            this->label5 = (gcnew System::Windows::Forms::Label());
             this->panel3 = (gcnew System::Windows::Forms::Panel());
             this->groupBox2 = (gcnew System::Windows::Forms::GroupBox());
             this->splitContainer2 = (gcnew System::Windows::Forms::SplitContainer());
@@ -141,9 +144,6 @@ namespace MetroEX {
             this->label3 = (gcnew System::Windows::Forms::Label());
             this->panel8 = (gcnew System::Windows::Forms::Panel());
             this->lblMotionLength = (gcnew System::Windows::Forms::Label());
-            this->panel1 = (gcnew System::Windows::Forms::Panel());
-            this->label5 = (gcnew System::Windows::Forms::Label());
-            this->txtModelComment = (gcnew System::Windows::Forms::TextBox());
             this->tableLayoutPanel1->SuspendLayout();
             this->panel2->SuspendLayout();
             this->groupBox1->SuspendLayout();
@@ -155,6 +155,7 @@ namespace MetroEX {
             this->panel4->SuspendLayout();
             this->panel5->SuspendLayout();
             this->panel6->SuspendLayout();
+            this->panel1->SuspendLayout();
             this->panel3->SuspendLayout();
             this->groupBox2->SuspendLayout();
             (cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->splitContainer2))->BeginInit();
@@ -164,7 +165,6 @@ namespace MetroEX {
             this->tableLayoutPanel3->SuspendLayout();
             this->panel7->SuspendLayout();
             this->panel8->SuspendLayout();
-            this->panel1->SuspendLayout();
             this->SuspendLayout();
             // 
             // tableLayoutPanel1
@@ -378,6 +378,38 @@ namespace MetroEX {
             this->label2->TabIndex = 0;
             this->label2->Text = L"Skeleton:";
             // 
+            // panel1
+            // 
+            this->panel1->Controls->Add(this->txtModelComment);
+            this->panel1->Controls->Add(this->label5);
+            this->panel1->Dock = System::Windows::Forms::DockStyle::Fill;
+            this->panel1->Location = System::Drawing::Point(0, 255);
+            this->panel1->Margin = System::Windows::Forms::Padding(0);
+            this->panel1->Name = L"panel1";
+            this->panel1->Size = System::Drawing::Size(679, 86);
+            this->panel1->TabIndex = 3;
+            // 
+            // txtModelComment
+            // 
+            this->txtModelComment->Dock = System::Windows::Forms::DockStyle::Fill;
+            this->txtModelComment->Location = System::Drawing::Point(0, 13);
+            this->txtModelComment->Multiline = true;
+            this->txtModelComment->Name = L"txtModelComment";
+            this->txtModelComment->ReadOnly = true;
+            this->txtModelComment->Size = System::Drawing::Size(679, 73);
+            this->txtModelComment->TabIndex = 1;
+            // 
+            // label5
+            // 
+            this->label5->AutoSize = true;
+            this->label5->Dock = System::Windows::Forms::DockStyle::Top;
+            this->label5->Location = System::Drawing::Point(0, 0);
+            this->label5->Margin = System::Windows::Forms::Padding(0);
+            this->label5->Name = L"label5";
+            this->label5->Size = System::Drawing::Size(54, 13);
+            this->label5->TabIndex = 0;
+            this->label5->Text = L"Comment:";
+            // 
             // panel3
             // 
             this->panel3->Controls->Add(this->groupBox2);
@@ -498,38 +530,6 @@ namespace MetroEX {
             this->lblMotionLength->TabIndex = 0;
             this->lblMotionLength->Text = L"Length: 15 seconds";
             // 
-            // panel1
-            // 
-            this->panel1->Controls->Add(this->txtModelComment);
-            this->panel1->Controls->Add(this->label5);
-            this->panel1->Dock = System::Windows::Forms::DockStyle::Fill;
-            this->panel1->Location = System::Drawing::Point(0, 255);
-            this->panel1->Margin = System::Windows::Forms::Padding(0);
-            this->panel1->Name = L"panel1";
-            this->panel1->Size = System::Drawing::Size(679, 86);
-            this->panel1->TabIndex = 3;
-            // 
-            // label5
-            // 
-            this->label5->AutoSize = true;
-            this->label5->Dock = System::Windows::Forms::DockStyle::Top;
-            this->label5->Location = System::Drawing::Point(0, 0);
-            this->label5->Margin = System::Windows::Forms::Padding(0);
-            this->label5->Name = L"label5";
-            this->label5->Size = System::Drawing::Size(54, 13);
-            this->label5->TabIndex = 0;
-            this->label5->Text = L"Comment:";
-            // 
-            // txtModelComment
-            // 
-            this->txtModelComment->Dock = System::Windows::Forms::DockStyle::Fill;
-            this->txtModelComment->Location = System::Drawing::Point(0, 13);
-            this->txtModelComment->Multiline = true;
-            this->txtModelComment->Name = L"txtModelComment";
-            this->txtModelComment->ReadOnly = true;
-            this->txtModelComment->Size = System::Drawing::Size(679, 73);
-            this->txtModelComment->TabIndex = 1;
-            // 
             // DlgModelInfo
             // 
             this->AutoScaleDimensions = System::Drawing::SizeF(6, 13);
@@ -552,6 +552,8 @@ namespace MetroEX {
             this->panel5->PerformLayout();
             this->panel6->ResumeLayout(false);
             this->panel6->PerformLayout();
+            this->panel1->ResumeLayout(false);
+            this->panel1->PerformLayout();
             this->panel3->ResumeLayout(false);
             this->groupBox2->ResumeLayout(false);
             this->splitContainer2->Panel1->ResumeLayout(false);
@@ -563,8 +565,6 @@ namespace MetroEX {
             this->panel7->PerformLayout();
             this->panel8->ResumeLayout(false);
             this->panel8->PerformLayout();
-            this->panel1->ResumeLayout(false);
-            this->panel1->PerformLayout();
             this->ResumeLayout(false);
 
         }

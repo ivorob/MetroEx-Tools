@@ -342,6 +342,9 @@
     <FxCompile Include="src\shaders\CubemapViewerVS.hlsl">
       <Filter>src\shaders</Filter>
     </FxCompile>
+    <FxCompile Include="src\shaders\ModelViewerWireframePS.hlsl">
+      <Filter>src\shaders</Filter>
+    </FxCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="src\shaders\common.hlsli">

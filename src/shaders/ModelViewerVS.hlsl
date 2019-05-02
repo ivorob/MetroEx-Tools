@@ -29,7 +29,7 @@ VSOutput main(VSInput IN) {
     Skin(IN, skinnedPos, skinnedNorm);
 
     OUT.pos = mul(float4(skinnedPos - BSphere.xyz, 1.0f), MatModelViewProj);
-    OUT.normal.xyz = mul(skinnedNorm, (float3x3)MatModel);
+    OUT.normal.xyz = mul(skinnedNorm, (float3x3)MatView);
     OUT.normal.w = IN.normal.w;
     OUT.uv = IN.uv;
 

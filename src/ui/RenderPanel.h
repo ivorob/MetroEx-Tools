@@ -77,6 +77,7 @@ namespace MetroEX {
         void        SetModel(MetroModel* model);
         MetroModel* GetModel();
         void        SetCubemap(MetroTexture* cubemap);
+        void        SetShowWireframe(const bool wireframe);
 
         void        SwitchMotion(const size_t idx);
         bool        IsPlayingAnim();
@@ -114,9 +115,11 @@ namespace MetroEX {
         ID3D11DepthStencilState*    mDepthStencilState;
         ID3D11DepthStencilView*     mDepthStencilView;
         ID3D11RasterizerState*      mRasterState;
+        ID3D11RasterizerState*      mRasterStateWireframe;
         // model viewer
         ID3D11VertexShader*         mModelViewerVS;
         ID3D11PixelShader*          mModelViewerPS;
+        ID3D11PixelShader*          mModelViewerWireframePS;
         ID3D11InputLayout*          mModelInputLayout;
         ID3D11Buffer*               mModelConstantBuffer;
         ID3D11SamplerState*         mModelTextureSampler;
@@ -139,6 +142,7 @@ namespace MetroEX {
 
         PointF                      mLastLMPos;
         float                       mZoom;
+        bool                        mShowWireframe;
         ConstantBufferData*         mConstantBufferData;
     };
 

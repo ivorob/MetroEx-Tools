@@ -246,8 +246,15 @@ namespace MetroEX {
 
     void MainForm::toolBtnImgEnableAlpha_Click(System::Object^, System::EventArgs^) {
         if (mImagePanel) {
-            toolBtnImgEnableAlpha->Checked = !toolBtnImgEnableAlpha->Checked;
+            this->toolBtnImgEnableAlpha->Checked = !this->toolBtnImgEnableAlpha->Checked;
             mImagePanel->EnableTransparency(toolBtnImgEnableAlpha->Checked);
+        }
+    }
+
+    void MainForm::toolBtnMdlShowWireframe_Click(System::Object^, System::EventArgs^) {
+        if (mRenderPanel) {
+            this->toolBtnMdlShowWireframe->Checked = !this->toolBtnMdlShowWireframe->Checked;
+            mRenderPanel->SetShowWireframe(this->toolBtnMdlShowWireframe->Checked);
         }
     }
 

@@ -6,7 +6,7 @@ SamplerState Sampler0   : register(s0);
 float4 main(VSOutput IN) : SV_Target0 {
     float3 normal = normalize(IN.normal.xyz);
     float vao = IN.normal.w;
-    float diffuse = clamp(dot(normal, normalize(float3(-0.5f, 0.75f, 0.5f))), 0.35f, 1.0f);
+    float diffuse = clamp(dot(normal, normalize(float3(0.5f, 0.75f, 0.5f))), 0.35f, 1.0f);
 
     float4 albedo = TexAlbedo.Sample(Sampler0, IN.uv);
     if (albedo.a < 0.1f) {
