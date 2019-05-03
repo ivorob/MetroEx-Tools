@@ -33,6 +33,23 @@ static T NameToEnum(const CharString& name, const CharString (&enumNames)[N]) {
     return result;
 }
 
+static bool GetBoolValue(const pugi::xml_node& parent, const CharString& childName, const bool defaultValue) {
+    static CharString kStrTrue("true");
+
+    bool result = defaultValue;
+
+    pugi::xml_node n = parent.child(childName.c_str());
+    if (n) {
+        result = n.text().get() == kStrTrue;
+    }
+
+    return result;
+}
+
+static void SetBoolValue(pugi::xml_node& parent, const CharString& childName, const bool value) {
+    parent.append_child(childName.c_str()).text() = value ? "true" : "false";
+}
+
 
 MEXSettings::MEXSettings() {
 
@@ -93,6 +110,8 @@ void MEXSettings::InitDefaults() {
     this->extraction.modelFormat = Extraction::MdlFormat::Obj;
     this->extraction.modelSaveWithAnims = true;
     this->extraction.modelAnimsSeparate = false;
+    this->extraction.modelSaveWithTextures = true;
+    this->extraction.modelExcludeCollision = true;
     // textures
     this->extraction.textureFormat = Extraction::TexFormat::Tga;
     // sounds
@@ -109,8 +128,10 @@ bool MEXSettings::LoadExtraction(pugi::xml_document& doc) {
     if (extractionNode) {
         // models
         this->extraction.modelFormat = NameToEnum<Extraction::MdlFormat>(extractionNode.child("modelFormat").text().get(), sMdlFormatNames);
-        this->extraction.modelSaveWithAnims = extractionNode.child("modelSaveWithAnims").text().get() == CharString("true");
-        this->extraction.modelAnimsSeparate = extractionNode.child("modelAnimsSeparate").text().get() == CharString("true");
+        this->extraction.modelSaveWithAnims = GetBoolValue(extractionNode, "modelSaveWithAnims", true);
+        this->extraction.modelAnimsSeparate = GetBoolValue(extractionNode, "modelAnimsSeparate", false);
+        this->extraction.modelSaveWithTextures = GetBoolValue(extractionNode, "modelSaveWithTextures", true);
+        this->extraction.modelExcludeCollision = GetBoolValue(extractionNode, "modelExcludeCollision", true);
 
         // textures
         this->extraction.textureFormat = NameToEnum<Extraction::TexFormat>(extractionNode.child("textureFormat").text().get(), sTexFormatNames);
@@ -119,7 +140,7 @@ bool MEXSettings::LoadExtraction(pugi::xml_document& doc) {
         this->extraction.soundFormat = NameToEnum<Extraction::SndFormat>(extractionNode.child("soundFormat").text().get(), sSndFormatNames);
 
         //stuff
-        this->extraction.askEveryTime = extractionNode.child("askEveryTime").text().get() == CharString("true");
+        this->extraction.askEveryTime = GetBoolValue(extractionNode, "askEveryTime", false);
 
         result = true;
     }
@@ -133,8 +154,10 @@ bool MEXSettings::SaveExtraction(pugi::xml_document& doc) {
 
     // models
     extractionNode.append_child("modelFormat").text() = sMdlFormatNames[scast<size_t>(this->extraction.modelFormat)].c_str();
-    extractionNode.append_child("modelSaveWithAnims").text() = this->extraction.modelSaveWithAnims ? "true" : "false";
-    extractionNode.append_child("modelAnimsSeparate").text() = this->extraction.modelAnimsSeparate ? "true" : "false";
+    SetBoolValue(extractionNode, "modelSaveWithAnims", this->extraction.modelSaveWithAnims);
+    SetBoolValue(extractionNode, "modelAnimsSeparate", this->extraction.modelAnimsSeparate);
+    SetBoolValue(extractionNode, "modelSaveWithTextures", this->extraction.modelSaveWithTextures);
+    SetBoolValue(extractionNode, "modelExcludeCollision", this->extraction.modelExcludeCollision);
 
     // textures
     extractionNode.append_child("textureFormat").text() = sTexFormatNames[scast<size_t>(this->extraction.textureFormat)].c_str();
@@ -143,7 +166,7 @@ bool MEXSettings::SaveExtraction(pugi::xml_document& doc) {
     extractionNode.append_child("soundFormat").text() = sSndFormatNames[scast<size_t>(this->extraction.soundFormat)].c_str();
 
     //stuff
-    extractionNode.append_child("askEveryTime").text() = this->extraction.askEveryTime ? "true" : "false";
+    SetBoolValue(extractionNode, "askEveryTime", this->extraction.askEveryTime);
 
     return true;
 }

@@ -30,6 +30,7 @@ namespace MetroEX {
         ID3D11Buffer*   ib;
         size_t          numFaces;
         RenderTexture*  texture;
+        bool            isCollision;
     };
 
     struct ViewingParams {
@@ -44,6 +45,7 @@ namespace MetroEX {
         mat4 matModel;
         mat4 matView;
         mat4 matProjection;
+        mat4 matModelView;
         mat4 matModelViewProj;
         vec4 camParams;
         mat4 bones[256];
@@ -78,15 +80,17 @@ namespace MetroEX {
         MetroModel* GetModel();
         void        SetCubemap(MetroTexture* cubemap);
         void        SetShowWireframe(const bool wireframe);
+        void        SetShowCollision(const bool collision);
 
         void        SwitchMotion(const size_t idx);
         bool        IsPlayingAnim();
         void        PlayAnim(const bool play);
 
+        void        ResetCamera(const bool forceRender);
+
     private:
         bool        CreateRenderTargets();
         void        UpdateCamera();
-        void        ResetCamera();
         void        CreateModelGeometries();
         void        CreateTextures();
         void        CreateRenderTexture(const MetroTexture* srcTexture, RenderTexture* rt);
@@ -141,8 +145,10 @@ namespace MetroEX {
         ID3D11PixelShader*          mCubemapViewerPS;
 
         PointF                      mLastLMPos;
+        PointF                      mLastRMPos;
         float                       mZoom;
         bool                        mShowWireframe;
+        bool                        mShowCollision;
         ConstantBufferData*         mConstantBufferData;
     };
 

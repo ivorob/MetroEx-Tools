@@ -90,7 +90,7 @@ bool MetroModel::LoadFromData(MemStream& stream, const size_t fileIdx) {
     return result;
 }
 
-bool MetroModel::SaveAsOBJ(const fs::path& filePath) {
+bool MetroModel::SaveAsOBJ(const fs::path& filePath, const bool excludeCollision) {
     bool result = false;
 
     std::ofstream file(filePath, std::ofstream::binary);
@@ -108,38 +108,47 @@ bool MetroModel::SaveAsOBJ(const fs::path& filePath) {
         size_t lastIdx = 0;
         for (size_t i = 0; i < mMeshes.size(); ++i) {
             const MetroMesh* mesh = mMeshes[i];
-            if (!mesh->vertices.empty() && !mesh->faces.empty()) {
-                for (const MetroVertex& v : mesh->vertices) {
-                    stringBuilder << "v " << v.pos.x << ' ' << v.pos.y << ' ' << v.pos.z << std::endl;
-                }
-                stringBuilder << "# " << mesh->vertices.size() << " vertices" << std::endl << std::endl;
 
-                for (const MetroVertex& v : mesh->vertices) {
-                    stringBuilder << "vt " << v.uv0.x << ' ' << (1.0f - v.uv0.y) << std::endl;
-                }
-                stringBuilder << "# " << mesh->vertices.size() << " texcoords" << std::endl << std::endl;
-
-                for (const MetroVertex& v : mesh->vertices) {
-                    stringBuilder << "vn " << v.normal.x << ' ' << v.normal.y << ' ' << v.normal.z << std::endl;
-                }
-                stringBuilder << "# " << mesh->vertices.size() << " normals" << std::endl << std::endl;
-
-                stringBuilder << "g Mesh_" << i << std::endl;
-                stringBuilder << "usemtl " << "Material_" << i << std::endl;
-
-                for (const MetroFace& f : mesh->faces) {
-                    const size_t a = f.c + lastIdx + 1;
-                    const size_t b = f.b + lastIdx + 1;
-                    const size_t c = f.a + lastIdx + 1;
-
-                    stringBuilder << "f " << a << '/' << a << '/' << a <<
-                                      ' ' << b << '/' << b << '/' << b <<
-                                      ' ' << c << '/' << c << '/' << c << std::endl;
-                }
-                stringBuilder << "# " << mesh->faces.size() << " faces" << std::endl << std::endl;
-
-                lastIdx += mesh->vertices.size();
+            // empty mesh ???
+            if (mesh->vertices.empty() || mesh->faces.empty()) {
+                continue;
             }
+
+            // skip collision geometry if asked so
+            if (excludeCollision && mesh->isCollision) {
+                continue;
+            }
+
+            for (const MetroVertex& v : mesh->vertices) {
+                stringBuilder << "v " << v.pos.x << ' ' << v.pos.y << ' ' << v.pos.z << std::endl;
+            }
+            stringBuilder << "# " << mesh->vertices.size() << " vertices" << std::endl << std::endl;
+
+            for (const MetroVertex& v : mesh->vertices) {
+                stringBuilder << "vt " << v.uv0.x << ' ' << (1.0f - v.uv0.y) << std::endl;
+            }
+            stringBuilder << "# " << mesh->vertices.size() << " texcoords" << std::endl << std::endl;
+
+            for (const MetroVertex& v : mesh->vertices) {
+                stringBuilder << "vn " << v.normal.x << ' ' << v.normal.y << ' ' << v.normal.z << std::endl;
+            }
+            stringBuilder << "# " << mesh->vertices.size() << " normals" << std::endl << std::endl;
+
+            stringBuilder << "g Mesh_" << i << std::endl;
+            stringBuilder << "usemtl " << "Material_" << i << std::endl;
+
+            for (const MetroFace& f : mesh->faces) {
+                const size_t a = f.c + lastIdx + 1;
+                const size_t b = f.b + lastIdx + 1;
+                const size_t c = f.a + lastIdx + 1;
+
+                stringBuilder << "f " << a << '/' << a << '/' << a <<
+                                    ' ' << b << '/' << b << '/' << b <<
+                                    ' ' << c << '/' << c << '/' << c << std::endl;
+            }
+            stringBuilder << "# " << mesh->faces.size() << " faces" << std::endl << std::endl;
+
+            lastIdx += mesh->vertices.size();
         }
 
         const CharString& str = stringBuilder.str();
@@ -161,31 +170,40 @@ bool MetroModel::SaveAsOBJ(const fs::path& filePath) {
 
             for (size_t i = 0; i < mMeshes.size(); ++i) {
                 const MetroMesh* mesh = mMeshes[i];
-                if (!mesh->vertices.empty() && !mesh->faces.empty()) {
-                    mtlBuilder << "newmtl " << "Material_" << i << std::endl;
 
-                    const CharString& textureName = mesh->materials.front();
-
-                    const CharString& sourceName = MetroTexturesDatabase::Get().GetSourceName(textureName);
-                    const CharString& bumpName = MetroTexturesDatabase::Get().GetSourceName(textureName);
-
-                    CharString textureTgaName = fs::path(sourceName).filename().string() + ".tga";
-
-                    mtlBuilder << "Kd 1 1 1" << std::endl;
-                    mtlBuilder << "Ke 0 0 0" << std::endl;
-                    mtlBuilder << "Ns 1000" << std::endl;
-                    mtlBuilder << "illum 2" << std::endl;
-                    mtlBuilder << "map_Ka " << textureTgaName << std::endl;
-                    mtlBuilder << "map_Kd " << textureTgaName << std::endl;
-
-                    if (!bumpName.empty()) {
-                        CharString bumpTgaName = fs::path(bumpName).filename().string() + "_nm.tga";
-                        mtlBuilder << "bump " << bumpTgaName << std::endl;
-                        mtlBuilder << "map_bump " << bumpTgaName << std::endl;
-                    }
-
-                    mtlBuilder << std::endl;
+                // empty mesh ???
+                if (mesh->vertices.empty() || mesh->faces.empty()) {
+                    continue;
                 }
+
+                // skip collision geometry if asked so
+                if (excludeCollision && mesh->isCollision) {
+                    continue;
+                }
+
+                mtlBuilder << "newmtl " << "Material_" << i << std::endl;
+
+                const CharString& textureName = mesh->materials.front();
+
+                const CharString& sourceName = MetroTexturesDatabase::Get().GetSourceName(textureName);
+                const CharString& bumpName = MetroTexturesDatabase::Get().GetSourceName(textureName);
+
+                CharString textureTgaName = fs::path(sourceName).filename().string() + ".tga";
+
+                mtlBuilder << "Kd 1 1 1" << std::endl;
+                mtlBuilder << "Ke 0 0 0" << std::endl;
+                mtlBuilder << "Ns 1000" << std::endl;
+                mtlBuilder << "illum 2" << std::endl;
+                mtlBuilder << "map_Ka " << textureTgaName << std::endl;
+                mtlBuilder << "map_Kd " << textureTgaName << std::endl;
+
+                if (!bumpName.empty()) {
+                    CharString bumpTgaName = fs::path(bumpName).filename().string() + "_nm.tga";
+                    mtlBuilder << "bump " << bumpTgaName << std::endl;
+                    mtlBuilder << "map_bump " << bumpTgaName << std::endl;
+                }
+
+                mtlBuilder << std::endl;
             }
 
             const CharString& mtlStr = mtlBuilder.str();
@@ -457,6 +475,7 @@ bool MetroModel::SaveAsFBX(const fs::path& filePath, const size_t options, const
     const bool exportMesh = TestBit(options, MetroModel::FBX_Export_Mesh);
     const bool exportSkeleton = TestBit(options, MetroModel::FBX_Export_Skeleton);
     const bool exportAnimation = TestBit(options, MetroModel::FBX_Export_Animation);
+    const bool excludeCollision = TestBit(options, MetroModel::FBX_Export_ExcludeCollision);
 
     fs::path modelFolder = filePath.parent_path();
 
@@ -476,58 +495,67 @@ bool MetroModel::SaveAsFBX(const fs::path& filePath, const size_t options, const
     if (exportMesh) {
         for (size_t i = 0; i < mMeshes.size(); ++i) {
             const MetroMesh* mesh = mMeshes[i];
-            if (!mesh->vertices.empty() && !mesh->faces.empty()) {
-                const CharString& textureName = mesh->materials.front();
 
-                auto it = fbxMaterials.find(textureName);
-                if (it == fbxMaterials.end()) {
-                    const CharString& sourceName = MetroTexturesDatabase::Get().GetSourceName(textureName);
-                    const CharString& bumpName = MetroTexturesDatabase::Get().GetSourceName(textureName);
+            // empty mesh ???
+            if (mesh->vertices.empty() || mesh->faces.empty()) {
+                continue;
+            }
 
-                    CharString textureTgaName = fs::path(sourceName).filename().u8string() + ".tga";
-                    CharString texturePath = (modelFolder / textureTgaName).u8string();
+            // skip collision geometry if asked so
+            if (excludeCollision && mesh->isCollision) {
+                continue;
+            }
 
-                    FbxFileTexture* texture = FbxFileTexture::Create(mgr, textureName.c_str());
-                    texture->SetFileName(texturePath.c_str());
-                    texture->SetTextureUse(FbxTexture::eStandard);
-                    texture->SetMappingType(FbxTexture::eUV);
-                    texture->SetMaterialUse(FbxFileTexture::eModelMaterial);
-                    texture->UVSwap = false;
-                    texture->SetTranslation(0.0, 0.0);
-                    texture->SetScale(1.0, 1.0);
-                    texture->SetRotation(0.0, 0.0);
-                    texture->SetAlphaSource(FbxTexture::eBlack);
+            const CharString& textureName = mesh->materials.front();
 
-                    FbxFileTexture* bump = nullptr;
-                    if (!bumpName.empty()) {
-                        CharString bumpTgaName = fs::path(bumpName).filename().u8string() + "_nm.tga";
-                        CharString bumpPath = (modelFolder / bumpTgaName).u8string();
+            auto it = fbxMaterials.find(textureName);
+            if (it == fbxMaterials.end()) {
+                const CharString& sourceName = MetroTexturesDatabase::Get().GetSourceName(textureName);
+                const CharString& bumpName = MetroTexturesDatabase::Get().GetSourceName(textureName);
 
-                        bump = FbxFileTexture::Create(mgr, bumpName.c_str());
-                        bump->SetFileName(bumpPath.c_str());
-                        bump->SetTextureUse(FbxTexture::eBumpNormalMap);
-                        bump->SetMappingType(FbxTexture::eUV);
-                        bump->SetMaterialUse(FbxFileTexture::eModelMaterial);
-                        bump->UVSwap = false;
-                        bump->SetTranslation(0.0, 0.0);
-                        bump->SetScale(1.0, 1.0);
-                        bump->SetRotation(0.0, 0.0);
-                    }
+                CharString textureTgaName = fs::path(sourceName).filename().u8string() + ".tga";
+                CharString texturePath = (modelFolder / textureTgaName).u8string();
 
-                    FbxSurfacePhong* material = FbxSurfacePhong::Create(mgr, textureName.c_str());
-                    material->Emissive = FbxDouble3(0.0, 0.0, 0.0);
-                    material->Diffuse.ConnectSrcObject(texture);
-                    material->Specular = FbxDouble3(1.0, 1.0, 1.0);
-                    material->SpecularFactor = 0.0;
-                    material->Shininess = 0.0; // simple diffuse
+                FbxFileTexture* texture = FbxFileTexture::Create(mgr, textureName.c_str());
+                texture->SetFileName(texturePath.c_str());
+                texture->SetTextureUse(FbxTexture::eStandard);
+                texture->SetMappingType(FbxTexture::eUV);
+                texture->SetMaterialUse(FbxFileTexture::eModelMaterial);
+                texture->UVSwap = false;
+                texture->SetTranslation(0.0, 0.0);
+                texture->SetScale(1.0, 1.0);
+                texture->SetRotation(0.0, 0.0);
+                texture->SetAlphaSource(FbxTexture::eBlack);
 
-                    if (bump) {
-                        material->Bump.ConnectSrcObject(bump);
-                        material->BumpFactor = 1.0;
-                    }
+                FbxFileTexture* bump = nullptr;
+                if (!bumpName.empty()) {
+                    CharString bumpTgaName = fs::path(bumpName).filename().u8string() + "_nm.tga";
+                    CharString bumpPath = (modelFolder / bumpTgaName).u8string();
 
-                    fbxMaterials[textureName] = material;
+                    bump = FbxFileTexture::Create(mgr, bumpName.c_str());
+                    bump->SetFileName(bumpPath.c_str());
+                    bump->SetTextureUse(FbxTexture::eBumpNormalMap);
+                    bump->SetMappingType(FbxTexture::eUV);
+                    bump->SetMaterialUse(FbxFileTexture::eModelMaterial);
+                    bump->UVSwap = false;
+                    bump->SetTranslation(0.0, 0.0);
+                    bump->SetScale(1.0, 1.0);
+                    bump->SetRotation(0.0, 0.0);
                 }
+
+                FbxSurfacePhong* material = FbxSurfacePhong::Create(mgr, textureName.c_str());
+                material->Emissive = FbxDouble3(0.0, 0.0, 0.0);
+                material->Diffuse.ConnectSrcObject(texture);
+                material->Specular = FbxDouble3(1.0, 1.0, 1.0);
+                material->SpecularFactor = 0.0;
+                material->Shininess = 0.0; // simple diffuse
+
+                if (bump) {
+                    material->Bump.ConnectSrcObject(bump);
+                    material->BumpFactor = 1.0;
+                }
+
+                fbxMaterials[textureName] = material;
             }
         }
     }
@@ -537,6 +565,17 @@ bool MetroModel::SaveAsFBX(const fs::path& filePath, const size_t options, const
     if (exportMesh) {
         for (size_t i = 0; i < mMeshes.size(); ++i) {
             const MetroMesh* mesh = this->GetMesh(i);
+
+            // empty mesh ???
+            if (mesh->vertices.empty() || mesh->faces.empty()) {
+                continue;
+            }
+
+            // skip collision geometry if asked so
+            if (excludeCollision && mesh->isCollision) {
+                continue;
+            }
+
             CharString meshName = CharString("mesh_") + std::to_string(i);
 
             FbxMesh* fbxMesh = FbxMesh::Create(scene, meshName.c_str());
@@ -768,6 +807,7 @@ void MetroModel::ReadSubChunks(MemStream& stream) {
                 }
 
                 if (mCurrentMesh) {
+                    mCurrentMesh->flags = hdr.flags;
                     mCurrentMesh->vscale = hdr.vscale;
                     mCurrentMesh->bbox = hdr.bbox;
                     mCurrentMesh->type = hdr.type;
@@ -787,6 +827,19 @@ void MetroModel::ReadSubChunks(MemStream& stream) {
                 for (auto& s : mCurrentMesh->materials) {
                     s = stream.ReadStringZ();
                 }
+
+                //#NOTE_SK: seems like meshes with either "invalid" texture, and/or "collision" source materials
+                //          are additional collision geometry, invisible during drawing
+                const CharString& textureName = mCurrentMesh->materials[0];
+                const CharString& shaderName = mCurrentMesh->materials[1];
+                const CharString& srcMatName = mCurrentMesh->materials[3];
+                if (StrEndsWith(textureName, "invalid") ||
+                    StrContains(shaderName, "invisible") ||
+                    StrContains(srcMatName, "collision") ||
+                    StrContains(srcMatName, "colision")) {
+                    mCurrentMesh->isCollision = true;
+                }
+
             } break;
 
             case MC_VerticesChunk: {

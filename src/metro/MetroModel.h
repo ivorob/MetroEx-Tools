@@ -6,17 +6,18 @@ class MetroMotion;
 
 class MetroModel {
 public:
-    static const size_t FBX_Export_None      = 0;
-    static const size_t FBX_Export_Mesh      = 1;
-    static const size_t FBX_Export_Skeleton  = 2;
-    static const size_t FBX_Export_Animation = 4;
+    static const size_t FBX_Export_None             = 0;
+    static const size_t FBX_Export_Mesh             = 1;
+    static const size_t FBX_Export_Skeleton         = 2;
+    static const size_t FBX_Export_Animation        = 4;
+    static const size_t FBX_Export_ExcludeCollision = 8;
 
 public:
     MetroModel();
     ~MetroModel();
 
     bool                    LoadFromData(MemStream& stream, const size_t fileIdx);
-    bool                    SaveAsOBJ(const fs::path& filePath);
+    bool                    SaveAsOBJ(const fs::path& filePath, const bool excludeCollision);
     bool                    SaveAsFBX(const fs::path& filePath, const size_t options, const size_t motionIdx = kInvalidValue);
 
     bool                    IsAnimated() const;

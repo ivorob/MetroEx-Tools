@@ -48,6 +48,8 @@ namespace MetroEX {
         bool        mdlSaveAsFbx;
         bool        mdlSaveWithAnims;
         bool        mdlAnimsSeparate;
+        bool        mdlSaveWithTextures;
+        bool        mdlExcludeCollision;
         // textures
         bool        txUseBC3;
         bool        txSaveAsDds;
@@ -182,6 +184,9 @@ private: System::Windows::Forms::ToolStripSeparator^  toolStripSeparator5;
 private: System::Windows::Forms::ToolStripButton^  toolBtnSettings;
 private: System::Windows::Forms::ToolStripSeparator^  toolStripSeparator6;
 private: System::Windows::Forms::ToolStripButton^  toolBtnMdlShowWireframe;
+private: System::Windows::Forms::ToolStripButton^  toolBtnMdlShowCollision;
+private: System::Windows::Forms::ToolStripSeparator^  toolStripSeparator7;
+private: System::Windows::Forms::ToolStripButton^  toolBtnMdlResetCamera;
     private: System::ComponentModel::IContainer^  components;
 
 
@@ -236,6 +241,7 @@ private: System::Windows::Forms::ToolStripButton^  toolBtnMdlShowWireframe;
             this->toolStripSeparator1 = (gcnew System::Windows::Forms::ToolStripSeparator());
             this->toolBtnImgEnableAlpha = (gcnew System::Windows::Forms::ToolStripButton());
             this->toolBtnMdlShowWireframe = (gcnew System::Windows::Forms::ToolStripButton());
+            this->toolBtnMdlShowCollision = (gcnew System::Windows::Forms::ToolStripButton());
             this->toolStripSeparator3 = (gcnew System::Windows::Forms::ToolStripSeparator());
             this->toolBtnTexturesDatabase = (gcnew System::Windows::Forms::ToolStripButton());
             this->toolStripSeparator4 = (gcnew System::Windows::Forms::ToolStripSeparator());
@@ -253,6 +259,8 @@ private: System::Windows::Forms::ToolStripButton^  toolBtnMdlShowWireframe;
             this->extractBinChunkToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
             this->ctxMenuExportLocalization = (gcnew System::Windows::Forms::ContextMenuStrip(this->components));
             this->saveAsExcel2003XMLToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
+            this->toolBtnMdlResetCamera = (gcnew System::Windows::Forms::ToolStripButton());
+            this->toolStripSeparator7 = (gcnew System::Windows::Forms::ToolStripSeparator());
             this->statusStrip1->SuspendLayout();
             (cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->splitContainer1))->BeginInit();
             this->splitContainer1->Panel1->SuspendLayout();
@@ -514,11 +522,11 @@ private: System::Windows::Forms::ToolStripButton^  toolBtnMdlShowWireframe;
             // toolStrip1
             // 
             this->toolStrip1->GripStyle = System::Windows::Forms::ToolStripGripStyle::Hidden;
-            this->toolStrip1->Items->AddRange(gcnew cli::array< System::Windows::Forms::ToolStripItem^  >(12) {
+            this->toolStrip1->Items->AddRange(gcnew cli::array< System::Windows::Forms::ToolStripItem^  >(15) {
                 this->toolBtnFileOpen,
-                    this->toolStripSeparator1, this->toolBtnImgEnableAlpha, this->toolBtnMdlShowWireframe, this->toolStripSeparator3, this->toolBtnTexturesDatabase,
-                    this->toolStripSeparator4, this->toolStripSplitButton1, this->toolStripSeparator2, this->toolBtnSettings, this->toolStripSeparator6,
-                    this->toolBtnAbout
+                    this->toolStripSeparator1, this->toolBtnImgEnableAlpha, this->toolStripSeparator7, this->toolBtnMdlShowWireframe, this->toolBtnMdlShowCollision,
+                    this->toolBtnMdlResetCamera, this->toolStripSeparator3, this->toolBtnTexturesDatabase, this->toolStripSeparator4, this->toolStripSplitButton1,
+                    this->toolStripSeparator2, this->toolBtnSettings, this->toolStripSeparator6, this->toolBtnAbout
             });
             this->toolStrip1->Location = System::Drawing::Point(0, 0);
             this->toolStrip1->Name = L"toolStrip1";
@@ -566,6 +574,18 @@ private: System::Windows::Forms::ToolStripButton^  toolBtnMdlShowWireframe;
             this->toolBtnMdlShowWireframe->Text = L"W";
             this->toolBtnMdlShowWireframe->ToolTipText = L"Show wireframe";
             this->toolBtnMdlShowWireframe->Click += gcnew System::EventHandler(this, &MainForm::toolBtnMdlShowWireframe_Click);
+            // 
+            // toolBtnMdlShowCollision
+            // 
+            this->toolBtnMdlShowCollision->DisplayStyle = System::Windows::Forms::ToolStripItemDisplayStyle::Text;
+            this->toolBtnMdlShowCollision->Font = (gcnew System::Drawing::Font(L"Segoe UI", 9, static_cast<System::Drawing::FontStyle>((System::Drawing::FontStyle::Bold | System::Drawing::FontStyle::Underline))));
+            this->toolBtnMdlShowCollision->Image = (cli::safe_cast<System::Drawing::Image^>(resources->GetObject(L"toolBtnMdlShowCollision.Image")));
+            this->toolBtnMdlShowCollision->ImageTransparentColor = System::Drawing::Color::Magenta;
+            this->toolBtnMdlShowCollision->Name = L"toolBtnMdlShowCollision";
+            this->toolBtnMdlShowCollision->Size = System::Drawing::Size(23, 22);
+            this->toolBtnMdlShowCollision->Text = L"C";
+            this->toolBtnMdlShowCollision->ToolTipText = L"Show collision (if any)";
+            this->toolBtnMdlShowCollision->Click += gcnew System::EventHandler(this, &MainForm::toolBtnMdlShowCollision_Click);
             // 
             // toolStripSeparator3
             // 
@@ -694,6 +714,22 @@ private: System::Windows::Forms::ToolStripButton^  toolBtnMdlShowWireframe;
             this->saveAsExcel2003XMLToolStripMenuItem->Text = L"Save as Excel 2003 XML";
             this->saveAsExcel2003XMLToolStripMenuItem->Click += gcnew System::EventHandler(this, &MainForm::saveAsExcel2003XMLToolStripMenuItem_Click);
             // 
+            // toolBtnMdlResetCamera
+            // 
+            this->toolBtnMdlResetCamera->DisplayStyle = System::Windows::Forms::ToolStripItemDisplayStyle::Image;
+            this->toolBtnMdlResetCamera->Image = (cli::safe_cast<System::Drawing::Image^>(resources->GetObject(L"toolBtnMdlResetCamera.Image")));
+            this->toolBtnMdlResetCamera->ImageTransparentColor = System::Drawing::Color::Magenta;
+            this->toolBtnMdlResetCamera->Name = L"toolBtnMdlResetCamera";
+            this->toolBtnMdlResetCamera->Size = System::Drawing::Size(23, 22);
+            this->toolBtnMdlResetCamera->Text = L"R";
+            this->toolBtnMdlResetCamera->ToolTipText = L"Reset camera";
+            this->toolBtnMdlResetCamera->Click += gcnew System::EventHandler(this, &MainForm::toolBtnMdlResetCamera_Click);
+            // 
+            // toolStripSeparator7
+            // 
+            this->toolStripSeparator7->Name = L"toolStripSeparator7";
+            this->toolStripSeparator7->Size = System::Drawing::Size(6, 25);
+            // 
             // MainForm
             // 
             this->AutoScaleDimensions = System::Drawing::SizeF(6, 13);
@@ -735,6 +771,8 @@ private: System::Windows::Forms::ToolStripButton^  toolBtnMdlShowWireframe;
         void toolBtnAbout_Click(System::Object^ sender, System::EventArgs^ e);
         void toolBtnImgEnableAlpha_Click(System::Object^  sender, System::EventArgs^ e);
         void toolBtnMdlShowWireframe_Click(System::Object^ sender, System::EventArgs^ e);
+        void toolBtnMdlShowCollision_Click(System::Object^ sender, System::EventArgs^ e);
+        void toolBtnMdlResetCamera_Click(System::Object^ sender, System::EventArgs^ e);
         // treeview
         void filterableTreeView_AfterSelect(System::Object^ sender, System::Windows::Forms::TreeViewEventArgs^ e);
         void filterableTreeView_AfterCollapse(System::Object^ sender, System::Windows::Forms::TreeViewEventArgs^ e);

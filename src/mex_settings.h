@@ -15,9 +15,9 @@ public:
     bool    Load();
     bool    Save();
 
-private:
     void    InitDefaults();
 
+private:
     // loading
     bool    LoadExtraction(pugi::xml_document& doc);
 
@@ -46,6 +46,8 @@ public:
         MdlFormat   modelFormat;
         bool        modelSaveWithAnims;
         bool        modelAnimsSeparate;
+        bool        modelSaveWithTextures;
+        bool        modelExcludeCollision;
         // textures
         TexFormat   textureFormat;
         // sounds

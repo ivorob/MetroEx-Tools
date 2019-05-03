@@ -258,7 +258,20 @@ namespace MetroEX {
         }
     }
 
-    void MainForm::toolBtnTexturesDatabase_Click(System::Object^ sender, System::EventArgs^ e) {
+    void MainForm::toolBtnMdlShowCollision_Click(System::Object^, System::EventArgs^) {
+        if (mRenderPanel) {
+            this->toolBtnMdlShowCollision->Checked = !this->toolBtnMdlShowCollision->Checked;
+            mRenderPanel->SetShowCollision(this->toolBtnMdlShowCollision->Checked);
+        }
+    }
+
+    void MainForm::toolBtnMdlResetCamera_Click(System::Object^, System::EventArgs^) {
+        if (mRenderPanel) {
+            mRenderPanel->ResetCamera(true);
+        }
+    }
+
+    void MainForm::toolBtnTexturesDatabase_Click(System::Object^, System::EventArgs^) {
         if (MetroTexturesDatabase::Get().Good()) {
             TexturesDatabaseViewer wnd(this, this->imageListMain);
             wnd.Icon = this->Icon;
@@ -909,6 +922,8 @@ namespace MetroEX {
         mExtractionCtx->mdlSaveAsFbx = (s.extraction.modelFormat == MEXSettings::Extraction::MdlFormat::Fbx);
         mExtractionCtx->mdlSaveWithAnims = s.extraction.modelSaveWithAnims;
         mExtractionCtx->mdlAnimsSeparate = s.extraction.modelAnimsSeparate;
+        mExtractionCtx->mdlSaveWithTextures = s.extraction.modelSaveWithTextures;
+        mExtractionCtx->mdlExcludeCollision = s.extraction.modelExcludeCollision;
         // textures
         mExtractionCtx->txSaveAsDds = (s.extraction.textureFormat == MEXSettings::Extraction::TexFormat::Dds || s.extraction.textureFormat == MEXSettings::Extraction::TexFormat::LegacyDds);
         mExtractionCtx->txUseBC3 = (s.extraction.textureFormat == MEXSettings::Extraction::TexFormat::LegacyDds);
@@ -1150,9 +1165,12 @@ namespace MetroEX {
                 MetroModel mdl;
                 if (mdl.LoadFromData(stream, ctx.fileIdx)) {
                     if (ctx.mdlSaveAsObj) {
-                        mdl.SaveAsOBJ(resultPath);
+                        mdl.SaveAsOBJ(resultPath, ctx.mdlExcludeCollision);
                     } else {
                         size_t fbxOptions = MetroModel::FBX_Export_Mesh | MetroModel::FBX_Export_Skeleton;
+                        if (ctx.mdlExcludeCollision) {
+                            fbxOptions |= MetroModel::FBX_Export_ExcludeCollision;
+                        }
                         if (MEXSettings::Get().extraction.modelSaveWithAnims && !MEXSettings::Get().extraction.modelAnimsSeparate) {
                             fbxOptions |= MetroModel::FBX_Export_Animation;
                         }
@@ -1171,7 +1189,7 @@ namespace MetroEX {
                         }
                     }
 
-                    if (!ctx.batch) {
+                    if (!ctx.batch && ctx.mdlSaveWithTextures) {
                         fs::path folderPath = resultPath.parent_path();
                         for (size_t i = 0; i < mdl.GetNumMeshes(); ++i) {
                             const MetroMesh* mesh = mdl.GetMesh(i);

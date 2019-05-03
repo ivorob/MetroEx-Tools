@@ -87,6 +87,10 @@ inline bool StrEndsWith(const CharString& str, const CharString& ending) {
     return str.size() >= ending.size() && str.compare(str.size() - ending.size(), ending.size(), ending) == 0;
 }
 
+inline bool StrContains(const CharString& str, const CharString& value) {
+    return str.size() >= value.size() && str.find(value) != CharString::npos;
+}
+
 
 class MemStream {
     using OwnedPtrType = std::shared_ptr<uint8_t>;

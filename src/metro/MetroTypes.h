@@ -106,6 +106,8 @@ struct MetroVertex {
 
 struct MetroMesh {
     bool                 skinned;
+    bool                 isCollision;
+    size_t               flags;
     float                vscale;
     AABBox               bbox;
     size_t               type;

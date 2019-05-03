@@ -34,6 +34,8 @@ namespace MetroEX {
 
         this->chkMdlExportAnims->Checked = s.extraction.modelSaveWithAnims;
         this->chkMdlExportAnimsSeparate->Checked = s.extraction.modelAnimsSeparate;
+        this->chkMdlSaveWithTextures->Checked = s.extraction.modelSaveWithTextures;
+        this->chkMdlExcludeCollision->Checked = s.extraction.modelExcludeCollision;
 
         // sounds
         switch (s.extraction.soundFormat) {
@@ -77,6 +79,8 @@ namespace MetroEX {
 
         s.extraction.modelSaveWithAnims = this->chkMdlExportAnims->Checked;
         s.extraction.modelAnimsSeparate = this->chkMdlExportAnimsSeparate->Checked;
+        s.extraction.modelSaveWithTextures = this->chkMdlSaveWithTextures->Checked;
+        s.extraction.modelExcludeCollision = this->chkMdlExcludeCollision->Checked;
 
         // sounds
         if (this->radioSndAsOGG->Checked) {

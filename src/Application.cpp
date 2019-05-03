@@ -51,6 +51,7 @@ void Main(array<String^>^ args) {
     MEXSettings::Get().SetFolder(folder);
     if (!MEXSettings::Get().Load()) {
         LogPrint(LogLevel::Error, "Failed to load settings, initializing to defauls");
+        MEXSettings::Get().InitDefaults();
     }
 
     if (IsWindows7OrGreater() && !IsWindows8OrGreater()) {

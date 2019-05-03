@@ -59,6 +59,7 @@ namespace MetroEX {
         , mLastLMPos(0.0f, 0.0f)
         , mZoom(1.0f)
         , mShowWireframe(false)
+        , mShowCollision(false)
         , mConstantBufferData(nullptr)
     {
         this->components = gcnew System::ComponentModel::Container();
@@ -267,7 +268,7 @@ namespace MetroEX {
             this->ResetAnimation();
             this->CreateModelGeometries();
             this->CreateTextures();
-            this->ResetCamera();
+            this->ResetCamera(false);
             this->Render();
         }
     }
@@ -293,6 +294,13 @@ namespace MetroEX {
         }
     }
 
+    void RenderPanel::SetShowCollision(const bool collision) {
+        if (mShowCollision != collision) {
+            mShowCollision = collision;
+            this->Render();
+        }
+    }
+
     void RenderPanel::SwitchMotion(const size_t idx) {
         if (mModel && mModel->IsAnimated()) {
             mCurrentMotion = mModel->GetMotion(idx);
@@ -310,6 +318,25 @@ namespace MetroEX {
             mAnimTimer->Start();
         } else {
             mAnimTimer->Stop();
+        }
+    }
+
+    void RenderPanel::ResetCamera(const bool forceRender) {
+        mZoom = 1.5f;
+
+        const float r = mConstantBufferData->modelBSphere.w;
+        const float nearZ = r * 0.05f;
+        const float farZ = r * 100.0f;
+
+        mCamera->LookAt(vec3(r * 0.3f, r, r), vec3(0.0f));
+
+        this->UpdateCamera();
+        mCamera->SetViewPlanes(nearZ, farZ);
+
+        mConstantBufferData->matModel = MatIdentity;
+
+        if (forceRender) {
+            this->Render();
         }
     }
 
@@ -388,21 +415,6 @@ namespace MetroEX {
         }
     }
 
-    void RenderPanel::ResetCamera() {
-        mZoom = 1.5f;
-
-        const float r = mConstantBufferData->modelBSphere.w;
-        const float nearZ = r * 0.05f;
-        const float farZ = r * 100.0f;
-
-        mCamera->LookAt(vec3(0, r, r), vec3(0.0f));
-
-        this->UpdateCamera();
-        mCamera->SetViewPlanes(nearZ, farZ);
-
-        mConstantBufferData->matModel = MatIdentity;
-    }
-
     void RenderPanel::CreateModelGeometries() {
         if (!mDevice) {
             return;
@@ -441,6 +453,7 @@ namespace MetroEX {
 
                 rg->texture = nullptr;
                 rg->numFaces = mesh->faces.size();
+                rg->isCollision = mesh->isCollision;
 
                 D3D11_BUFFER_DESC desc = {};
                 D3D11_SUBRESOURCE_DATA subData = {};
@@ -691,11 +704,12 @@ namespace MetroEX {
             mDeviceContext->ClearRenderTargetView(mRenderTargetView, clearColor);
             mDeviceContext->ClearDepthStencilView(mDepthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0);
 
-            mat4 modelView = mCamera->GetTransform();
+            mat4 view = mCamera->GetTransform();
             mat4 projMat = mCamera->GetProjection();
-            mConstantBufferData->matView = modelView;
+            mConstantBufferData->matView = view;
             mConstantBufferData->matProjection = projMat;
-            mConstantBufferData->matModelViewProj = projMat * modelView;
+            mConstantBufferData->matModelView = view * mConstantBufferData->matModel;
+            mConstantBufferData->matModelViewProj = projMat * mConstantBufferData->matModelView;
             mConstantBufferData->camParams.x = Deg2Rad(mCamera->GetFovY());
             mConstantBufferData->camParams.y = mCamera->GetAspect();
 
@@ -728,18 +742,20 @@ namespace MetroEX {
 
                     if (mModelGeometries) {
                         for each (RenderGeometry* rg in mModelGeometries) {
-                            if (rg) {
-                                ID3D11ShaderResourceView* texSRV = (rg->texture) ? rg->texture->srv : nullptr;
-                                pin_ptr<ID3D11ShaderResourceView*> srvPtr(&texSRV);
-                                mDeviceContext->PSSetShaderResources(0, 1, srvPtr);
-
-                                const UINT stride = sizeof(MetroVertex);
-                                const UINT offset = 0;
-                                mDeviceContext->IASetVertexBuffers(0, 1, &rg->vb, &stride, &offset);
-                                mDeviceContext->IASetIndexBuffer(rg->ib, DXGI_FORMAT_R16_UINT, 0);
-
-                                mDeviceContext->DrawIndexed(scast<UINT>(rg->numFaces * 3), 0, 0);
+                            if (!rg || (!mShowCollision && rg->isCollision)) {
+                                continue;
                             }
+
+                            ID3D11ShaderResourceView* texSRV = (rg->texture) ? rg->texture->srv : nullptr;
+                            pin_ptr<ID3D11ShaderResourceView*> srvPtr(&texSRV);
+                            mDeviceContext->PSSetShaderResources(0, 1, srvPtr);
+
+                            const UINT stride = sizeof(MetroVertex);
+                            const UINT offset = 0;
+                            mDeviceContext->IASetVertexBuffers(0, 1, &rg->vb, &stride, &offset);
+                            mDeviceContext->IASetIndexBuffer(rg->ib, DXGI_FORMAT_R16_UINT, 0);
+
+                            mDeviceContext->DrawIndexed(scast<UINT>(rg->numFaces * 3), 0, 0);
                         }
                     }
                 }
@@ -789,21 +805,37 @@ namespace MetroEX {
 
         if (e->Button == System::Windows::Forms::MouseButtons::Left) {
             mLastLMPos = mp;
+        } else if (e->Button == System::Windows::Forms::MouseButtons::Right) {
+            mLastRMPos = mp;
         }
 
         Panel::OnMouseDown(e);
     }
 
     void RenderPanel::OnMouseMove(System::Windows::Forms::MouseEventArgs^ e) {
+        static const float kCameraRotateSpeed = 0.2f;
+        static const float kModelMoveSpeed = 0.01f;
+
         PointF mp(scast<float>(e->X), scast<float>(e->Y));
 
         if (e->Button == System::Windows::Forms::MouseButtons::Left) {
             PointF delta = PointF(mp.X - mLastLMPos.X, mp.Y - mLastLMPos.Y);
             mLastLMPos = mp;
 
-            mCamera->Rotate(-delta.X * 0.2f, -delta.Y * 0.2f);
+            mCamera->Rotate(-delta.X * kCameraRotateSpeed, -delta.Y * kCameraRotateSpeed);
 
             this->Render();
+        } else if (e->Button == System::Windows::Forms::MouseButtons::Right) {
+            PointF delta = PointF(mp.X - mLastRMPos.X, mp.Y - mLastRMPos.Y);
+            mLastRMPos = mp;
+
+            if (mModel) {
+                vec3 tx = mCamera->GetSide() * delta.X * kModelMoveSpeed;
+                vec3 ty = mCamera->GetUp() * -delta.Y * kModelMoveSpeed;
+                mConstantBufferData->matModel = MatTranslate(mConstantBufferData->matModel, tx + ty);
+
+                this->Render();
+            }
         }
 
         Panel::OnMouseMove(e);
