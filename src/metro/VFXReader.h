@@ -29,7 +29,7 @@ public:
     const CharString&           GetContentVersion() const;
     size_t                      GetVersion() const;
 
-    MemStream                   ExtractFile(const size_t fileIdx, const size_t subOffset = kInvalidValue, const size_t subLength = kInvalidValue);
+    MemStream                   ExtractFile(const size_t fileIdx, const size_t subOffset = kInvalidValue, const size_t subLength = kInvalidValue) const;
 
     bool                        Good() const;
 

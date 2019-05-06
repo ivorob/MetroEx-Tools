@@ -129,7 +129,7 @@ size_t VFXReader::GetVersion() const {
     return mVersion;
 }
 
-MemStream VFXReader::ExtractFile(const size_t fileIdx, const size_t subOffset, const size_t subLength) {
+MemStream VFXReader::ExtractFile(const size_t fileIdx, const size_t subOffset, const size_t subLength) const {
     MemStream result;
 
     const MetroFile& mf = mFiles[fileIdx];

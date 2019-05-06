@@ -129,6 +129,10 @@
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">CompileAsCpp</CompileAs>
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">CompileAsCpp</CompileAs>
     </ClCompile>
+    <ClCompile Include="src\metro\Config.cpp" />
+    <ClCompile Include="src\metro\entities\Entity.cpp" />
+    <ClCompile Include="src\metro\entities\EntityFactory.cpp" />
+    <ClCompile Include="src\metro\LevelSpawn.cpp" />
     <ClCompile Include="src\metro\MetroBinArchive.cpp" />
     <ClCompile Include="src\Application.cpp" />
     <ClCompile Include="src\camera.cpp" />
@@ -148,6 +152,9 @@
     <ClCompile Include="src\metro\MetroSound.cpp" />
     <ClCompile Include="src\metro\MetroTexture.cpp" />
     <ClCompile Include="src\metro\MetroTexturesDatabase.cpp" />
+    <ClCompile Include="src\metro\scripts\Block.cpp" />
+    <ClCompile Include="src\metro\scripts\BlockFactory.cpp" />
+    <ClCompile Include="src\metro\scripts\Script.cpp" />
     <ClCompile Include="src\metro\VFXReader.cpp" />
     <ClCompile Include="src\mex_settings.cpp" />
     <ClCompile Include="src\ui\AboutDlg.cpp" />
@@ -171,7 +178,10 @@
     <ClInclude Include="libs\lz4\lz4hc.h" />
     <ClInclude Include="libs\pugixml\src\pugixml.hpp" />
     <ClInclude Include="libs\xxhash\xxhash.h" />
-    <ClInclude Include="src\metro\MetroBinTemplateEngine.h" />
+    <ClInclude Include="src\metro\Config.h" />
+    <ClInclude Include="src\metro\entities\Entity.h" />
+    <ClInclude Include="src\metro\entities\EntityFactory.h" />
+    <ClInclude Include="src\metro\LevelSpawn.h" />
     <ClInclude Include="src\metro\MetroBinArchive.h" />
     <ClInclude Include="src\log.h" />
     <ClInclude Include="src\metro\MetroCompression.h" />
@@ -191,6 +201,10 @@
     <ClInclude Include="src\metro\MetroTexture.h" />
     <ClInclude Include="src\metro\MetroTexturesDatabase.h" />
     <ClInclude Include="src\metro\MetroTypes.h" />
+    <ClInclude Include="src\metro\scripts\Block.h" />
+    <ClInclude Include="src\metro\scripts\BlockFactory.h" />
+    <ClInclude Include="src\metro\scripts\BlockMeta.h" />
+    <ClInclude Include="src\metro\scripts\Script.h" />
     <ClInclude Include="src\metro\VFXReader.h" />
     <ClInclude Include="src\mex_settings.h" />
     <ClInclude Include="src\mycommon.h" />

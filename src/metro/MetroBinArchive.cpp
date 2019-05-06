@@ -66,16 +66,21 @@ MetroBinArchive::MetroBinArchive(const CharString& name, const MemStream& stream
 }
 
 MetroReflectionReader MetroBinArchive::ReflectionReader() const {
-    MetroReflectionReader result;
-
+    MemStream data;
     if (this->HasChunks()) {
         const ChunkData& chunk = this->GetFirstChunk();
-
-        result = MetroReflectionReader(mFileStream.Substream(chunk.offset, chunk.size), mBinFlags);
+        data = mFileStream.Substream(chunk.offset, chunk.size);
     } else {
-        result = MetroReflectionReader(mFileStream.Substream(1, mFileStream.Length() - 1), mBinFlags);
+        data = mFileStream.Substream(1, mFileStream.Length() - 1);
+    }
+    if (TestBit(mBinFlags, MetroReflectionFlags::MultiChunk)) {
+        const size_t chunkId = data.ReadTyped<uint32_t>();
+        const size_t chunkSize = data.ReadTyped<uint32_t>();
+        assert(chunkId == Hash_CalculateCRC32("arch_chunk_0"));
+        data = data.Substream(chunkSize);
     }
 
+    MetroReflectionReader result{ data, mBinFlags };
     if (!mSTable.data.empty()) {
         result.SetSTable(&mSTable);
     }

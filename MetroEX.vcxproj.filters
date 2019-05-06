@@ -121,6 +121,27 @@
     <ClCompile Include="src\ui\DlgSettings.cpp">
       <Filter>src\ui</Filter>
     </ClCompile>
+    <ClCompile Include="src\metro\Config.cpp">
+      <Filter>src\metro</Filter>
+    </ClCompile>
+    <ClCompile Include="src\metro\LevelSpawn.cpp">
+      <Filter>src\metro</Filter>
+    </ClCompile>
+    <ClCompile Include="src\metro\scripts\Block.cpp">
+      <Filter>src\metro\scripts</Filter>
+    </ClCompile>
+    <ClCompile Include="src\metro\scripts\BlockFactory.cpp">
+      <Filter>src\metro\scripts</Filter>
+    </ClCompile>
+    <ClCompile Include="src\metro\scripts\Script.cpp">
+      <Filter>src\metro\scripts</Filter>
+    </ClCompile>
+    <ClCompile Include="src\metro\entities\Entity.cpp">
+      <Filter>src\metro\entities</Filter>
+    </ClCompile>
+    <ClCompile Include="src\metro\entities\EntityFactory.cpp">
+      <Filter>src\metro\entities</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\ui\RenderPanel.h">
@@ -207,9 +228,6 @@
     <ClInclude Include="src\metro\MetroBinArrayArchive.h">
       <Filter>src\metro</Filter>
     </ClInclude>
-    <ClInclude Include="src\metro\MetroBinTemplateEngine.h">
-      <Filter>src\metro</Filter>
-    </ClInclude>
     <ClInclude Include="src\metro\MetroCompression.h">
       <Filter>src\metro</Filter>
     </ClInclude>
@@ -257,6 +275,30 @@
     </ClInclude>
     <ClInclude Include="src\ui\DlgSettings.h">
       <Filter>src\ui</Filter>
+    </ClInclude>
+    <ClInclude Include="src\metro\Config.h">
+      <Filter>src\metro</Filter>
+    </ClInclude>
+    <ClInclude Include="src\metro\LevelSpawn.h">
+      <Filter>src\metro</Filter>
+    </ClInclude>
+    <ClInclude Include="src\metro\scripts\Block.h">
+      <Filter>src\metro\scripts</Filter>
+    </ClInclude>
+    <ClInclude Include="src\metro\scripts\BlockFactory.h">
+      <Filter>src\metro\scripts</Filter>
+    </ClInclude>
+    <ClInclude Include="src\metro\scripts\BlockMeta.h">
+      <Filter>src\metro\scripts</Filter>
+    </ClInclude>
+    <ClInclude Include="src\metro\scripts\Script.h">
+      <Filter>src\metro\scripts</Filter>
+    </ClInclude>
+    <ClInclude Include="src\metro\entities\Entity.h">
+      <Filter>src\metro\entities</Filter>
+    </ClInclude>
+    <ClInclude Include="src\metro\entities\EntityFactory.h">
+      <Filter>src\metro\entities</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -321,6 +363,12 @@
     </Filter>
     <Filter Include="libs\pugixml">
       <UniqueIdentifier>{fab92e35-1e7a-4049-8945-f2b8fedc8c1c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\metro\entities">
+      <UniqueIdentifier>{01b8d0e7-a2fc-4a0b-82c6-2d6dc7473891}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\metro\scripts">
+      <UniqueIdentifier>{f44ca32c-2db5-4776-bb77-d7f245545da9}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
