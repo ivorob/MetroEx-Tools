@@ -34,6 +34,11 @@ enum ModelChunks {
     MC_Comment              = 0x00000024,   // 36
 };
 
+
+static const size_t kModelVersionRedux      = 22;
+static const size_t kModelVersionArktika1   = 32;
+static const size_t kModelVersionExodus     = 42;
+
 static const size_t kMetroModelMaxMaterials = 4;
 
 
@@ -83,7 +88,9 @@ bool MetroModel::LoadFromData(MemStream& stream, const size_t fileIdx) {
 
     this->ReadSubChunks(stream);
 
-    this->LoadMotions();
+    if (mVersion >= kModelVersionArktika1) {
+        this->LoadMotions();
+    }
 
     result = !mMeshes.empty();
 
@@ -767,23 +774,6 @@ const CharString& MetroModel::GetComment() const {
 }
 
 
-// for string delimiter
-StringArray SplitString(const CharString& s, const char delimiter) {
-    StringArray result;
-
-    size_t pos_start = 0, pos_end;
-    CharString token;
-
-    while ((pos_end = s.find(delimiter, pos_start)) != CharString::npos) {
-        token = s.substr(pos_start, pos_end - pos_start);
-        pos_start = pos_end + 1;
-        result.emplace_back(token);
-    }
-
-    result.push_back(s.substr(pos_start));
-    return result;
-}
-
 static void RemapBones(MetroVertex& v, const BytesArray& remap) {
     v.bones[0] = remap[v.bones[0]];
     v.bones[1] = remap[v.bones[1]];
@@ -802,17 +792,25 @@ void MetroModel::ReadSubChunks(MemStream& stream) {
                 MdlHeader hdr;
                 stream.ReadStruct(hdr);
 
+                //#NOTE_SK: versions prior to Redux are not supported
+                if (hdr.version < kModelVersionRedux) {
+                    assert(false);
+                    return;
+                }
+
                 if (hdr.vscale <= MM_Epsilon) {
                     hdr.vscale = 1.0f;
                 }
 
                 if (mCurrentMesh) {
+                    mCurrentMesh->version = hdr.version;
                     mCurrentMesh->flags = hdr.flags;
                     mCurrentMesh->vscale = hdr.vscale;
                     mCurrentMesh->bbox = hdr.bbox;
                     mCurrentMesh->type = hdr.type;
                     mCurrentMesh->shaderId = hdr.shaderId;
                 } else {
+                    mVersion = hdr.version;
                     mBBox = hdr.bbox;
                     mBSphere = hdr.bsphere;
                 }
@@ -848,7 +846,7 @@ void MetroModel::ReadSubChunks(MemStream& stream) {
 
                     const size_t vertexType = stream.ReadTyped<uint32_t>();
                     const size_t numVertices = stream.ReadTyped<uint32_t>();
-                    const size_t numShadowVertices = stream.ReadTyped<uint16_t>();
+                    const size_t numShadowVertices = mCurrentMesh->version >= kModelVersionArktika1 ? stream.ReadTyped<uint16_t>() : 0;
 
                     mCurrentMesh->vertices.resize(numVertices);
 
@@ -877,8 +875,14 @@ void MetroModel::ReadSubChunks(MemStream& stream) {
                     //stream.ReadToBuffer(obbs.data(), obbs.size() * sizeof(MetroOBB));
                     stream.SkipBytes(numBones * sizeof(MetroOBB));
 
-                    const size_t numVertices = stream.ReadTyped<uint32_t>();
-                    const size_t numShadowVertices = stream.ReadTyped<uint16_t>();
+                    size_t numVertices = 0, numShadowVertices = 0;
+
+                    numVertices = stream.ReadTyped<uint32_t>();
+                    if (mCurrentMesh->version >= kModelVersionArktika1) {
+                        numShadowVertices = stream.ReadTyped<uint16_t>();
+                    } else {
+                        mCurrentMesh->vscale = 12.0f;   //#NOTE_SK: Redux versions are scaled down by 12
+                    }
 
                     mCurrentMesh->vertices.resize(numVertices);
 
@@ -898,8 +902,19 @@ void MetroModel::ReadSubChunks(MemStream& stream) {
 
             case MC_FacesChunk: {
                 if (mCurrentMesh) {
-                    const size_t numFaces = mCurrentMesh->skinned ? stream.ReadTyped<uint16_t>() : stream.ReadTyped<uint32_t>();
-                    const size_t numShadowFaces = stream.ReadTyped<uint16_t>();
+                    size_t numFaces = 0, numShadowFaces = 0;
+
+                    if (!mCurrentMesh->skinned) {
+                        numFaces = stream.ReadTyped<uint32_t>();
+                        if (mCurrentMesh->version >= kModelVersionArktika1) {
+                            numShadowFaces = stream.ReadTyped<uint16_t>();
+                        } else {
+                            numFaces /= 3;  //#NOTE_SK: Exodus models store number of indices, not faces
+                        }
+                    } else {
+                        numFaces = stream.ReadTyped<uint16_t>();
+                        numShadowFaces = stream.ReadTyped<uint16_t>();
+                    }
 
                     mCurrentMesh->faces.resize(numFaces);
                     stream.ReadToBuffer(mCurrentMesh->faces.data(), numFaces * sizeof(MetroFace));
@@ -941,7 +956,7 @@ void MetroModel::ReadSubChunks(MemStream& stream) {
                 for (size_t i = 0; i < numStrings; ++i) {
                     CharString linksString = stream.ReadStringZ();
                     if (!linksString.empty()) {
-                        StringArray splittedLinks = SplitString(linksString, ',');
+                        StringArray splittedLinks = StrSplit(linksString, ',');
                         links.insert(links.end(), splittedLinks.begin(), splittedLinks.end());
                     }
                 }
@@ -1021,7 +1036,7 @@ void MetroModel::LoadMotions() {
 
     MyArray<size_t> motionFiles;
 
-    StringArray motionFolders = SplitString(motionsStr, ',');
+    StringArray motionFolders = StrSplit(motionsStr, ',');
     StringArray motionPaths;
     for (const CharString& f : motionFolders) {
         CharString fullFolderPath = "content\\motions\\" + f + "\\";

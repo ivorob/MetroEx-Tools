@@ -488,6 +488,7 @@ namespace MetroEX {
     }
 
     void MainForm::saveAsOBJToolStripMenuItem_Click(System::Object^, System::EventArgs^) {
+        this->EnsureExtractionOptions();
         mExtractionCtx->mdlSaveAsObj = true;
 
         if (!this->ExtractModel(*mExtractionCtx, fs::path())) {
@@ -496,8 +497,8 @@ namespace MetroEX {
     }
 
     void MainForm::saveAsFBXToolStripMenuItem_Click(System::Object^, System::EventArgs^) {
+        this->EnsureExtractionOptions();
         mExtractionCtx->mdlSaveAsFbx = true;
-        mExtractionCtx->mdlSaveWithAnims = true;
 
         if (!this->ExtractModel(*mExtractionCtx, fs::path())) {
             MetroEX::ShowErrorMessageBox(this, L"Failed to extract model!");
@@ -740,7 +741,7 @@ namespace MetroEX {
         MemStream stream = VFXReader::Get().ExtractFile(fileIdx);
         if (stream) {
             MetroTexture texture;
-            if (texture.LoadFromData(stream, mf.name)) {
+            if (texture.LoadFromData(stream, mf.idx)) {
                 if (texture.IsCubemap()) {
                     this->SwitchViewPanel(PanelType::Model);
                     mRenderPanel->SetCubemap(&texture);
@@ -1000,6 +1001,12 @@ namespace MetroEX {
             textureIdx = VFXReader::Get().FindFile(textureNameSrc);
         }
 
+        if (textureIdx == MetroFile::InvalidFileIdx) {
+            // last try - Redux .bin
+            textureNameSrc = textureName + ".bin";
+            textureIdx = VFXReader::Get().FindFile(textureNameSrc);
+        }
+
         if (textureIdx != MetroFile::InvalidFileIdx) {
             const MetroFile& txMf = VFXReader::Get().GetFile(textureIdx);
             FileExtractionCtx tmpCtx = ctx;
@@ -1107,7 +1114,7 @@ namespace MetroEX {
             MemStream stream = VFXReader::Get().ExtractFile(ctx.fileIdx);
             if (stream) {
                 MetroTexture texture;
-                if (texture.LoadFromData(stream, mf.name)) {
+                if (texture.LoadFromData(stream, mf.idx)) {
                     if (ctx.txSaveAsDds) {
                         if (ctx.txUseBC3) {
                             result = texture.SaveAsLegacyDDS(resultPath);
@@ -1196,8 +1203,8 @@ namespace MetroEX {
                             if (!mesh->materials.empty()) {
                                 const CharString& textureName = mesh->materials.front();
 
-                                const CharString& sourceName = MetroTexturesDatabase::Get().GetSourceName(textureName);
-                                const CharString& bumpName = MetroTexturesDatabase::Get().GetSourceName(textureName);
+                                CharString sourceName = MetroTexturesDatabase::Get().GetSourceName(textureName);
+                                CharString bumpName = MetroTexturesDatabase::Get().GetSourceName(textureName);
 
                                 this->TextureSaveHelper(folderPath, ctx, sourceName);
                                 if (!bumpName.empty()) {

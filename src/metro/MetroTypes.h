@@ -105,6 +105,7 @@ struct MetroVertex {
 } PACKED_STRUCT_END;
 
 struct MetroMesh {
+    size_t               version;
     bool                 skinned;
     bool                 isCollision;
     size_t               flags;

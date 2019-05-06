@@ -70,6 +70,8 @@ struct HashString {
     inline bool operator <(const HashString& other) const { return hash < other.hash; }
     inline bool operator >(const HashString& other) const { return hash > other.hash; }
 
+    inline bool Valid() const { return hash != 0u; }
+
     uint32_t    hash;
     CharString  str;
 };
@@ -89,6 +91,23 @@ inline bool StrEndsWith(const CharString& str, const CharString& ending) {
 
 inline bool StrContains(const CharString& str, const CharString& value) {
     return str.size() >= value.size() && str.find(value) != CharString::npos;
+}
+
+// for string delimiter
+inline StringArray StrSplit(const CharString& s, const char delimiter) {
+    StringArray result;
+
+    size_t pos_start = 0, pos_end;
+    CharString token;
+
+    while ((pos_end = s.find(delimiter, pos_start)) != CharString::npos) {
+        token = s.substr(pos_start, pos_end - pos_start);
+        pos_start = pos_end + 1;
+        result.emplace_back(token);
+    }
+
+    result.push_back(s.substr(pos_start));
+    return result;
 }
 
 

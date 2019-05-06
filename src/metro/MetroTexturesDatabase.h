@@ -22,34 +22,6 @@ struct MetroTextureInfo {
         Instance            = 64
     };
 
-    enum class PixelFormat : uint32_t {
-        Invalid                 = ~0u,
-        BC1                     = 0,
-        BC3                     = 1,
-        RGBA8_UNORM             = 2,
-        RGBA8_SNORM             = 3,
-        BC6H                    = 4,
-        BC7                     = 5,
-        RG8_UNORM               = 6,
-        RG8_SNORM               = 7,
-        DEPTH_32F_S8            = 8,
-        DEPTH_32F               = 9,
-        R32_F                   = 10,
-        RGBA16_F                = 11,
-        RG16_F                  = 12,
-        RGBA16_U                = 13,
-        R8_UNORM                = 14,
-        R8_U                    = 15,
-        RGB10_UNORM_A2_UNORM    = 16,
-        RGB10_SNORM_A2_UNORM    = 17,   //#NOTE_SK: this format is unavailable on PC for DirectX, tho available on Vulkan and XBox
-        R11G11B10_F             = 18,
-        R16_UNORM               = 19,
-        R32_U                   = 20,
-        RGBA32_F                = 21,
-        PPS                     = 22,   //#NOTE_SK: have no clue wtf is this
-        BGRA8_UNORM             = 23
-    };
-
     enum class DisplType : uint8_t {
         Simple   = 0,
         Parallax = 1,

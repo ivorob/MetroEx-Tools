@@ -7,6 +7,14 @@ enum SkeletonChunks : size_t {
     SC_StringsDictionary    = 0x00000002,
 };
 
+struct ReduxBoneBodyPartHelper {
+    uint16_t bp;
+
+    void Serialize(MetroReflectionReader& reader) {
+        METRO_READ_MEMBER(reader, bp);
+    }
+};
+
 
 void ParentMapped::Serialize(MetroReflectionReader& reader) {
     METRO_READ_MEMBER(reader, parent_bone);
@@ -21,8 +29,18 @@ void MetroBone::Serialize(MetroReflectionReader& reader) {
     METRO_READ_MEMBER(reader, parent);
     METRO_READ_MEMBER(reader, q);
     METRO_READ_MEMBER(reader, t);
-    METRO_READ_MEMBER(reader, bp);
-    METRO_READ_MEMBER(reader, bpf); // if skeleton version > 18
+
+    const size_t skeletonVersion = reader.GetUserData();
+    if (skeletonVersion > 18) {
+        METRO_READ_MEMBER(reader, bp);
+        METRO_READ_MEMBER(reader, bpf);
+    } else {
+        //#NOTE_SK: using a hack to read old (Redux) bones
+        ReduxBoneBodyPartHelper helper;
+        reader >> helper;
+
+        this->bp = scast<uint8_t>(helper.bp & 0xff);
+    }
 }
 
 
@@ -102,15 +120,25 @@ void MetroSkeleton::DeserializeSelf(MetroReflectionReader& reader) {
     if (skeletonReader.Good()) {
         METRO_READ_MEMBER(skeletonReader, ver);
         METRO_READ_MEMBER(skeletonReader, crc);
-        // if version < 15 - read facefx (CharString)
-        METRO_READ_MEMBER(skeletonReader, pfnn); // if version > 16
+
+        skeletonReader.SetUserData(this->ver);
+
+        if (this->ver < 15) {
+            METRO_READ_MEMBER(skeletonReader, facefx);
+        } else {
+            METRO_READ_MEMBER(skeletonReader, pfnn); // if version > 16
+        }
         if (this->ver > 20) {
             METRO_READ_MEMBER(skeletonReader, has_as); // if version > 20
         }
         METRO_READ_MEMBER(skeletonReader, motions);
-        METRO_READ_MEMBER(skeletonReader, source_info); // if version > 12
-        METRO_READ_MEMBER(skeletonReader, parent_skeleton); // if version > 13
-        METRO_READ_STRUCT_ARRAY_MEMBER(skeletonReader, parent_bone_maps); // if version > 13
+        if (this->ver > 12) {
+            METRO_READ_MEMBER(skeletonReader, source_info); // if version > 12
+            if (this->ver > 13) {
+                METRO_READ_MEMBER(skeletonReader, parent_skeleton); // if version > 13
+                METRO_READ_STRUCT_ARRAY_MEMBER(skeletonReader, parent_bone_maps); // if version > 13
+            }
+        }
         METRO_READ_STRUCT_ARRAY_MEMBER(skeletonReader, bones);
     }
     reader.CloseSection(skeletonReader);

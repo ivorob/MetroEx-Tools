@@ -81,27 +81,31 @@ public:
     MetroReflectionReader()
         : mStream()
         , mSTable(nullptr)
-        , mFlags(MetroReflectionFlags::None) {
+        , mFlags(MetroReflectionFlags::None)
+        , mUserData(kInvalidValue) {
     }
 
     MetroReflectionReader(const MemStream& s, const uint8_t flags = MetroReflectionFlags::None)
         : mStream(s)
         , mSTable(nullptr)
-        , mFlags(flags) {
+        , mFlags(flags)
+        , mUserData(kInvalidValue) {
     }
 
     MetroReflectionReader(const MetroReflectionReader& other)
         : mStream(other.mStream)
         , mSTable(other.mSTable)
         , mFlags(other.mFlags)
-        , mSectionName(other.mSectionName) {
+        , mSectionName(other.mSectionName)
+        , mUserData(other.mUserData) {
     }
 
     MetroReflectionReader(MetroReflectionReader&& other)
         : mStream(std::move(other.mStream))
         , mSTable(other.mSTable)
         , mFlags(other.mFlags)
-        , mSectionName(std::move(other.mSectionName)) {
+        , mSectionName(std::move(other.mSectionName))
+        , mUserData(other.mUserData) {
     }
 
     inline MetroReflectionReader& operator =(const MetroReflectionReader& other) {
@@ -109,6 +113,7 @@ public:
         mSTable = other.mSTable;
         mFlags = other.mFlags;
         mSectionName = other.mSectionName;
+        mUserData = other.mUserData;
         return *this;
     }
 
@@ -117,6 +122,7 @@ public:
         mSTable = other.mSTable;
         mFlags = other.mFlags;
         mSectionName = std::move(other.mSectionName);
+        mUserData = other.mUserData;
         return *this;
     }
 
@@ -148,8 +154,16 @@ public:
         mSectionName = sectionName;
     }
 
-    const CharString& GetSectionName() const {
+    inline const CharString& GetSectionName() const {
         return mSectionName;
+    }
+
+    void SetUserData(const size_t userData) {
+        mUserData = userData;
+    }
+
+    inline size_t GetUserData() const {
+        return mUserData;
     }
 
     bool ReadEditorTag(const CharString& propName) {
@@ -207,6 +221,7 @@ public:
                 const size_t dataSize = sectionSize - 1;
                 MetroReflectionReader result(mStream.Substream(dataSize), flags);
                 result.SetSTable(mSTable);
+                result.SetUserData(mUserData);
 
                 if (result.HasDebugInfo()) {
                     CharString name;
@@ -358,6 +373,7 @@ private:
     const StringsTable* mSTable;
     uint8_t             mFlags;
     CharString          mSectionName;
+    size_t              mUserData;
 };
 
 

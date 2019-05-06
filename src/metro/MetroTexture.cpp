@@ -1,5 +1,9 @@
 #include "MetroTexture.h"
+#include "VFXReader.h"
 #include "MetroCompression.h"
+#include "MetroBinArchive.h"
+#include "MetroReflection.h"
+
 #include "dds_utils.h"
 
 #define STBI_WRITE_NO_STDIO
@@ -22,9 +26,55 @@
 #define STB_IMAGE_RESIZE_IMPLEMENTATION
 #include "stb_image_resize.h"
 
+#include "../libs/crunch/inc/crn_decomp.h"
+
 #include <fstream>
 #include <intrin.h>
 
+
+struct TextureInfoRedux {
+    CharString  bump_name;
+    CharString  det_name;
+    CharString  aux0_name;
+    CharString  aux1_name;
+    uint8_t     type;
+    uint32_t    width;
+    uint32_t    height;
+    float       bump_height;
+    uint8_t     displ_type;
+    float       displ_height;
+    bool        animated;
+    bool        mipmapped;
+    bool        streamable;
+    uint8_t     priority;
+    float       det_u_scale;
+    float       det_v_scale;
+    float       det_intesity;
+    uint8_t     format;
+    uint32_t    avg_color;
+
+    void Serialize(MetroReflectionReader& s) {
+        METRO_READ_MEMBER(s, bump_name);
+        METRO_READ_MEMBER(s, det_name);
+        METRO_READ_MEMBER(s, aux0_name);
+        METRO_READ_MEMBER(s, aux1_name);
+        METRO_READ_MEMBER(s, type);
+        METRO_READ_MEMBER(s, width);
+        METRO_READ_MEMBER(s, height);
+        METRO_READ_MEMBER(s, bump_height);
+        METRO_READ_MEMBER(s, displ_type);
+        METRO_READ_MEMBER(s, displ_height);
+        METRO_READ_MEMBER(s, animated);
+        METRO_READ_MEMBER(s, mipmapped);
+        METRO_READ_MEMBER(s, streamable);
+        METRO_READ_MEMBER(s, priority);
+        METRO_READ_MEMBER(s, det_u_scale);
+        METRO_READ_MEMBER(s, det_v_scale);
+        METRO_READ_MEMBER(s, det_intesity);
+        METRO_READ_MEMBER(s, format);
+        METRO_READ_MEMBER(s, avg_color);
+    }
+};
 
 
 static size_t NumMipsFromResolution(const size_t resolution) {
@@ -45,89 +95,134 @@ MetroTexture::MetroTexture()
     , mHeight(0)
     , mDepth(0)
     , mNumMips(0)
-    , mFormat(TextureFormat::BC7)
+    , mFormat(PixelFormat::Invalid)
 {
 }
 MetroTexture::~MetroTexture() {
 }
 
 
-bool MetroTexture::LoadFromData(MemStream& stream, const CharString& name) {
+bool MetroTexture::LoadFromData(MemStream& stream, const size_t fileIdx) {
     bool result = false;
 
     const uint8_t* data = stream.GetDataAtCursor();
     const size_t length = stream.Remains();
 
-    if (*rcast<const uint32_t*>(data) == cDDSFileSignature) {
-        // this is a plain DDS file
-        stream.SkipBytes(4); // skip DDS magic
+    const MetroFile& mf = VFXReader::Get().GetFile(fileIdx);
 
-        DDSURFACEDESC2 ddsHdr;
-        DDS_HEADER_DXT10 dx10Hdr;
+    const bool isBin = StrEndsWith(mf.name, ".bin");
+    if (isBin) { //#NOTE_SK: Redux versions
+        MetroBinArchive bin(kEmptyString, stream, MetroBinArchive::kHeaderNotExist);
+        MetroReflectionReader reader = bin.ReflectionReader();
+        if (reader.Good()) {
+            TextureInfoRedux texInfo;
+            reader >> texInfo;
 
-        stream.ReadStruct(ddsHdr);
-        if (ddsHdr.ddpfPixelFormat.dwFourCC == PIXEL_FMT_FOURCC('D', 'X', '1', '0')) {
-            stream.ReadStruct(dx10Hdr);
+            // save the format so we don't have to guess it
+            mFormat = scast<MetroTexture::PixelFormat>(texInfo.format);
 
-            switch (dx10Hdr.dxgiFormat) {
-                case DXGI_FORMAT_BC7_TYPELESS:
-                case DXGI_FORMAT_BC7_UNORM:
-                case DXGI_FORMAT_BC7_UNORM_SRGB: {
-                    mFormat = TextureFormat::BC7;
-                } break;
-
-                case DXGI_FORMAT_BC6H_TYPELESS:
-                case DXGI_FORMAT_BC6H_SF16:
-                case DXGI_FORMAT_BC6H_UF16: {
-                    mFormat = TextureFormat::BC6H;
-                    mIsCubemap = true;
-                } break;
-
-                default:
-                    return false;
+            const MetroFile* folder = VFXReader::Get().GetParentFolder(fileIdx);
+            if (folder) {
+                CharString texName = mf.name.substr(0, mf.name.length() - 4) + ".512";
+                size_t textureIdx = VFXReader::Get().FindFile(texName, folder);
+                if (textureIdx == kInvalidValue) {
+                    texName = mf.name.substr(0, mf.name.length() - 4) + ".512c";
+                    textureIdx = VFXReader::Get().FindFile(texName, folder);
+                }
+                if (textureIdx != kInvalidValue) {
+                    MemStream stream = VFXReader::Get().ExtractFile(textureIdx);
+                    if (stream) {
+                        return this->LoadFromData(stream, textureIdx);
+                    }
+                }
             }
-        } else {
-            return false;
         }
-
-        mWidth = ddsHdr.dwWidth;
-        mHeight = ddsHdr.dwHeight;
-        mDepth = 1;
-        mNumMips = (ddsHdr.dwMipMapCount > 1) ? ddsHdr.dwMipMapCount : 1;
-
-        mData.resize(stream.Remains());
-        stream.ReadToBuffer(mData.data(), mData.size());
-
-        result = true;
     } else {
-        // LZ4-compressed BC7 texture
-        CharString extension = fs::path(name).extension().string();
-        size_t dimension = 0, numMips = 0;
-        if (extension == ".512") {
-            dimension = 512;
-            numMips = 10;
-        } else if (extension == ".1024") {
-            dimension = 1024;
-            numMips = 1;
-        } else if (extension == ".2048") {
-            dimension = 2048;
-            numMips = 1;
-        }
+        if (*rcast<const uint32_t*>(data) == cDDSFileSignature) {
+            // this is a plain DDS file
+            stream.SkipBytes(4); // skip DDS magic
 
-        if (dimension > 0) {
-            const size_t bc7size = DDS_GetCompressedSizeBC7(dimension, dimension, numMips);
-            mData.resize(bc7size);
-            const size_t uresult = MetroCompression::DecompressBlob(data, length, mData.data(), bc7size);
-            if (uresult != bc7size) {
-                mData.resize(0);
+            DDSURFACEDESC2 ddsHdr;
+            DDS_HEADER_DXT10 dx10Hdr;
+
+            stream.ReadStruct(ddsHdr);
+            if (ddsHdr.ddpfPixelFormat.dwFourCC == PIXEL_FMT_FOURCC('D', 'X', '1', '0')) {
+                stream.ReadStruct(dx10Hdr);
+
+                switch (dx10Hdr.dxgiFormat) {
+                    case DXGI_FORMAT_BC7_TYPELESS:
+                    case DXGI_FORMAT_BC7_UNORM:
+                    case DXGI_FORMAT_BC7_UNORM_SRGB: {
+                        mFormat = PixelFormat::BC7;
+                    } break;
+
+                    case DXGI_FORMAT_BC6H_TYPELESS:
+                    case DXGI_FORMAT_BC6H_SF16:
+                    case DXGI_FORMAT_BC6H_UF16: {
+                        mFormat = PixelFormat::BC6H;
+                        mIsCubemap = true;
+                    } break;
+
+                    default:
+                        return false;
+                }
             } else {
-                mWidth = dimension;
-                mHeight = dimension;
-                mDepth = 1;
-                mNumMips = numMips;
-                mFormat = TextureFormat::BC7;
+                return false;
+            }
 
-                result = true;
+            mWidth = ddsHdr.dwWidth;
+            mHeight = ddsHdr.dwHeight;
+            mDepth = 1;
+            mNumMips = (ddsHdr.dwMipMapCount > 1) ? ddsHdr.dwMipMapCount : 1;
+
+            mData.resize(stream.Remains());
+            stream.ReadToBuffer(mData.data(), mData.size());
+
+            result = true;
+        } else {
+            CharString extension = fs::path(mf.name).extension().string();
+            size_t dimension = 0, numMips = 0;
+            if (extension == ".512" || extension == ".512c") {
+                dimension = 512;
+                numMips = 10;
+            } else if (extension == ".1024" || extension == ".1024c") {
+                dimension = 1024;
+                numMips = 1;
+            } else if (extension == ".2048" || extension == ".2048c") {
+                dimension = 2048;
+                numMips = 1;
+            }
+
+            const bool isCrunched = extension.back() == 'c';
+
+            if (dimension > 0) {
+                if (mFormat == PixelFormat::Invalid) {
+                    // LZ4-compressed BC7 texture
+                    const size_t bc7size = DDS_GetCompressedSizeBC7(dimension, dimension, numMips);
+                    mData.resize(bc7size);
+                    const size_t uresult = MetroCompression::DecompressBlob(data, length, mData.data(), bc7size);
+                    if (uresult != bc7size) {
+                        mData.resize(0);
+                    } else {
+                        mWidth = dimension;
+                        mHeight = dimension;
+                        mDepth = 1;
+                        mNumMips = numMips;
+                        mFormat = PixelFormat::BC7;
+
+                        result = true;
+                    }
+                } else {
+                    const bool ok = (isCrunched ? this->DecrunchTexture(data, length) : true);
+                    if (ok) {
+                        mWidth = dimension;
+                        mHeight = dimension;
+                        mDepth = 1;
+                        mNumMips = numMips;
+
+                        result = true;
+                    }
+                }
             }
         }
     }
@@ -163,7 +258,7 @@ bool MetroTexture::LoadFromFile(const fs::path& fileName) {
                 mHeight = scast<size_t>(height);
                 mDepth = 1;
                 mNumMips = 1;
-                mFormat = TextureFormat::RGBA;
+                mFormat = PixelFormat::RGBA8_UNORM;
 
                 result = true;
             }
@@ -388,7 +483,7 @@ size_t MetroTexture::GetNumMips() const {
     return mNumMips;
 }
 
-MetroTexture::TextureFormat MetroTexture::GetFormat() const {
+MetroTexture::PixelFormat MetroTexture::GetFormat() const {
     return mFormat;
 }
 
@@ -397,9 +492,18 @@ bool MetroTexture::GetRGBA(BytesArray& imagePixels) const {
 
     if (!mData.empty()) {
         //#TODO: add support for other formats!
-        if (mFormat == TextureFormat::BC7) {
+        if (mFormat == PixelFormat::BC7) {
             imagePixels.resize(mWidth * mHeight * 4);
             DDS_DecompressBC7(mData.data(), imagePixels.data(), mWidth, mHeight);
+            result = true;
+        } else if (mFormat == PixelFormat::BC3) {
+            imagePixels.resize(mWidth * mHeight * 4);
+            DDS_DecompressBC3(mData.data(), imagePixels.data(), mWidth, mHeight);
+            result = true;
+        } else if (mFormat == PixelFormat::BC1) {
+            imagePixels.resize(mWidth * mHeight * 4);
+            memset(imagePixels.data(), 255, imagePixels.size());
+            DDS_DecompressBC1(mData.data(), imagePixels.data(), mWidth, mHeight, 4);
             result = true;
         }
     }
@@ -421,4 +525,52 @@ bool MetroTexture::GetBGRA(BytesArray& imagePixels) const {
 
 const uint8_t* MetroTexture::GetRawData() const {
     return mData.data();
+}
+
+bool MetroTexture::DecrunchTexture(const uint8_t* data, const size_t dataLength) {
+    bool result = true;
+
+    crnd::crn_texture_info info;
+    info.m_struct_size = sizeof(crnd::crn_texture_info);
+    if (crnd::crnd_get_texture_info(data, scast<uint32_t>(dataLength), &info)) {
+        crnd::crnd_unpack_context ctx = crnd::crnd_unpack_begin(data, scast<uint32_t>(dataLength));
+
+        const size_t blockSize = (info.m_format == cCRNFmtDXT1) ? 8 : 16;
+
+        const size_t ddsSize = (info.m_format == cCRNFmtDXT1) ?
+            DDS_GetCompressedSizeBC1(info.m_width, info.m_height, info.m_levels) :
+            DDS_GetCompressedSizeBC7(info.m_width, info.m_height, info.m_levels);
+
+        mData.resize(ddsSize);
+
+        uint8_t* dstPtr = mData.data();
+
+        size_t size = info.m_width;
+        for (size_t mip = 0; mip < info.m_levels; ++mip) {
+            const size_t numBlocks = (size / 4);
+            const size_t pitch = numBlocks * blockSize;
+            const size_t mipSize = numBlocks * pitch;
+
+            if (!crnd::crnd_unpack_level(ctx, rcast<void**>(&dstPtr), scast<uint32_t>(mipSize), scast<uint32_t>(pitch), scast<uint32_t>(mip))) {
+                crnd::crnd_unpack_end(ctx);
+                result = false;
+                break;
+            }
+
+            dstPtr += mipSize;
+
+            size >>= 1;
+            if (size < 4) {
+                size = 4;
+            }
+        }
+
+        if (result) {
+            crnd::crnd_unpack_end(ctx);
+        }
+    } else {
+        result = false;
+    }
+
+    return result;
 }

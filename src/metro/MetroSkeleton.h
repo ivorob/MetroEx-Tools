@@ -49,6 +49,7 @@ private:
 private:
     uint32_t                ver;
     uint32_t                crc;
+    CharString              facefx;
     CharString              pfnn;
     bool                    has_as;
     CharString              motions;

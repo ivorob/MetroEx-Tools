@@ -49,6 +49,7 @@ private:
         MetroMotion*    motion;
     };
 
+    size_t                  mVersion;
     AABBox                  mBBox;
     vec4                    mBSphere;
     MyArray<MetroMesh*>     mMeshes;

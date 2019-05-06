@@ -15,14 +15,14 @@ static void LoadDatabasesFromFile(MetroConfigsDatabase*& cfgDb) {
         MemStream stream = VFXReader::Get().ExtractFile(fileIdx);
         if (stream) {
             MetroTexturesDatabase::Get().LoadFromData(stream);
+        }
+    }
 
-            fileIdx = VFXReader::Get().FindFile("content\\scripts\\texture_aliases.bin");
-            if (MetroFile::InvalidFileIdx != fileIdx) {
-                stream = VFXReader::Get().ExtractFile(fileIdx);
-                if (stream) {
-                    MetroTexturesDatabase::Get().LoadAliasesFromData(stream);
-                }
-            }
+    fileIdx = VFXReader::Get().FindFile("content\\scripts\\texture_aliases.bin");
+    if (MetroFile::InvalidFileIdx != fileIdx) {
+        MemStream stream = VFXReader::Get().ExtractFile(fileIdx);
+        if (stream) {
+            MetroTexturesDatabase::Get().LoadAliasesFromData(stream);
         }
     }
 

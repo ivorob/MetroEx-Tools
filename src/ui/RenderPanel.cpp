@@ -23,6 +23,35 @@
 
 #include "UIHelpers.h"
 
+
+static DXGI_FORMAT sPixelFormatToTextureFormat[] = {
+    DXGI_FORMAT_BC1_UNORM,
+    DXGI_FORMAT_BC3_UNORM,
+    DXGI_FORMAT_R8G8B8A8_UNORM,
+    DXGI_FORMAT_R8G8B8A8_SNORM,
+    DXGI_FORMAT_BC6H_UF16,
+    DXGI_FORMAT_BC7_UNORM,
+    DXGI_FORMAT_R8G8_UNORM,
+    DXGI_FORMAT_R8G8_SNORM,
+    DXGI_FORMAT_D32_FLOAT_S8X24_UINT,       // ???
+    DXGI_FORMAT_D32_FLOAT,
+    DXGI_FORMAT_R32_FLOAT,
+    DXGI_FORMAT_R16G16B16A16_FLOAT,
+    DXGI_FORMAT_R16G16_FLOAT,
+    DXGI_FORMAT_R16G16B16A16_UINT,
+    DXGI_FORMAT_R8_UNORM,
+    DXGI_FORMAT_R8_UINT,
+    DXGI_FORMAT_R10G10B10A2_UNORM,
+    DXGI_FORMAT_R10G10B10A2_UNORM,          // we don't have RGB10_SNORM_A2_UNORM on PC DirectX
+    DXGI_FORMAT_R11G11B10_FLOAT,
+    DXGI_FORMAT_R16_UNORM,
+    DXGI_FORMAT_R32_UINT,
+    DXGI_FORMAT_R32G32B32A32_FLOAT,
+    DXGI_FORMAT_UNKNOWN,
+    DXGI_FORMAT_B8G8R8A8_UNORM
+};
+
+
 namespace MetroEX {
 
     RenderPanel::RenderPanel()
@@ -522,13 +551,18 @@ namespace MetroEX {
                     CharString texturePathBest = texturePath + ".512";
                     size_t textureIdx = VFXReader::Get().FindFile(texturePathBest);
 
+                    if (textureIdx == MetroFile::InvalidFileIdx) {
+                        texturePathBest = texturePath + ".bin";
+                        textureIdx = VFXReader::Get().FindFile(texturePathBest);
+                    }
+
                     if (textureIdx != MetroFile::InvalidFileIdx) {
                         MemStream stream = VFXReader::Get().ExtractFile(textureIdx);
                         if (stream) {
                             const MetroFile& mf = VFXReader::Get().GetFile(textureIdx);
 
                             MetroTexture texture;
-                            if (texture.LoadFromData(stream, mf.name)) {
+                            if (texture.LoadFromData(stream, mf.idx)) {
                                 RenderTexture* rt = new RenderTexture;
                                 this->CreateRenderTexture(&texture, rt);
                                 mModelTextures->Add(texNameManaged, IntPtr(rt));
@@ -547,8 +581,7 @@ namespace MetroEX {
     void RenderPanel::CreateRenderTexture(const MetroTexture* srcTexture, RenderTexture* rt) {
         D3D11_TEXTURE2D_DESC desc = {};
 
-        const DXGI_FORMAT textureFormat = srcTexture->IsCubemap() ? DXGI_FORMAT_BC6H_TYPELESS : DXGI_FORMAT_BC7_TYPELESS;
-        const DXGI_FORMAT srvFormat = srcTexture->IsCubemap() ? DXGI_FORMAT_BC6H_UF16 : DXGI_FORMAT_BC7_UNORM;
+        const DXGI_FORMAT textureFormat = sPixelFormatToTextureFormat[scast<uint32_t>(srcTexture->GetFormat())];
 
         desc.Width = scast<UINT>(srcTexture->GetWidth());
         desc.Height = scast<UINT>(srcTexture->GetHeight());
@@ -564,6 +597,8 @@ namespace MetroEX {
 
         MyArray<D3D11_SUBRESOURCE_DATA> subDesc(desc.ArraySize * desc.MipLevels);
 
+        const UINT blockSize = textureFormat == DXGI_FORMAT_BC1_UNORM ? 8 : 16;
+
         size_t counter = 0;
         const uint8_t* dataPtr = srcTexture->GetRawData();
         for (size_t i = 0; i < desc.ArraySize; ++i) {
@@ -574,7 +609,7 @@ namespace MetroEX {
                 const UINT numBlocksH = (mipHeight + 3) / 4;
 
                 subDesc[counter].pSysMem = dataPtr;
-                subDesc[counter].SysMemPitch = numBlocksW * 16;
+                subDesc[counter].SysMemPitch = numBlocksW * blockSize;
                 subDesc[counter].SysMemSlicePitch = subDesc[counter].SysMemPitch * numBlocksH;
 
                 dataPtr += subDesc[counter].SysMemSlicePitch;
@@ -588,7 +623,7 @@ namespace MetroEX {
         HRESULT hr = mDevice->CreateTexture2D(&desc, subDesc.data(), texPtr);
         if (SUCCEEDED(hr)) {
             D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
-            srvDesc.Format = srvFormat;
+            srvDesc.Format = textureFormat;
             srvDesc.ViewDimension = srcTexture->IsCubemap() ? D3D11_SRV_DIMENSION_TEXTURECUBE : D3D11_SRV_DIMENSION_TEXTURE2D;
             srvDesc.Texture2D.MipLevels = ~0u;
             srvDesc.Texture2D.MostDetailedMip = 0;

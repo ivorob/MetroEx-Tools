@@ -93,7 +93,7 @@ void DDS_DecodeBC3AlphaBlock(uint8_t* dest, const size_t w, const size_t h, cons
 
 
 
-void DDS_DecompressBC1(const void* inputBlocks, void* outPixels, const size_t width, const size_t height) {
+void DDS_DecompressBC1(const void* inputBlocks, void* outPixels, const size_t width, const size_t height, const size_t bpp) {
     const size_t sx = (width < 4) ? width : 4;
     const size_t sy = (height < 4) ? height : 4;
 
@@ -102,8 +102,8 @@ void DDS_DecompressBC1(const void* inputBlocks, void* outPixels, const size_t wi
 
     for (size_t y = 0; y < height; y += 4) {
         for (size_t x = 0; x < width; x += 4) {
-            uint8_t* dst = dest + (y * width + x) * 3;
-            DDS_DecodeColorBlock(dst, sx, sy, 3, width * 3, false, src);
+            uint8_t* dst = dest + (y * width + x) * bpp;
+            DDS_DecodeColorBlock(dst, sx, sy, bpp, width * bpp, false, src);
             src += 8;
         }
     }
@@ -119,7 +119,7 @@ void DDS_DecompressBC2(const void* inputBlocks, void* outPixels, const size_t wi
     for (size_t y = 0; y < height; y += 4) {
         for (size_t x = 0; x < width; x += 4) {
             uint8_t* dst = dest + (y * width + x) * 4;
-            
+
             DDS_DecodeBC2AlphaBlock(dst + 3, sx, sy, 4, width * 4, src);
             src += 8;
 
@@ -232,6 +232,23 @@ void DDS_CompressBC7(const void* inputRGBA, void* outBlocks, const size_t width,
     }
 }
 
+size_t DDS_GetCompressedSizeBC1(const size_t width, const size_t height, const size_t numMips) {
+    size_t w = width;
+    size_t h = height;
+    size_t result = 0;
+
+    for (size_t i = 0; i < numMips; ++i) {
+        w = std::max<size_t>(4, w);
+        h = std::max<size_t>(4, h);
+
+        result += ((w / 4) * (h / 4)) * 8;
+
+        w /= 2;
+        h /= 2;
+    }
+
+    return result;
+}
 
 size_t DDS_GetCompressedSizeBC7(const size_t width, const size_t height, const size_t numMips) {
     size_t w = width;

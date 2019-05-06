@@ -144,8 +144,12 @@ const HashString& MetroTexturesDatabase::GetAlias(const HashString& name) const 
 const CharString& MetroTexturesDatabase::GetSourceName(const HashString& name) const {
     const HashString& alias = this->GetAlias(name);
 
-    const MetroTextureInfo* mti = this->GetInfoByName((alias.hash == 0) ? name : alias);
-    return (mti == nullptr) ? kEmptyString : mti->source_name;
+    if (mDatabase.empty()) { // 2033 / LL
+        return (alias.Valid() ? alias.str : name.str);
+    } else {
+        const MetroTextureInfo* mti = this->GetInfoByName(alias.Valid() ? alias : name);
+        return (mti == nullptr) ? kEmptyString : mti->source_name;
+    }
 }
 
 const CharString& MetroTexturesDatabase::GetBumpName(const HashString& name) const {

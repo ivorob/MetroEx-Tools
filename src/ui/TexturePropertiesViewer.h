@@ -105,54 +105,54 @@ namespace MetroEX {
         [Description("Texture format")]
         property String^ Format {
             String^ get() {
-                switch (safe_cast<MetroTextureInfo::PixelFormat>(mTextureInfo->format)) {
-                case MetroTextureInfo::PixelFormat::Invalid:
+                switch (safe_cast<MetroTexture::PixelFormat>(mTextureInfo->format)) {
+                case MetroTexture::PixelFormat::Invalid:
                     return "Invalid";
-                case MetroTextureInfo::PixelFormat::BC1:
+                case MetroTexture::PixelFormat::BC1:
                     return "BC1";
-                case MetroTextureInfo::PixelFormat::BC3:
+                case MetroTexture::PixelFormat::BC3:
                     return "BC3";
-                case MetroTextureInfo::PixelFormat::RGBA8_UNORM:
+                case MetroTexture::PixelFormat::RGBA8_UNORM:
                     return "RGBA8_UNORM";
-                case MetroTextureInfo::PixelFormat::RGBA8_SNORM:
+                case MetroTexture::PixelFormat::RGBA8_SNORM:
                     return "RGBA8_SNORM";
-                case MetroTextureInfo::PixelFormat::BC7:
+                case MetroTexture::PixelFormat::BC7:
                     return "BC7";
-                case MetroTextureInfo::PixelFormat::RG8_UNORM:
+                case MetroTexture::PixelFormat::RG8_UNORM:
                     return "RG8_UNORM";
-                case MetroTextureInfo::PixelFormat::RG8_SNORM:
+                case MetroTexture::PixelFormat::RG8_SNORM:
                     return "RG8_SNORM";
-                case MetroTextureInfo::PixelFormat::DEPTH_32F_S8:
+                case MetroTexture::PixelFormat::DEPTH_32F_S8:
                     return "DEPTH_32F_S8";
-                case MetroTextureInfo::PixelFormat::DEPTH_32F:
+                case MetroTexture::PixelFormat::DEPTH_32F:
                     return "DEPTH_32F";
-                case MetroTextureInfo::PixelFormat::R32_F:
+                case MetroTexture::PixelFormat::R32_F:
                     return "R32_F";
-                case MetroTextureInfo::PixelFormat::RGBA16_F:
+                case MetroTexture::PixelFormat::RGBA16_F:
                     return "RGBA16_F";
-                case MetroTextureInfo::PixelFormat::RG16_F:
+                case MetroTexture::PixelFormat::RG16_F:
                     return "RG16_F";
-                case MetroTextureInfo::PixelFormat::RGBA16_U:
+                case MetroTexture::PixelFormat::RGBA16_U:
                     return "RGBA16_U";
-                case MetroTextureInfo::PixelFormat::R8_UNORM:
+                case MetroTexture::PixelFormat::R8_UNORM:
                     return "R8_UNORM";
-                case MetroTextureInfo::PixelFormat::R8_U:
+                case MetroTexture::PixelFormat::R8_U:
                     return "R8_U";
-                case MetroTextureInfo::PixelFormat::RGB10_UNORM_A2_UNORM:
+                case MetroTexture::PixelFormat::RGB10_UNORM_A2_UNORM:
                     return "RGB10_UNORM_A2_UNORM";
-                case MetroTextureInfo::PixelFormat::RGB10_SNORM_A2_UNORM:
+                case MetroTexture::PixelFormat::RGB10_SNORM_A2_UNORM:
                     return "RGB10_SNORM_A2_UNORM";
-                case MetroTextureInfo::PixelFormat::R11G11B10_F:
+                case MetroTexture::PixelFormat::R11G11B10_F:
                     return "R11G11B10_F";
-                case MetroTextureInfo::PixelFormat::R16_UNORM:
+                case MetroTexture::PixelFormat::R16_UNORM:
                     return "R16_UNORM";
-                case MetroTextureInfo::PixelFormat::R32_U:
+                case MetroTexture::PixelFormat::R32_U:
                     return "R32_U";
-                case MetroTextureInfo::PixelFormat::RGBA32_F:
+                case MetroTexture::PixelFormat::RGBA32_F:
                     return "RGBA32_F";
-                case MetroTextureInfo::PixelFormat::PPS:
+                case MetroTexture::PixelFormat::PPS:
                     return "PPS";
-                case MetroTextureInfo::PixelFormat::BGRA8_UNORM:
+                case MetroTexture::PixelFormat::BGRA8_UNORM:
                     return "BGRA8_UNORM";
                 default:
                     return "Unknown";
