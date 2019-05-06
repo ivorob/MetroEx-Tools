@@ -490,6 +490,7 @@ namespace MetroEX {
     void MainForm::saveAsOBJToolStripMenuItem_Click(System::Object^, System::EventArgs^) {
         this->EnsureExtractionOptions();
         mExtractionCtx->mdlSaveAsObj = true;
+        mExtractionCtx->mdlSaveAsFbx = false;
 
         if (!this->ExtractModel(*mExtractionCtx, fs::path())) {
             MetroEX::ShowErrorMessageBox(this, L"Failed to extract model!");
@@ -498,6 +499,7 @@ namespace MetroEX {
 
     void MainForm::saveAsFBXToolStripMenuItem_Click(System::Object^, System::EventArgs^) {
         this->EnsureExtractionOptions();
+        mExtractionCtx->mdlSaveAsObj = false;
         mExtractionCtx->mdlSaveAsFbx = true;
 
         if (!this->ExtractModel(*mExtractionCtx, fs::path())) {
