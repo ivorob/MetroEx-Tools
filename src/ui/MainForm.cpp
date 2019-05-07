@@ -225,10 +225,7 @@ namespace MetroEX {
             System::Windows::Forms::Cursor::Current = System::Windows::Forms::Cursors::WaitCursor;
 
             if (VFXReader::Get().LoadFromFile(StringToPath(ofd.FileName))) {
-                MetroConfigsDatabase* cfgDb;
-                LoadDatabasesFromFile(cfgDb);
-                mConfigsDatabase = cfgDb;
-
+                LoadDatabasesFromFile();
                 this->UpdateFilesList();
             }
 
@@ -317,7 +314,7 @@ namespace MetroEX {
 
         if (VFXReader::Get().Good()) {
             if (isSubFile) {
-                const MetroConfigsDatabase::ConfigInfo& ci = mConfigsDatabase->GetFileByIdx(fileData->subFileIdx);
+                const MetroConfigsDatabase::ConfigInfo& ci = MetroConfigsDatabase::Get().GetFileByIdx(fileData->subFileIdx);
 
                 this->statusLabel1->Text = L"config.bin";
                 this->statusLabel2->Text = fileData->subFileIdx.ToString();
@@ -422,7 +419,7 @@ namespace MetroEX {
 
                     case FileType::Bin: {
                         if (isSubFile) {
-                            const MetroConfigsDatabase::ConfigInfo& ci = mConfigsDatabase->GetFileByIdx(fileData->subFileIdx);
+                            const MetroConfigsDatabase::ConfigInfo& ci = MetroConfigsDatabase::Get().GetFileByIdx(fileData->subFileIdx);
 
                             mExtractionCtx->customOffset = ci.offset;
                             mExtractionCtx->customLength = ci.length;
@@ -662,8 +659,8 @@ namespace MetroEX {
         fileNode->Tag = gcnew FileTagData(FileType::BinArchive, fileIdx, kInvalidValue);
         UpdateNodeIcon(fileNode);
 
-        for (size_t idx = 0, numFiles = mConfigsDatabase->GetNumFiles(); idx < numFiles; ++idx) {
-            const MetroConfigsDatabase::ConfigInfo& ci = mConfigsDatabase->GetFileByIdx(idx);
+        for (size_t idx = 0, numFiles = MetroConfigsDatabase::Get().GetNumFiles(); idx < numFiles; ++idx) {
+            const MetroConfigsDatabase::ConfigInfo& ci = MetroConfigsDatabase::Get().GetFileByIdx(idx);
 
             const bool isNameDecrypted = !ci.nameStr.empty();
 

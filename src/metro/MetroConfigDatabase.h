@@ -2,6 +2,12 @@
 #include "mycommon.h"
 
 class MetroConfigsDatabase {
+    IMPL_SINGLETON(MetroConfigsDatabase)
+
+protected:
+    MetroConfigsDatabase();
+    ~MetroConfigsDatabase();
+
 public:
     struct ConfigInfo {
         uint32_t    nameCRC;
@@ -9,9 +15,6 @@ public:
         size_t      offset;
         size_t      length;
     };
-
-    MetroConfigsDatabase();
-    ~MetroConfigsDatabase();
 
     bool                LoadFromData(MemStream& stream);
 

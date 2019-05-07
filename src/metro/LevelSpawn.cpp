@@ -60,29 +60,29 @@ void Serialize(MetroReflectionReader& r, uobject*& obj) {
     InitData data;
     data.Serialize(r);
     obj = EntityFactory::Create(data);
-    // obj->param = EntityFactory::GetStaticParams(obj->initData, configDb, config);
-    obj->Read(r);
+    // obj->param = EntityFactory::GetStaticParams(obj->initData, config);
+    obj->Serialize(r);
 }
 
-bool LevelSpawn::LoadFromData(MemStream& stream, const VFXReader& fs, const MetroConfigsDatabase& configDb) {
-    auto      fileIdx = fs.FindFile("content\\config.bin");
-    MemStream config = fs.ExtractFile(fileIdx);
-    if (!config)
-        return false;
+bool LevelSpawn::LoadFromData(MemStream& stream) {
+    bool result = false;
 
-    auto id = stream.ReadTyped<uint32_t>();
-    if (id != MakeFourcc<'l', 'e', 'v', 'l'>())
-        return false;
-    stream.SetCursor(0);
+    const uint32_t magic = stream.ReadTyped<uint32_t>();
+    if (magic == MakeFourcc<'l', 'e', 'v', 'l'>()) {
+        stream.SetCursor(0);
 
-    ClearEntities();
+        ClearEntities();
 
-    MetroBinArchive a("level.bin", stream, 4);
-    auto            r = a.ReflectionReader();
-    METRO_READ_CHILD_STRUCT(r, startup);
-    METRO_READ_CHILD_STRUCT(r, entities_params);
-    METRO_READ_CHILD_STRUCT_ARRAY(r, entities);
-    return true;
+        MetroBinArchive a("level.bin", stream, 4);
+        auto r = a.ReflectionReader();
+        METRO_READ_CHILD_STRUCT(r, startup);
+        METRO_READ_CHILD_STRUCT(r, entities_params);
+        METRO_READ_CHILD_STRUCT_ARRAY(r, entities);
+
+        result = true;
+    }
+
+    return result;
 }
 
 void LevelSpawn::ClearEntities() {

@@ -8,9 +8,9 @@ class Config;
 struct Block {
     using Params = MyArray<std::pair<const char*, ParamValue>>;
 
-    Block(uint32_t clsid, const char* name, const MetaInfo* meta);
+    Block(MetroClsid clsid, const char* name, const MetaInfo* meta);
 
-    uint32_t   clsid;
+    MetroClsid clsid;
     CharString name;
     uint16_t   posx;
     uint16_t   posy;

@@ -59,7 +59,7 @@ public:
     LevelSpawn();
     ~LevelSpawn();
 
-    bool LoadFromData(MemStream& stream, const VFXReader& fs, const MetroConfigsDatabase& configInfo);
+    bool LoadFromData(MemStream& stream);
 
     Startup           startup;
     Params            entities_params;

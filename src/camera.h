@@ -13,7 +13,7 @@ public:
     Camera();
     ~Camera();
 
-    void        SetViewport(const ivec4& viewport);
+    void        SetViewport(const vec4i& viewport);
     void        SetFovY(const float fovy);
     void        SetViewPlanes(const float nearZ, const float farZ);
     void        SetZoom(const float zoom, const bool reset = false);
@@ -46,7 +46,7 @@ private:
 
 private:
     Mode        mMode;
-    ivec4       mViewport;
+    vec4i       mViewport;
     float       mFovY;
     float       mNearZ;
     float       mFarZ;

@@ -7,5 +7,5 @@ class MetroConfigsDatabase;
 
 namespace EntityFactory {
 uobject*               Create(const InitData& data);
-uobject_static_params* GetStaticParams(const InitData& init, const MetroConfigsDatabase& configDb, MemStream& config);
+uobject_static_params* GetStaticParams(const InitData& init, MemStream& config);
 }

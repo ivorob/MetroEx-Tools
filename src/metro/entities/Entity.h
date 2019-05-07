@@ -2,9 +2,7 @@
 
 #include "metro/MetroTypes.h"
 #include "metro/scripts/Script.h"
-#include <array>
 #include "mymath.h"
-#include <variant>
 
 class Config;
 class MetroReflectionReader;
@@ -31,15 +29,16 @@ struct uobject_static_params {
     bool       collideable;
     float      usage_distance;
 
-    virtual void Read(Config& cfg, uint16_t version);
+    virtual void Serialize(MetroReflectionReader& r);
 };
 
 struct uobject {
     virtual ~uobject() {
     }
 
-    virtual void Read(MetroReflectionReader& r);
-    // на самом деле возвращает common_vss**
+    virtual void Serialize(MetroReflectionReader& r);
+
+    // it actually returns common_vss**
     virtual bool common_vss() {
         return false;
     }
@@ -81,14 +80,18 @@ struct interest_info {
 };
 
 struct uobject_static : public uobject {
+    DECLARE_INHERITED_CLASS(uobject_static, uobject);
+
     Flags8        flags;
     uint8_t       collision_group;
     interest_info interest;
 
-    void Read(MetroReflectionReader& r) override;
+    virtual void Serialize(MetroReflectionReader& r) override;
 };
 
 struct uobject_effect : public uobject {
+    DECLARE_INHERITED_CLASS(uobject_effect, uobject);
+
     AnimationString     startup_animation;
     CharString          bone_part;
     uint16_t            start_frame;
@@ -103,13 +106,16 @@ struct uobject_effect : public uobject {
     interest_info       interest;
     MyArray<CharString> labels;
 
-    void Read(MetroReflectionReader& r) override;
+    virtual void Serialize(MetroReflectionReader& r) override;
+
     bool common_vss() override {
         return true;
     }
 };
 
 struct centity_static_params : public uobject_static_params {
+    DECLARE_INHERITED_CLASS(centity_static_params, uobject_static_params);
+
     CharString collision_sound;
     CharString collision_track;
     uint32_t   collision_interval;
@@ -117,7 +123,7 @@ struct centity_static_params : public uobject_static_params {
     float      attach_threshold;
     float      attach_armor;
 
-    void Read(Config& cfg, uint16_t version) override;
+    virtual void Serialize(MetroReflectionReader& r) override;
 };
 
 struct PhysicsShape {
@@ -164,6 +170,8 @@ struct PhysicsJoint {
 };
 
 struct centity : public uobject_effect {
+    DECLARE_INHERITED_CLASS(centity, uobject_effect);
+
     float    health;
     uint32_t dying_mask;
     Flags8   physics_flags;
@@ -191,11 +199,13 @@ struct centity : public uobject_effect {
     float        footprint_size;
     float        footprint_power;
 
-    void Read(MetroReflectionReader& r) override;
+    void Serialize(MetroReflectionReader& r) override;
 };
 
 struct lamp : public centity {
-    void Read(MetroReflectionReader& r) override;
+    DECLARE_INHERITED_CLASS(lamp, centity);
+
+    void Serialize(MetroReflectionReader& r) override;
 };
 
 struct inventory_item_static_params {
@@ -222,93 +232,117 @@ struct inventory_item_static_params {
     CharString item_attp_npc;
     uint16_t   ui_tag;
 
-    void Read(Config& cfg, uint16_t version);
+    void Serialize(MetroReflectionReader& r);
 };
 
 struct inventory_item_object_static_params : public centity_static_params {
+    DECLARE_INHERITED_CLASS(inventory_item_object_static_params, centity_static_params);
+
     inventory_item_static_params inventory_item;
     CharString                   hr_class;
     float                        take_impulse;
     CharString                   take_sound;
     bool                         can_be_taken_as_child;
 
-    void Read(Config& cfg, uint16_t version) override;
+    virtual void Serialize(MetroReflectionReader& r) override;
 };
 
 struct inventory_item_object : public centity {
+    DECLARE_INHERITED_CLASS(inventory_item_object, centity);
+
     // inventory_item
     Flags8   flags0;
     uint16_t trade_weight;
     uint8_t  ui_force_slot_id;
-    bool     anim_simplification; // ? неизвестно в каком классе должно быть
+    bool     anim_simplification; // ? not sure which class should contain this
 
-    void Read(MetroReflectionReader& r) override;
+    virtual void Serialize(MetroReflectionReader& r) override;
 };
 
 struct chud_item_container_static_params {
-    void Read(Config& cfg, uint16_t version);
+    void Serialize(MetroReflectionReader& r);
 };
 
 struct upgrade_item_static_params : public inventory_item_object_static_params {
+    DECLARE_INHERITED_CLASS(upgrade_item_static_params, inventory_item_object_static_params);
+
     chud_item_container_static_params container;
 
-    void Read(Config& cfg, uint16_t version) override;
+    virtual void Serialize(MetroReflectionReader& r) override;
 };
 
 struct upgrade_item : public inventory_item_object {
-    void Read(MetroReflectionReader& r) override;
+    DECLARE_INHERITED_CLASS(upgrade_item, inventory_item_object);
+
+    virtual void Serialize(MetroReflectionReader& r) override;
 
     CharString upgrade_id;
 };
 
 struct device_upgrade_static_params : public upgrade_item_static_params {
+    DECLARE_INHERITED_CLASS(device_upgrade_static_params, upgrade_item_static_params);
+
     uint8_t menu_event;
 
-    void Read(Config& cfg, uint16_t version) override;
+    virtual void Serialize(MetroReflectionReader& r) override;
 };
 
-struct device_upgrade : public upgrade_item {};
+struct device_upgrade : public upgrade_item {
+    DECLARE_INHERITED_CLASS(device_upgrade, upgrade_item);
+};
 
-struct player_timer_base : public device_upgrade {};
+struct player_timer_base : public device_upgrade {
+    DECLARE_INHERITED_CLASS(player_timer_base, device_upgrade);
+};
 
-struct player_timer_static_params : public device_upgrade_static_params {};
+struct player_timer_static_params : public device_upgrade_static_params {
+    DECLARE_INHERITED_CLASS(player_timer_static_params, device_upgrade_static_params);
+};
 
-struct player_timer : public player_timer_base {};
+struct player_timer : public player_timer_base {
+    DECLARE_INHERITED_CLASS(player_timer, player_timer_base);
+};
 
 struct player_timer_hud_item_static_params {
-    float                  font_size;
-    CharString             font_name;
-    std::array<int32_t, 4> color;
-    std::array<int32_t, 4> color_active;
-    std::array<int32_t, 4> color_time;
-    std::array<int32_t, 4> color_vs;
-    CharString             light_bone;
+    float       font_size;
+    CharString  font_name;
+    vec4i       color;
+    vec4i       color_active;
+    vec4i       color_time;
+    vec4i       color_vs;
+    CharString  light_bone;
 
-    void Read(Config& cfg, uint16_t version);
+    virtual void Serialize(MetroReflectionReader& r);
 };
 
 struct player_timer_hud_item_object_static_params : public player_timer_static_params {
+    DECLARE_INHERITED_CLASS(player_timer_hud_item_object_static_params, player_timer_static_params);
+
     player_timer_hud_item_static_params hud_item;
 
-    void Read(Config& cfg, uint16_t version) override;
+    virtual void Serialize(MetroReflectionReader& r) override;
 };
 
-struct player_timer_hud_item_object : public player_timer {};
+struct player_timer_hud_item_object : public player_timer {
+    DECLARE_INHERITED_CLASS(player_timer_hud_item_object, player_timer);
+};
 
 struct shooting_particles_data {
-    void Read(Config& cfg, uint16_t version);
+    void Serialize(MetroReflectionReader& r) {}
 };
 
 struct shooting_light_data {
-    void Read(Config& cfg, uint16_t version);
+    void Serialize(MetroReflectionReader& r) {}
 };
 
 struct shooting_weapon_data {
-    void Read(Config& cfg, uint16_t version);
+    void Serialize(MetroReflectionReader& r) {}
 };
 
 struct weapon_item_static_params : public upgrade_item_static_params {
-    void Read(Config& cfg, uint16_t version) override;
+    DECLARE_INHERITED_CLASS(weapon_item_static_params, upgrade_item_static_params);
+
+    virtual void Serialize(MetroReflectionReader& r) override;
 };
 
 struct chuditem_static_params {
@@ -316,24 +350,32 @@ struct chuditem_static_params {
 };
 
 struct weapon_item : public upgrade_item {
+    DECLARE_INHERITED_CLASS(weapon_item, upgrade_item);
+
     bool vr_attach;
     bool free_on_level;
 
-    void Read(MetroReflectionReader& r) override;
+    virtual void Serialize(MetroReflectionReader& r) override;
 };
 
 struct uobject_vs : public uobject {
-    void Read(MetroReflectionReader& cfg) override;
+    DECLARE_INHERITED_CLASS(uobject_vs, uobject);
+
+    virtual void Serialize(MetroReflectionReader& r) override;
 };
 
 struct unknown_static_params : public uobject_static_params {
+    DECLARE_INHERITED_CLASS(unknown_static_params, uobject_static_params);
+
     BytesArray unknown;
 
-    void Read(Config& cfg, uint16_t version) override;
+    virtual void Serialize(MetroReflectionReader& r) override;
 };
 
 struct UnknownObject : public uobject {
+    DECLARE_INHERITED_CLASS(UnknownObject, uobject);
+
     BytesArray unknown;
 
-    void Read(MetroReflectionReader& r) override;
+    virtual void Serialize(MetroReflectionReader& r) override;
 };

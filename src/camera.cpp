@@ -15,7 +15,7 @@ Camera::Camera()
 Camera::~Camera() {
 }
 
-void Camera::SetViewport(const ivec4& viewport) {
+void Camera::SetViewport(const vec4i& viewport) {
     mViewport = viewport;
     this->MakeProjection();
 }

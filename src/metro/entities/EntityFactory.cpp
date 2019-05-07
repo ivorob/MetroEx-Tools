@@ -1,8 +1,11 @@
 #include "EntityFactory.h"
-#include "../Config.h"
-#include "../MetroConfigDatabase.h"
+#include "metro/Config.h"
+#include "metro/MetroConfigDatabase.h"
+#include "metro/MetroReflection.h"
 #include "Entity.h"
-#include <fstream>
+
+#include "log.h"
+
 
 namespace {
 const char* clsids[] = {
@@ -520,43 +523,48 @@ uobject_static_params* CreateStaticParam(uint32_t clsid) {
 
 namespace EntityFactory {
 
-uobject* Create(const InitData& data) {
-    static auto classMap = CreateClassMap();
-    static auto staticMap = CreateStaticDataMap();
-    CharString  cls = classMap[data.clsid];
-    CharString  staticData = staticMap[data.static_data_key];
-    uobject*    entity = ::Create(data.clsid);
-    entity->initData = data;
-    entity->cls = cls;
-    entity->static_data = staticData;
-    return entity;
-}
-
-uobject_static_params* GetStaticParams(const InitData& init, const MetroConfigsDatabase& configDb, MemStream& config) {
-    uint64_t key = ((uint64_t)init.clsid << 32) + init.static_data_key;
-    auto     it = paramCache.find(key);
-    if (it != paramCache.end())
-        return it->second.get();
-    auto param = CreateStaticParam(init.clsid);
-    paramCache[key].reset(param);
-
-    char cfgName[256];
-    sprintf(cfgName, "content\\scripts\\static_data\\%08x_%08x_%08x.bin", init.clsid, init.clsid, init.static_data_key);
-    const auto* cfgInfo = configDb.FindFile(cfgName);
-    const auto* cfgInfo2 = configDb.FindFile(Hash_CalculateCRC32(cfgName));
-    assert(cfgInfo2);
-    if (!cfgInfo) {
-        std::ofstream file("unknown_config.txt", std::ofstream::binary | std::ofstream::app);
-        if (file.good())
-            file << cfgName << std::endl;
+    uobject* Create(const InitData& data) {
+        static auto classMap = CreateClassMap();
+        static auto staticMap = CreateStaticDataMap();
+        CharString  cls = classMap[data.clsid];
+        CharString  staticData = staticMap[data.static_data_key];
+        uobject*    entity = ::Create(data.clsid);
+        entity->initData = data;
+        entity->cls = cls;
+        entity->static_data = staticData;
+        return entity;
     }
-    config.SetCursor(cfgInfo2->offset);
-    MemStream stream = config.Substream(cfgInfo2->length);
-    Config    cfg(stream);
-    uint16_t  version = cfg.r_u16("version");
-    param->Read(cfg, version);
-    assert(cfg.Ended());
 
-    return param;
-}
+    uobject_static_params* GetStaticParams(const InitData& init, MemStream& config) {
+        const uint64_t key = (scast<uint64_t>(init.clsid) << 32) | init.static_data_key;
+        auto it = paramCache.find(key);
+        if (it != paramCache.end()) {
+            return it->second.get();
+        }
+
+        auto param = CreateStaticParam(init.clsid);
+        paramCache[key].reset(param);
+
+        char cfgName[256];
+        sprintf(cfgName, "content\\scripts\\static_data\\%08x_%08x_%08x.bin", init.clsid, init.clsid, init.static_data_key);
+        const auto* cfgInfo = MetroConfigsDatabase::Get().FindFile(cfgName);
+        const auto* cfgInfo2 = MetroConfigsDatabase::Get().FindFile(Hash_CalculateCRC32(cfgName));
+        assert(cfgInfo2);
+        if (!cfgInfo) {
+            LogPrint(LogLevel::Warning, "Unknown static data: ", cfgName);
+        }
+
+        config.SetCursor(cfgInfo2->offset);
+        MemStream stream = config.Substream(cfgInfo2->length);
+        MetroReflectionReader r(stream);
+
+        uint16_t version;
+        METRO_READ_MEMBER(r, version);
+        r.SetUserData(version);
+        param->Serialize(r);
+
+        assert(r.GetStream().Ended());
+
+        return param;
+    }
 }

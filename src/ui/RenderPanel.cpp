@@ -151,7 +151,7 @@ namespace MetroEX {
         }
 
         mCamera = new Camera();
-        mCamera->SetViewport(ivec4(0, 0, this->Size.Width, this->Size.Height));
+        mCamera->SetViewport(vec4i(0, 0, this->Size.Width, this->Size.Height));
         mCamera->SetViewPlanes(0.0f, 1.0f);
         mCamera->LookAt(vec3(0.0f), vec3(0.0f, 0.0f, 1.0f));
 
@@ -431,7 +431,7 @@ namespace MetroEX {
 
         mDeviceContext->RSSetViewports(1, &viewport);
 
-        mCamera->SetViewport(ivec4(0, 0, this->Size.Width, this->Size.Height));
+        mCamera->SetViewport(vec4i(0, 0, this->Size.Width, this->Size.Height));
 
         return true;
     }

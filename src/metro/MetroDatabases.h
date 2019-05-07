@@ -4,10 +4,8 @@
 #include "metro/MetroConfigDatabase.h"
 #include "metro/MetroMaterialsDatabase.h"
 
-static void LoadDatabasesFromFile(MetroConfigsDatabase*& cfgDb) {
+static void LoadDatabasesFromFile() {
     size_t fileIdx = 0;
-
-    cfgDb = nullptr;
 
     // Load textures_handles_storage.bin
     fileIdx = VFXReader::Get().FindFile("content\\textures_handles_storage.bin");
@@ -31,8 +29,7 @@ static void LoadDatabasesFromFile(MetroConfigsDatabase*& cfgDb) {
     if (MetroFile::InvalidFileIdx != fileIdx) {
         MemStream stream = VFXReader::Get().ExtractFile(fileIdx);
         if (stream) {
-            cfgDb = new MetroConfigsDatabase();
-            cfgDb->LoadFromData(stream);
+            MetroConfigsDatabase::Get().LoadFromData(stream);
         }
     }
 

@@ -10,7 +10,6 @@
 #include "LocalizationPanel.h"
 #include "DlgModelInfo.h"
 
-class MetroConfigsDatabase;
 
 namespace MetroEX {
     enum class FileType : size_t {
@@ -121,8 +120,6 @@ namespace MetroEX {
         IProgressDialog*                    mExtractionProgressDlg;
 
         TreeNode^                           mOriginalRootNode;
-
-        MetroConfigsDatabase*               mConfigsDatabase;
 
     protected:
 

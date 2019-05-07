@@ -24,19 +24,13 @@ using mat4 = glm::highp_mat4;
 using mat43T = glm::highp_mat3x4;
 using quat = glm::highp_quat;
 
-using ivec4 = glm::highp_ivec4;
+using vec4i = glm::highp_ivec4;
 
-struct color4f : vec4 {
+struct color4f : vec4 { };
 
-};
+struct pose : mat43T { };
 
-struct pose : mat43T {
-
-};
-
-struct ang3 : vec3 {
-
-};
+struct ang3 : vec3 { };
 
 struct AABBox {
     vec3 minimum, maximum;

@@ -77,6 +77,7 @@ METRO_REGISTER_TYPE_ALIAS(float, fp32)
 METRO_REGISTER_TYPE_ALIAS(vec2, vec2f)
 METRO_REGISTER_TYPE_ALIAS(vec3, vec3f)
 METRO_REGISTER_TYPE_ALIAS(vec4, vec4f)
+METRO_REGISTER_TYPE_ALIAS(vec4i, vec4i);
 METRO_REGISTER_TYPE_ALIAS(quat, vec4f)
 METRO_REGISTER_TYPE_ALIAS(CharString, stringz)
 METRO_REGISTER_TYPE_ALIAS(Flags8, bool8)
@@ -365,6 +366,13 @@ public:
         (*this) >> v.w;
     }
 
+    inline void operator >>(vec4i& v) {
+        (*this) >> v.x;
+        (*this) >> v.y;
+        (*this) >> v.z;
+        (*this) >> v.w;
+    }
+
     inline void operator >>(quat& v) {
         (*this) >> v.x;
         (*this) >> v.y;
@@ -457,10 +465,17 @@ struct ArrayElementTypeGetter {
 };
 
 
+#define METRO_SERIALIZE_PARENT(s) Super::Serialize(s);
+
+
 #define METRO_READ_MEMBER_NO_VERIFY(s, memberName)  s >> memberName;
 
 #define METRO_READ_MEMBER(s, memberName)                                                \
     s.VerifyTypeInfo(STRINGIFY(memberName), MetroTypeGetAlias<decltype(memberName)>()); \
+    s >> memberName;
+
+#define METRO_READ_CLASS_MEMBER(s, memberName)                              \
+    s.VerifyTypeInfo("class", MetroTypeGetAlias<decltype(memberName)>());   \
     s >> memberName;
 
 #define METRO_READ_STRUCT_MEMBER(s, memberName) s.ReadStruct(STRINGIFY(memberName), memberName)
@@ -480,21 +495,6 @@ struct ArrayElementTypeGetter {
 #define METRO_READ_CHILD_STRUCT_ARRAY(s, memberName) s.ReadStructArray(STRINGIFY(memberName), memberName, true)
 
 #define METRO_READ_MEMBER_CHOOSE(s, memberName)                                         \
-    s.ReadEditorTag(STRINGIFY(memberName));                                             \
-    s.VerifyTypeInfo(STRINGIFY(memberName), MetroTypeGetAlias<decltype(memberName)>()); \
-    s >> memberName;
-
-#define METRO_READ_MEMBER_NAME(s, memberName)                                           \
-    s.ReadEditorTag(STRINGIFY(memberName));                                             \
-    s.VerifyTypeInfo(STRINGIFY(memberName), MetroTypeGetAlias<decltype(memberName)>()); \
-    s >> memberName;
-
-#define METRO_READ_MEMBER_PART_STR(s, memberName)                                       \
-    s.ReadEditorTag(STRINGIFY(memberName));                                             \
-    s.VerifyTypeInfo(STRINGIFY(memberName), MetroTypeGetAlias<decltype(memberName)>()); \
-    s >> memberName;
-
-#define METRO_READ_MEMBER_ATTP_SRC(s, memberName)                                       \
     s.ReadEditorTag(STRINGIFY(memberName));                                             \
     s.VerifyTypeInfo(STRINGIFY(memberName), MetroTypeGetAlias<decltype(memberName)>()); \
     s >> memberName;

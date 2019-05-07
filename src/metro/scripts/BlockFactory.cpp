@@ -1787,7 +1787,6 @@ MyDict<uint32_t, MetaInfo> metaBlocks {
               { Type_u32, "ai_sound_type" },
               { Type_fp32, "stop_interval" },
               { Type_fp32, "startus_intervalus" },
-              // { Type_fp32, "start_delay" }, в арктике был, в исходе нет
               { Type_fp32, "end_cb_offset" },
               { Type_bool, "play_as_music" },
 
@@ -1798,19 +1797,20 @@ MyDict<uint32_t, MetaInfo> metaBlocks {
 }
 
 namespace BlockFactory {
-Block Create(uint32_t clsid) {
-    static auto nameMap = CreateBlockMap();
+    Block Create(const MetroClsid clsid) {
+        static auto nameMap = CreateBlockMap();
 
-    auto nameIt = nameMap.find(clsid);
-    assert(nameIt != nameMap.end());
-    const char* name = nameIt == nameMap.end() ? nullptr : nameIt->second;
+        auto nameIt = nameMap.find(clsid);
+        assert(nameIt != nameMap.end());
+        const char* name = nameIt == nameMap.end() ? nullptr : nameIt->second;
 
-    auto metaIt = metaBlocks.find(clsid);
-    if (metaIt == metaBlocks.end())
-        LogPrint(LogLevel::Info, "unknown script block ", name);
-    auto meta = metaIt == metaBlocks.end() ? nullptr : &metaIt->second;
+        auto metaIt = metaBlocks.find(clsid);
+        if (metaIt == metaBlocks.end()) {
+            LogPrint(LogLevel::Info, "unknown script block ", name);
+        }
+        auto meta = metaIt == metaBlocks.end() ? nullptr : &metaIt->second;
 
-    Block result(clsid, name, meta);
-    return result;
-}
+        Block result(clsid, name, meta);
+        return result;
+    }
 }

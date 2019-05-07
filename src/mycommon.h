@@ -371,6 +371,10 @@ static T& Get() {                   \
 }
 
 
+#define DECLARE_INHERITED_CLASS(className, parentClassName) \
+using Super = parentClassName;
+
+
 #include "log.h"
 
 struct MetroTime {
@@ -400,3 +404,5 @@ struct FloatQ8 {
 struct EntityLink {
     uint16_t value;
 };
+
+typedef uint32_t MetroClsid;
