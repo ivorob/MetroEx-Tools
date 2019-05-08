@@ -1,0 +1,14 @@
+E:\Work\Projects\MetroEX\Bin\ComponentFactory.Krypton.Toolkit.dll
+E:\Work\Projects\MetroEX\Bin\ComponentFactory.Krypton.Toolkit.pdb
+E:\Work\Projects\MetroEX\build\obj\ComponentFactory.Krypton.Toolkit\Debug\ComponentFactory.Krypton.Toolkit.csprojAssemblyReference.cache
+E:\Work\Projects\MetroEX\build\obj\ComponentFactory.Krypton.Toolkit\Debug\ComponentFactory.Krypton.Toolkit.KryptonInputBox.resources
+E:\Work\Projects\MetroEX\build\obj\ComponentFactory.Krypton.Toolkit\Debug\ComponentFactory.Krypton.Toolkit.VisualTaskDialog.resources
+E:\Work\Projects\MetroEX\build\obj\ComponentFactory.Krypton.Toolkit\Debug\ComponentFactory.Krypton.Toolkit.KryptonMessageBox.resources
+E:\Work\Projects\MetroEX\build\obj\ComponentFactory.Krypton.Toolkit\Debug\ComponentFactory.Krypton.Toolkit.Properties.Resources.resources
+E:\Work\Projects\MetroEX\build\obj\ComponentFactory.Krypton.Toolkit\Debug\ComponentFactory.Krypton.Toolkit.KryptonCheckButtonCollectionForm.resources
+E:\Work\Projects\MetroEX\build\obj\ComponentFactory.Krypton.Toolkit\Debug\ComponentFactory.Krypton.Toolkit.PaletteDrawBordersSelector.resources
+E:\Work\Projects\MetroEX\build\obj\ComponentFactory.Krypton.Toolkit\Debug\ComponentFactory.Krypton.Toolkit.ModalWaitDialog.resources
+E:\Work\Projects\MetroEX\build\obj\ComponentFactory.Krypton.Toolkit\Debug\ComponentFactory.Krypton.Toolkit.csproj.GenerateResource.cache
+E:\Work\Projects\MetroEX\build\obj\ComponentFactory.Krypton.Toolkit\Debug\ComponentFactory.Krypton.Toolkit.csproj.CoreCompileInputs.cache
+E:\Work\Projects\MetroEX\build\obj\ComponentFactory.Krypton.Toolkit\Debug\ComponentFactory.Krypton.Toolkit.dll
+E:\Work\Projects\MetroEX\build\obj\ComponentFactory.Krypton.Toolkit\Debug\ComponentFactory.Krypton.Toolkit.pdb

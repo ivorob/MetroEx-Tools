@@ -1,0 +1,9 @@
+E:\Work\Projects\MetroEX\Bin\ComponentFactory.Krypton.Ribbon.dll
+E:\Work\Projects\MetroEX\Bin\ComponentFactory.Krypton.Ribbon.pdb
+E:\Work\Projects\MetroEX\build\obj\ComponentFactory.Krypton.Ribbon\Debug\ComponentFactory.Krypton.Ribbon.csprojAssemblyReference.cache
+E:\Work\Projects\MetroEX\build\obj\ComponentFactory.Krypton.Ribbon\Debug\ComponentFactory.Krypton.Ribbon.Properties.Resources.resources
+E:\Work\Projects\MetroEX\build\obj\ComponentFactory.Krypton.Ribbon\Debug\ComponentFactory.Krypton.Ribbon.csproj.GenerateResource.cache
+E:\Work\Projects\MetroEX\build\obj\ComponentFactory.Krypton.Ribbon\Debug\ComponentFactory.Krypton.Ribbon.csproj.CoreCompileInputs.cache
+E:\Work\Projects\MetroEX\build\obj\ComponentFactory.Krypton.Ribbon\Debug\ComponentFactory.Krypton.Ribbon.csproj.CopyComplete
+E:\Work\Projects\MetroEX\build\obj\ComponentFactory.Krypton.Ribbon\Debug\ComponentFactory.Krypton.Ribbon.dll
+E:\Work\Projects\MetroEX\build\obj\ComponentFactory.Krypton.Ribbon\Debug\ComponentFactory.Krypton.Ribbon.pdb

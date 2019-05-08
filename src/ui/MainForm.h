@@ -74,7 +74,7 @@ namespace MetroEX {
     using namespace System::Drawing;
 
 
-    public ref class MainForm : public System::Windows::Forms::Form {
+    public ref class MainForm : public ComponentFactory::Krypton::Toolkit::KryptonForm {
     public:
         MainForm() {
             mImagePanel = nullptr;
@@ -187,6 +187,45 @@ private: System::Windows::Forms::ToolStripButton^  toolBtnMdlShowWireframe;
 private: System::Windows::Forms::ToolStripButton^  toolBtnMdlShowCollision;
 private: System::Windows::Forms::ToolStripSeparator^  toolStripSeparator7;
 private: System::Windows::Forms::ToolStripButton^  toolBtnMdlResetCamera;
+private: ComponentFactory::Krypton::Ribbon::KryptonRibbon^  ribbon;
+private: ComponentFactory::Krypton::Ribbon::KryptonRibbonTab^  fileTab;
+private: ComponentFactory::Krypton::Ribbon::KryptonRibbonGroup^  archiveGroup;
+private: ComponentFactory::Krypton::Ribbon::KryptonRibbonGroupTriple^  kryptonRibbonGroupTriple1;
+private: ComponentFactory::Krypton::Ribbon::KryptonRibbonGroupButton^  ribbonBtnOpenFile;
+private: ComponentFactory::Krypton::Ribbon::KryptonRibbonGroup^  toolsGroup;
+private: ComponentFactory::Krypton::Ribbon::KryptonRibbonGroupTriple^  kryptonRibbonGroupTriple2;
+private: ComponentFactory::Krypton::Ribbon::KryptonRibbonGroupButton^  ribbonBtnTexturesDatabaseViewer;
+private: ComponentFactory::Krypton::Ribbon::KryptonRibbonGroupSeparator^  kryptonRibbonGroupSeparator1;
+private: ComponentFactory::Krypton::Ribbon::KryptonRibbonGroupTriple^  kryptonRibbonGroupTriple4;
+private: ComponentFactory::Krypton::Ribbon::KryptonRibbonGroupButton^  ribbonBtnTexturesConverter;
+private: ComponentFactory::Krypton::Ribbon::KryptonRibbonGroupButton^  ribbonBtnLocalizationConversion;
+private: ComponentFactory::Krypton::Ribbon::KryptonRibbonGroupSeparator^  kryptonRibbonGroupSeparator2;
+private: ComponentFactory::Krypton::Ribbon::KryptonRibbonGroupTriple^  kryptonRibbonGroupTriple5;
+private: ComponentFactory::Krypton::Ribbon::KryptonRibbonGroupButton^  ribbonBtnArchiveTool;
+private: ComponentFactory::Krypton::Ribbon::KryptonRibbonGroupTriple^  kryptonRibbonGroupTriple3;
+private: ComponentFactory::Krypton::Ribbon::KryptonRibbonGroupButton^  kryptonRibbonGroupButton1;
+private: ComponentFactory::Krypton::Ribbon::KryptonRibbonGroupButton^  kryptonRibbonGroupButton2;
+private: ComponentFactory::Krypton::Ribbon::KryptonRibbonGroupButton^  kryptonRibbonGroupButton3;
+private: ComponentFactory::Krypton::Ribbon::KryptonRibbonGroupButton^  kryptonRibbonGroupButton7;
+private: ComponentFactory::Krypton::Toolkit::KryptonPanel^  kryptonPanel1;
+private: ComponentFactory::Krypton::Ribbon::KryptonRibbonTab^  viewTab;
+private: ComponentFactory::Krypton::Ribbon::KryptonRibbonGroup^  kryptonRibbonGroup1;
+private: ComponentFactory::Krypton::Ribbon::KryptonRibbonGroupTriple^  kryptonRibbonGroupTriple6;
+private: ComponentFactory::Krypton::Ribbon::KryptonRibbonGroupButton^  ribbonBtnEnableAlpha;
+private: ComponentFactory::Krypton::Ribbon::KryptonRibbonGroupSeparator^  kryptonRibbonGroupSeparator3;
+private: ComponentFactory::Krypton::Ribbon::KryptonRibbonGroupTriple^  kryptonRibbonGroupTriple7;
+private: ComponentFactory::Krypton::Ribbon::KryptonRibbonGroupButton^  ribbonBtnShowWireframe;
+private: ComponentFactory::Krypton::Ribbon::KryptonRibbonGroupButton^  ribbonBtnShowCollision;
+private: ComponentFactory::Krypton::Ribbon::KryptonRibbonGroupSeparator^  kryptonRibbonGroupSeparator4;
+private: ComponentFactory::Krypton::Ribbon::KryptonRibbonGroupTriple^  kryptonRibbonGroupTriple8;
+private: ComponentFactory::Krypton::Ribbon::KryptonRibbonGroupButton^  ribbonBtnResetCamera;
+private: ComponentFactory::Krypton::Ribbon::KryptonRibbonTab^  miscTab;
+private: ComponentFactory::Krypton::Ribbon::KryptonRibbonGroup^  kryptonRibbonGroup2;
+private: ComponentFactory::Krypton::Ribbon::KryptonRibbonGroupTriple^  kryptonRibbonGroupTriple9;
+private: ComponentFactory::Krypton::Ribbon::KryptonRibbonGroupButton^  ribbonBtnSettings;
+private: ComponentFactory::Krypton::Ribbon::KryptonRibbonGroupButton^  ribbonBtnAbout;
+private: ComponentFactory::Krypton::Ribbon::KryptonRibbonQATButton^  QATBtnSettings;
+private: ComponentFactory::Krypton::Ribbon::KryptonRibbonQATButton^  QATBtnAbout;
     private: System::ComponentModel::IContainer^  components;
 
 
@@ -240,8 +279,10 @@ private: System::Windows::Forms::ToolStripButton^  toolBtnMdlResetCamera;
             this->toolBtnFileOpen = (gcnew System::Windows::Forms::ToolStripButton());
             this->toolStripSeparator1 = (gcnew System::Windows::Forms::ToolStripSeparator());
             this->toolBtnImgEnableAlpha = (gcnew System::Windows::Forms::ToolStripButton());
+            this->toolStripSeparator7 = (gcnew System::Windows::Forms::ToolStripSeparator());
             this->toolBtnMdlShowWireframe = (gcnew System::Windows::Forms::ToolStripButton());
             this->toolBtnMdlShowCollision = (gcnew System::Windows::Forms::ToolStripButton());
+            this->toolBtnMdlResetCamera = (gcnew System::Windows::Forms::ToolStripButton());
             this->toolStripSeparator3 = (gcnew System::Windows::Forms::ToolStripSeparator());
             this->toolBtnTexturesDatabase = (gcnew System::Windows::Forms::ToolStripButton());
             this->toolStripSeparator4 = (gcnew System::Windows::Forms::ToolStripSeparator());
@@ -259,8 +300,45 @@ private: System::Windows::Forms::ToolStripButton^  toolBtnMdlResetCamera;
             this->extractBinChunkToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
             this->ctxMenuExportLocalization = (gcnew System::Windows::Forms::ContextMenuStrip(this->components));
             this->saveAsExcel2003XMLToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
-            this->toolBtnMdlResetCamera = (gcnew System::Windows::Forms::ToolStripButton());
-            this->toolStripSeparator7 = (gcnew System::Windows::Forms::ToolStripSeparator());
+            this->ribbon = (gcnew ComponentFactory::Krypton::Ribbon::KryptonRibbon());
+            this->fileTab = (gcnew ComponentFactory::Krypton::Ribbon::KryptonRibbonTab());
+            this->archiveGroup = (gcnew ComponentFactory::Krypton::Ribbon::KryptonRibbonGroup());
+            this->kryptonRibbonGroupTriple1 = (gcnew ComponentFactory::Krypton::Ribbon::KryptonRibbonGroupTriple());
+            this->ribbonBtnOpenFile = (gcnew ComponentFactory::Krypton::Ribbon::KryptonRibbonGroupButton());
+            this->toolsGroup = (gcnew ComponentFactory::Krypton::Ribbon::KryptonRibbonGroup());
+            this->kryptonRibbonGroupTriple2 = (gcnew ComponentFactory::Krypton::Ribbon::KryptonRibbonGroupTriple());
+            this->ribbonBtnTexturesDatabaseViewer = (gcnew ComponentFactory::Krypton::Ribbon::KryptonRibbonGroupButton());
+            this->kryptonRibbonGroupSeparator1 = (gcnew ComponentFactory::Krypton::Ribbon::KryptonRibbonGroupSeparator());
+            this->kryptonRibbonGroupTriple3 = (gcnew ComponentFactory::Krypton::Ribbon::KryptonRibbonGroupTriple());
+            this->kryptonRibbonGroupButton1 = (gcnew ComponentFactory::Krypton::Ribbon::KryptonRibbonGroupButton());
+            this->kryptonRibbonGroupButton2 = (gcnew ComponentFactory::Krypton::Ribbon::KryptonRibbonGroupButton());
+            this->kryptonRibbonGroupButton3 = (gcnew ComponentFactory::Krypton::Ribbon::KryptonRibbonGroupButton());
+            this->kryptonRibbonGroupTriple4 = (gcnew ComponentFactory::Krypton::Ribbon::KryptonRibbonGroupTriple());
+            this->ribbonBtnTexturesConverter = (gcnew ComponentFactory::Krypton::Ribbon::KryptonRibbonGroupButton());
+            this->ribbonBtnLocalizationConversion = (gcnew ComponentFactory::Krypton::Ribbon::KryptonRibbonGroupButton());
+            this->kryptonRibbonGroupButton7 = (gcnew ComponentFactory::Krypton::Ribbon::KryptonRibbonGroupButton());
+            this->kryptonRibbonGroupSeparator2 = (gcnew ComponentFactory::Krypton::Ribbon::KryptonRibbonGroupSeparator());
+            this->kryptonRibbonGroupTriple5 = (gcnew ComponentFactory::Krypton::Ribbon::KryptonRibbonGroupTriple());
+            this->ribbonBtnArchiveTool = (gcnew ComponentFactory::Krypton::Ribbon::KryptonRibbonGroupButton());
+            this->kryptonPanel1 = (gcnew ComponentFactory::Krypton::Toolkit::KryptonPanel());
+            this->viewTab = (gcnew ComponentFactory::Krypton::Ribbon::KryptonRibbonTab());
+            this->kryptonRibbonGroup1 = (gcnew ComponentFactory::Krypton::Ribbon::KryptonRibbonGroup());
+            this->kryptonRibbonGroupTriple6 = (gcnew ComponentFactory::Krypton::Ribbon::KryptonRibbonGroupTriple());
+            this->ribbonBtnEnableAlpha = (gcnew ComponentFactory::Krypton::Ribbon::KryptonRibbonGroupButton());
+            this->kryptonRibbonGroupSeparator3 = (gcnew ComponentFactory::Krypton::Ribbon::KryptonRibbonGroupSeparator());
+            this->kryptonRibbonGroupTriple7 = (gcnew ComponentFactory::Krypton::Ribbon::KryptonRibbonGroupTriple());
+            this->ribbonBtnShowWireframe = (gcnew ComponentFactory::Krypton::Ribbon::KryptonRibbonGroupButton());
+            this->ribbonBtnShowCollision = (gcnew ComponentFactory::Krypton::Ribbon::KryptonRibbonGroupButton());
+            this->kryptonRibbonGroupSeparator4 = (gcnew ComponentFactory::Krypton::Ribbon::KryptonRibbonGroupSeparator());
+            this->kryptonRibbonGroupTriple8 = (gcnew ComponentFactory::Krypton::Ribbon::KryptonRibbonGroupTriple());
+            this->ribbonBtnResetCamera = (gcnew ComponentFactory::Krypton::Ribbon::KryptonRibbonGroupButton());
+            this->miscTab = (gcnew ComponentFactory::Krypton::Ribbon::KryptonRibbonTab());
+            this->kryptonRibbonGroup2 = (gcnew ComponentFactory::Krypton::Ribbon::KryptonRibbonGroup());
+            this->kryptonRibbonGroupTriple9 = (gcnew ComponentFactory::Krypton::Ribbon::KryptonRibbonGroupTriple());
+            this->ribbonBtnSettings = (gcnew ComponentFactory::Krypton::Ribbon::KryptonRibbonGroupButton());
+            this->ribbonBtnAbout = (gcnew ComponentFactory::Krypton::Ribbon::KryptonRibbonGroupButton());
+            this->QATBtnSettings = (gcnew ComponentFactory::Krypton::Ribbon::KryptonRibbonQATButton());
+            this->QATBtnAbout = (gcnew ComponentFactory::Krypton::Ribbon::KryptonRibbonQATButton());
             this->statusStrip1->SuspendLayout();
             (cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->splitContainer1))->BeginInit();
             this->splitContainer1->Panel1->SuspendLayout();
@@ -275,6 +353,9 @@ private: System::Windows::Forms::ToolStripButton^  toolBtnMdlResetCamera;
             this->toolStrip1->SuspendLayout();
             this->ctxMenuExportBin->SuspendLayout();
             this->ctxMenuExportLocalization->SuspendLayout();
+            (cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->ribbon))->BeginInit();
+            (cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->kryptonPanel1))->BeginInit();
+            this->kryptonPanel1->SuspendLayout();
             this->SuspendLayout();
             // 
             // statusStrip1
@@ -322,18 +403,19 @@ private: System::Windows::Forms::ToolStripButton^  toolBtnMdlResetCamera;
             // splitContainer1
             // 
             this->splitContainer1->Dock = System::Windows::Forms::DockStyle::Fill;
-            this->splitContainer1->Location = System::Drawing::Point(0, 25);
+            this->splitContainer1->Location = System::Drawing::Point(0, 0);
             this->splitContainer1->Margin = System::Windows::Forms::Padding(0);
             this->splitContainer1->Name = L"splitContainer1";
             // 
             // splitContainer1.Panel1
             // 
             this->splitContainer1->Panel1->Controls->Add(this->filterableTreeView);
+            this->splitContainer1->Panel1->Controls->Add(this->toolStrip1);
             // 
             // splitContainer1.Panel2
             // 
             this->splitContainer1->Panel2->Controls->Add(this->tableLayoutPanel2);
-            this->splitContainer1->Size = System::Drawing::Size(1159, 672);
+            this->splitContainer1->Size = System::Drawing::Size(1159, 554);
             this->splitContainer1->SplitterDistance = 301;
             this->splitContainer1->TabIndex = 2;
             // 
@@ -345,7 +427,7 @@ private: System::Windows::Forms::ToolStripButton^  toolBtnMdlResetCamera;
             this->filterableTreeView->Location = System::Drawing::Point(0, 0);
             this->filterableTreeView->Margin = System::Windows::Forms::Padding(0);
             this->filterableTreeView->Name = L"filterableTreeView";
-            this->filterableTreeView->Size = System::Drawing::Size(301, 672);
+            this->filterableTreeView->Size = System::Drawing::Size(301, 554);
             this->filterableTreeView->TabIndex = 0;
             // 
             // tableLayoutPanel2
@@ -362,7 +444,7 @@ private: System::Windows::Forms::ToolStripButton^  toolBtnMdlResetCamera;
             this->tableLayoutPanel2->RowCount = 2;
             this->tableLayoutPanel2->RowStyles->Add((gcnew System::Windows::Forms::RowStyle(System::Windows::Forms::SizeType::Percent, 100)));
             this->tableLayoutPanel2->RowStyles->Add((gcnew System::Windows::Forms::RowStyle(System::Windows::Forms::SizeType::Absolute, 80)));
-            this->tableLayoutPanel2->Size = System::Drawing::Size(854, 672);
+            this->tableLayoutPanel2->Size = System::Drawing::Size(854, 554);
             this->tableLayoutPanel2->TabIndex = 0;
             // 
             // pnlViewers
@@ -371,14 +453,14 @@ private: System::Windows::Forms::ToolStripButton^  toolBtnMdlResetCamera;
             this->pnlViewers->Location = System::Drawing::Point(0, 0);
             this->pnlViewers->Margin = System::Windows::Forms::Padding(0);
             this->pnlViewers->Name = L"pnlViewers";
-            this->pnlViewers->Size = System::Drawing::Size(854, 592);
+            this->pnlViewers->Size = System::Drawing::Size(854, 474);
             this->pnlViewers->TabIndex = 0;
             // 
             // pnlMetaProps
             // 
             this->pnlMetaProps->BorderStyle = System::Windows::Forms::BorderStyle::FixedSingle;
             this->pnlMetaProps->Dock = System::Windows::Forms::DockStyle::Fill;
-            this->pnlMetaProps->Location = System::Drawing::Point(0, 592);
+            this->pnlMetaProps->Location = System::Drawing::Point(0, 474);
             this->pnlMetaProps->Margin = System::Windows::Forms::Padding(0);
             this->pnlMetaProps->Name = L"pnlMetaProps";
             this->pnlMetaProps->Size = System::Drawing::Size(854, 80);
@@ -521,6 +603,8 @@ private: System::Windows::Forms::ToolStripButton^  toolBtnMdlResetCamera;
             // 
             // toolStrip1
             // 
+            this->toolStrip1->Dock = System::Windows::Forms::DockStyle::None;
+            this->toolStrip1->Font = (gcnew System::Drawing::Font(L"Segoe UI", 9));
             this->toolStrip1->GripStyle = System::Windows::Forms::ToolStripGripStyle::Hidden;
             this->toolStrip1->Items->AddRange(gcnew cli::array< System::Windows::Forms::ToolStripItem^  >(15) {
                 this->toolBtnFileOpen,
@@ -528,9 +612,9 @@ private: System::Windows::Forms::ToolStripButton^  toolBtnMdlResetCamera;
                     this->toolBtnMdlResetCamera, this->toolStripSeparator3, this->toolBtnTexturesDatabase, this->toolStripSeparator4, this->toolStripSplitButton1,
                     this->toolStripSeparator2, this->toolBtnSettings, this->toolStripSeparator6, this->toolBtnAbout
             });
-            this->toolStrip1->Location = System::Drawing::Point(0, 0);
+            this->toolStrip1->Location = System::Drawing::Point(50, 697);
             this->toolStrip1->Name = L"toolStrip1";
-            this->toolStrip1->Size = System::Drawing::Size(1159, 25);
+            this->toolStrip1->Size = System::Drawing::Size(255, 25);
             this->toolStrip1->TabIndex = 5;
             this->toolStrip1->Text = L"toolStrip1";
             // 
@@ -563,6 +647,11 @@ private: System::Windows::Forms::ToolStripButton^  toolBtnMdlResetCamera;
             this->toolBtnImgEnableAlpha->ToolTipText = L"Enable alpha";
             this->toolBtnImgEnableAlpha->Click += gcnew System::EventHandler(this, &MainForm::toolBtnImgEnableAlpha_Click);
             // 
+            // toolStripSeparator7
+            // 
+            this->toolStripSeparator7->Name = L"toolStripSeparator7";
+            this->toolStripSeparator7->Size = System::Drawing::Size(6, 25);
+            // 
             // toolBtnMdlShowWireframe
             // 
             this->toolBtnMdlShowWireframe->DisplayStyle = System::Windows::Forms::ToolStripItemDisplayStyle::Text;
@@ -586,6 +675,17 @@ private: System::Windows::Forms::ToolStripButton^  toolBtnMdlResetCamera;
             this->toolBtnMdlShowCollision->Text = L"C";
             this->toolBtnMdlShowCollision->ToolTipText = L"Show collision (if any)";
             this->toolBtnMdlShowCollision->Click += gcnew System::EventHandler(this, &MainForm::toolBtnMdlShowCollision_Click);
+            // 
+            // toolBtnMdlResetCamera
+            // 
+            this->toolBtnMdlResetCamera->DisplayStyle = System::Windows::Forms::ToolStripItemDisplayStyle::Image;
+            this->toolBtnMdlResetCamera->Image = (cli::safe_cast<System::Drawing::Image^>(resources->GetObject(L"toolBtnMdlResetCamera.Image")));
+            this->toolBtnMdlResetCamera->ImageTransparentColor = System::Drawing::Color::Magenta;
+            this->toolBtnMdlResetCamera->Name = L"toolBtnMdlResetCamera";
+            this->toolBtnMdlResetCamera->Size = System::Drawing::Size(23, 22);
+            this->toolBtnMdlResetCamera->Text = L"R";
+            this->toolBtnMdlResetCamera->ToolTipText = L"Reset camera";
+            this->toolBtnMdlResetCamera->Click += gcnew System::EventHandler(this, &MainForm::toolBtnMdlResetCamera_Click);
             // 
             // toolStripSeparator3
             // 
@@ -714,29 +814,250 @@ private: System::Windows::Forms::ToolStripButton^  toolBtnMdlResetCamera;
             this->saveAsExcel2003XMLToolStripMenuItem->Text = L"Save as Excel 2003 XML";
             this->saveAsExcel2003XMLToolStripMenuItem->Click += gcnew System::EventHandler(this, &MainForm::saveAsExcel2003XMLToolStripMenuItem_Click);
             // 
-            // toolBtnMdlResetCamera
+            // ribbon
             // 
-            this->toolBtnMdlResetCamera->DisplayStyle = System::Windows::Forms::ToolStripItemDisplayStyle::Image;
-            this->toolBtnMdlResetCamera->Image = (cli::safe_cast<System::Drawing::Image^>(resources->GetObject(L"toolBtnMdlResetCamera.Image")));
-            this->toolBtnMdlResetCamera->ImageTransparentColor = System::Drawing::Color::Magenta;
-            this->toolBtnMdlResetCamera->Name = L"toolBtnMdlResetCamera";
-            this->toolBtnMdlResetCamera->Size = System::Drawing::Size(23, 22);
-            this->toolBtnMdlResetCamera->Text = L"R";
-            this->toolBtnMdlResetCamera->ToolTipText = L"Reset camera";
-            this->toolBtnMdlResetCamera->Click += gcnew System::EventHandler(this, &MainForm::toolBtnMdlResetCamera_Click);
+            this->ribbon->InDesignHelperMode = true;
+            this->ribbon->Name = L"ribbon";
+            this->ribbon->QATButtons->AddRange(gcnew cli::array< System::ComponentModel::Component^  >(2) { this->QATBtnSettings, this->QATBtnAbout });
+            this->ribbon->QATUserChange = false;
+            this->ribbon->RibbonAppButton->AppButtonVisible = false;
+            this->ribbon->RibbonTabs->AddRange(gcnew cli::array< ComponentFactory::Krypton::Ribbon::KryptonRibbonTab^  >(3) {
+                this->fileTab,
+                    this->viewTab, this->miscTab
+            });
+            this->ribbon->SelectedContext = nullptr;
+            this->ribbon->SelectedTab = this->fileTab;
+            this->ribbon->Size = System::Drawing::Size(1159, 143);
+            this->ribbon->TabIndex = 7;
             // 
-            // toolStripSeparator7
+            // fileTab
             // 
-            this->toolStripSeparator7->Name = L"toolStripSeparator7";
-            this->toolStripSeparator7->Size = System::Drawing::Size(6, 25);
+            this->fileTab->Groups->AddRange(gcnew cli::array< ComponentFactory::Krypton::Ribbon::KryptonRibbonGroup^  >(2) {
+                this->archiveGroup,
+                    this->toolsGroup
+            });
+            this->fileTab->Text = L"File";
+            // 
+            // archiveGroup
+            // 
+            this->archiveGroup->Items->AddRange(gcnew cli::array< ComponentFactory::Krypton::Ribbon::KryptonRibbonGroupContainer^  >(1) { this->kryptonRibbonGroupTriple1 });
+            this->archiveGroup->TextLine1 = L"Archive";
+            // 
+            // kryptonRibbonGroupTriple1
+            // 
+            this->kryptonRibbonGroupTriple1->Items->AddRange(gcnew cli::array< ComponentFactory::Krypton::Ribbon::KryptonRibbonGroupItem^  >(1) { this->ribbonBtnOpenFile });
+            // 
+            // ribbonBtnOpenFile
+            // 
+            this->ribbonBtnOpenFile->ImageLarge = (cli::safe_cast<System::Drawing::Image^>(resources->GetObject(L"ribbonBtnOpenFile.ImageLarge")));
+            this->ribbonBtnOpenFile->ImageSmall = (cli::safe_cast<System::Drawing::Image^>(resources->GetObject(L"ribbonBtnOpenFile.ImageSmall")));
+            this->ribbonBtnOpenFile->TextLine1 = L"Open";
+            this->ribbonBtnOpenFile->TextLine2 = L"VFX";
+            this->ribbonBtnOpenFile->Click += gcnew System::EventHandler(this, &MainForm::toolBtnFileOpen_Click);
+            // 
+            // toolsGroup
+            // 
+            this->toolsGroup->Items->AddRange(gcnew cli::array< ComponentFactory::Krypton::Ribbon::KryptonRibbonGroupContainer^  >(5) {
+                this->kryptonRibbonGroupTriple2,
+                    this->kryptonRibbonGroupSeparator1, this->kryptonRibbonGroupTriple4, this->kryptonRibbonGroupSeparator2, this->kryptonRibbonGroupTriple5
+            });
+            this->toolsGroup->TextLine1 = L"Tools";
+            // 
+            // kryptonRibbonGroupTriple2
+            // 
+            this->kryptonRibbonGroupTriple2->Items->AddRange(gcnew cli::array< ComponentFactory::Krypton::Ribbon::KryptonRibbonGroupItem^  >(1) { this->ribbonBtnTexturesDatabaseViewer });
+            // 
+            // ribbonBtnTexturesDatabaseViewer
+            // 
+            this->ribbonBtnTexturesDatabaseViewer->ImageLarge = (cli::safe_cast<System::Drawing::Image^>(resources->GetObject(L"ribbonBtnTexturesDatabaseViewer.ImageLarge")));
+            this->ribbonBtnTexturesDatabaseViewer->ImageSmall = (cli::safe_cast<System::Drawing::Image^>(resources->GetObject(L"ribbonBtnTexturesDatabaseViewer.ImageSmall")));
+            this->ribbonBtnTexturesDatabaseViewer->TextLine1 = L"Textures";
+            this->ribbonBtnTexturesDatabaseViewer->TextLine2 = L"Database";
+            this->ribbonBtnTexturesDatabaseViewer->Click += gcnew System::EventHandler(this, &MainForm::toolBtnTexturesDatabase_Click);
+            // 
+            // kryptonRibbonGroupTriple3
+            // 
+            this->kryptonRibbonGroupTriple3->Items->AddRange(gcnew cli::array< ComponentFactory::Krypton::Ribbon::KryptonRibbonGroupItem^  >(3) {
+                this->kryptonRibbonGroupButton1,
+                    this->kryptonRibbonGroupButton2, this->kryptonRibbonGroupButton3
+            });
+            // 
+            // kryptonRibbonGroupButton1
+            // 
+            this->kryptonRibbonGroupButton1->ImageLarge = (cli::safe_cast<System::Drawing::Image^>(resources->GetObject(L"kryptonRibbonGroupButton1.ImageLarge")));
+            this->kryptonRibbonGroupButton1->ImageSmall = (cli::safe_cast<System::Drawing::Image^>(resources->GetObject(L"kryptonRibbonGroupButton1.ImageSmall")));
+            this->kryptonRibbonGroupButton1->TextLine1 = L"Textures";
+            this->kryptonRibbonGroupButton1->TextLine2 = L"Database";
+            // 
+            // kryptonRibbonGroupButton2
+            // 
+            this->kryptonRibbonGroupButton2->ImageLarge = (cli::safe_cast<System::Drawing::Image^>(resources->GetObject(L"kryptonRibbonGroupButton2.ImageLarge")));
+            this->kryptonRibbonGroupButton2->ImageSmall = (cli::safe_cast<System::Drawing::Image^>(resources->GetObject(L"kryptonRibbonGroupButton2.ImageSmall")));
+            this->kryptonRibbonGroupButton2->TextLine1 = L"Textures";
+            this->kryptonRibbonGroupButton2->TextLine2 = L"Converter";
+            // 
+            // kryptonRibbonGroupButton3
+            // 
+            this->kryptonRibbonGroupButton3->ImageLarge = (cli::safe_cast<System::Drawing::Image^>(resources->GetObject(L"kryptonRibbonGroupButton3.ImageLarge")));
+            this->kryptonRibbonGroupButton3->ImageSmall = (cli::safe_cast<System::Drawing::Image^>(resources->GetObject(L"kryptonRibbonGroupButton3.ImageSmall")));
+            this->kryptonRibbonGroupButton3->TextLine1 = L"Localization";
+            this->kryptonRibbonGroupButton3->TextLine2 = L"Conversion";
+            // 
+            // kryptonRibbonGroupTriple4
+            // 
+            this->kryptonRibbonGroupTriple4->Items->AddRange(gcnew cli::array< ComponentFactory::Krypton::Ribbon::KryptonRibbonGroupItem^  >(2) {
+                this->ribbonBtnTexturesConverter,
+                    this->ribbonBtnLocalizationConversion
+            });
+            // 
+            // ribbonBtnTexturesConverter
+            // 
+            this->ribbonBtnTexturesConverter->ImageLarge = (cli::safe_cast<System::Drawing::Image^>(resources->GetObject(L"ribbonBtnTexturesConverter.ImageLarge")));
+            this->ribbonBtnTexturesConverter->ImageSmall = (cli::safe_cast<System::Drawing::Image^>(resources->GetObject(L"ribbonBtnTexturesConverter.ImageSmall")));
+            this->ribbonBtnTexturesConverter->TextLine1 = L"Textures";
+            this->ribbonBtnTexturesConverter->TextLine2 = L"Converter";
+            this->ribbonBtnTexturesConverter->Click += gcnew System::EventHandler(this, &MainForm::texturesConverterToolStripMenuItem_Click);
+            // 
+            // ribbonBtnLocalizationConversion
+            // 
+            this->ribbonBtnLocalizationConversion->ImageLarge = (cli::safe_cast<System::Drawing::Image^>(resources->GetObject(L"ribbonBtnLocalizationConversion.ImageLarge")));
+            this->ribbonBtnLocalizationConversion->ImageSmall = (cli::safe_cast<System::Drawing::Image^>(resources->GetObject(L"ribbonBtnLocalizationConversion.ImageSmall")));
+            this->ribbonBtnLocalizationConversion->TextLine1 = L"Localization";
+            this->ribbonBtnLocalizationConversion->TextLine2 = L"Conversion";
+            this->ribbonBtnLocalizationConversion->Click += gcnew System::EventHandler(this, &MainForm::localizationConversionToolStripMenuItem_Click);
+            // 
+            // kryptonRibbonGroupButton7
+            // 
+            this->kryptonRibbonGroupButton7->ImageLarge = (cli::safe_cast<System::Drawing::Image^>(resources->GetObject(L"kryptonRibbonGroupButton7.ImageLarge")));
+            this->kryptonRibbonGroupButton7->ImageSmall = (cli::safe_cast<System::Drawing::Image^>(resources->GetObject(L"kryptonRibbonGroupButton7.ImageSmall")));
+            this->kryptonRibbonGroupButton7->TextLine1 = L"Textures";
+            this->kryptonRibbonGroupButton7->TextLine2 = L"Converter";
+            // 
+            // kryptonRibbonGroupTriple5
+            // 
+            this->kryptonRibbonGroupTriple5->Items->AddRange(gcnew cli::array< ComponentFactory::Krypton::Ribbon::KryptonRibbonGroupItem^  >(1) { this->ribbonBtnArchiveTool });
+            // 
+            // ribbonBtnArchiveTool
+            // 
+            this->ribbonBtnArchiveTool->ImageLarge = (cli::safe_cast<System::Drawing::Image^>(resources->GetObject(L"ribbonBtnArchiveTool.ImageLarge")));
+            this->ribbonBtnArchiveTool->ImageSmall = (cli::safe_cast<System::Drawing::Image^>(resources->GetObject(L"ribbonBtnArchiveTool.ImageSmall")));
+            this->ribbonBtnArchiveTool->TextLine1 = L"Archive";
+            this->ribbonBtnArchiveTool->TextLine2 = L"Tool";
+            this->ribbonBtnArchiveTool->Click += gcnew System::EventHandler(this, &MainForm::archiveToolToolStripMenuItem_Click);
+            // 
+            // kryptonPanel1
+            // 
+            this->kryptonPanel1->Controls->Add(this->splitContainer1);
+            this->kryptonPanel1->Dock = System::Windows::Forms::DockStyle::Fill;
+            this->kryptonPanel1->Location = System::Drawing::Point(0, 143);
+            this->kryptonPanel1->Name = L"kryptonPanel1";
+            this->kryptonPanel1->Size = System::Drawing::Size(1159, 554);
+            this->kryptonPanel1->TabIndex = 8;
+            // 
+            // viewTab
+            // 
+            this->viewTab->Groups->AddRange(gcnew cli::array< ComponentFactory::Krypton::Ribbon::KryptonRibbonGroup^  >(1) { this->kryptonRibbonGroup1 });
+            this->viewTab->Text = L"View";
+            // 
+            // kryptonRibbonGroup1
+            // 
+            this->kryptonRibbonGroup1->Items->AddRange(gcnew cli::array< ComponentFactory::Krypton::Ribbon::KryptonRibbonGroupContainer^  >(5) {
+                this->kryptonRibbonGroupTriple6,
+                    this->kryptonRibbonGroupSeparator3, this->kryptonRibbonGroupTriple7, this->kryptonRibbonGroupSeparator4, this->kryptonRibbonGroupTriple8
+            });
+            this->kryptonRibbonGroup1->TextLine1 = L"View";
+            // 
+            // kryptonRibbonGroupTriple6
+            // 
+            this->kryptonRibbonGroupTriple6->Items->AddRange(gcnew cli::array< ComponentFactory::Krypton::Ribbon::KryptonRibbonGroupItem^  >(1) { this->ribbonBtnEnableAlpha });
+            // 
+            // ribbonBtnEnableAlpha
+            // 
+            this->ribbonBtnEnableAlpha->ButtonType = ComponentFactory::Krypton::Ribbon::GroupButtonType::Check;
+            this->ribbonBtnEnableAlpha->Checked = true;
+            this->ribbonBtnEnableAlpha->TextLine1 = L"Enable";
+            this->ribbonBtnEnableAlpha->TextLine2 = L"Alpha";
+            this->ribbonBtnEnableAlpha->Click += gcnew System::EventHandler(this, &MainForm::toolBtnImgEnableAlpha_Click);
+            // 
+            // kryptonRibbonGroupTriple7
+            // 
+            this->kryptonRibbonGroupTriple7->Items->AddRange(gcnew cli::array< ComponentFactory::Krypton::Ribbon::KryptonRibbonGroupItem^  >(2) {
+                this->ribbonBtnShowWireframe,
+                    this->ribbonBtnShowCollision
+            });
+            // 
+            // ribbonBtnShowWireframe
+            // 
+            this->ribbonBtnShowWireframe->TextLine1 = L"Show";
+            this->ribbonBtnShowWireframe->TextLine2 = L"Wireframe";
+            this->ribbonBtnShowWireframe->Click += gcnew System::EventHandler(this, &MainForm::toolBtnMdlShowWireframe_Click);
+            // 
+            // ribbonBtnShowCollision
+            // 
+            this->ribbonBtnShowCollision->TextLine1 = L"Show";
+            this->ribbonBtnShowCollision->TextLine2 = L"Collision";
+            this->ribbonBtnShowCollision->Click += gcnew System::EventHandler(this, &MainForm::toolBtnMdlShowCollision_Click);
+            // 
+            // kryptonRibbonGroupTriple8
+            // 
+            this->kryptonRibbonGroupTriple8->Items->AddRange(gcnew cli::array< ComponentFactory::Krypton::Ribbon::KryptonRibbonGroupItem^  >(1) { this->ribbonBtnResetCamera });
+            // 
+            // ribbonBtnResetCamera
+            // 
+            this->ribbonBtnResetCamera->ImageLarge = (cli::safe_cast<System::Drawing::Image^>(resources->GetObject(L"ribbonBtnResetCamera.ImageLarge")));
+            this->ribbonBtnResetCamera->ImageSmall = (cli::safe_cast<System::Drawing::Image^>(resources->GetObject(L"ribbonBtnResetCamera.ImageSmall")));
+            this->ribbonBtnResetCamera->TextLine1 = L"Reset";
+            this->ribbonBtnResetCamera->TextLine2 = L"Camera";
+            this->ribbonBtnResetCamera->Click += gcnew System::EventHandler(this, &MainForm::toolBtnMdlResetCamera_Click);
+            // 
+            // miscTab
+            // 
+            this->miscTab->Groups->AddRange(gcnew cli::array< ComponentFactory::Krypton::Ribbon::KryptonRibbonGroup^  >(1) { this->kryptonRibbonGroup2 });
+            this->miscTab->Text = L"Misc";
+            // 
+            // kryptonRibbonGroup2
+            // 
+            this->kryptonRibbonGroup2->Items->AddRange(gcnew cli::array< ComponentFactory::Krypton::Ribbon::KryptonRibbonGroupContainer^  >(1) { this->kryptonRibbonGroupTriple9 });
+            this->kryptonRibbonGroup2->TextLine1 = L" ";
+            // 
+            // kryptonRibbonGroupTriple9
+            // 
+            this->kryptonRibbonGroupTriple9->Items->AddRange(gcnew cli::array< ComponentFactory::Krypton::Ribbon::KryptonRibbonGroupItem^  >(2) {
+                this->ribbonBtnSettings,
+                    this->ribbonBtnAbout
+            });
+            // 
+            // ribbonBtnSettings
+            // 
+            this->ribbonBtnSettings->ImageLarge = (cli::safe_cast<System::Drawing::Image^>(resources->GetObject(L"ribbonBtnSettings.ImageLarge")));
+            this->ribbonBtnSettings->ImageSmall = (cli::safe_cast<System::Drawing::Image^>(resources->GetObject(L"ribbonBtnSettings.ImageSmall")));
+            this->ribbonBtnSettings->TextLine1 = L"Settings";
+            this->ribbonBtnSettings->Click += gcnew System::EventHandler(this, &MainForm::toolBtnSettings_Click);
+            // 
+            // ribbonBtnAbout
+            // 
+            this->ribbonBtnAbout->ImageLarge = (cli::safe_cast<System::Drawing::Image^>(resources->GetObject(L"ribbonBtnAbout.ImageLarge")));
+            this->ribbonBtnAbout->ImageSmall = (cli::safe_cast<System::Drawing::Image^>(resources->GetObject(L"ribbonBtnAbout.ImageSmall")));
+            this->ribbonBtnAbout->TextLine1 = L"About";
+            this->ribbonBtnAbout->Click += gcnew System::EventHandler(this, &MainForm::toolBtnAbout_Click);
+            // 
+            // QATBtnSettings
+            // 
+            this->QATBtnSettings->Image = (cli::safe_cast<System::Drawing::Image^>(resources->GetObject(L"QATBtnSettings.Image")));
+            this->QATBtnSettings->Click += gcnew System::EventHandler(this, &MainForm::toolBtnSettings_Click);
+            // 
+            // QATBtnAbout
+            // 
+            this->QATBtnAbout->Image = (cli::safe_cast<System::Drawing::Image^>(resources->GetObject(L"QATBtnAbout.Image")));
+            this->QATBtnAbout->Click += gcnew System::EventHandler(this, &MainForm::toolBtnAbout_Click);
             // 
             // MainForm
             // 
             this->AutoScaleDimensions = System::Drawing::SizeF(6, 13);
             this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
             this->ClientSize = System::Drawing::Size(1159, 719);
-            this->Controls->Add(this->splitContainer1);
-            this->Controls->Add(this->toolStrip1);
+            this->Controls->Add(this->kryptonPanel1);
+            this->Controls->Add(this->ribbon);
             this->Controls->Add(this->statusStrip1);
             this->Name = L"MainForm";
             this->StartPosition = System::Windows::Forms::FormStartPosition::CenterScreen;
@@ -745,6 +1066,7 @@ private: System::Windows::Forms::ToolStripButton^  toolBtnMdlResetCamera;
             this->statusStrip1->ResumeLayout(false);
             this->statusStrip1->PerformLayout();
             this->splitContainer1->Panel1->ResumeLayout(false);
+            this->splitContainer1->Panel1->PerformLayout();
             this->splitContainer1->Panel2->ResumeLayout(false);
             (cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->splitContainer1))->EndInit();
             this->splitContainer1->ResumeLayout(false);
@@ -758,6 +1080,9 @@ private: System::Windows::Forms::ToolStripButton^  toolBtnMdlResetCamera;
             this->toolStrip1->PerformLayout();
             this->ctxMenuExportBin->ResumeLayout(false);
             this->ctxMenuExportLocalization->ResumeLayout(false);
+            (cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->ribbon))->EndInit();
+            (cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->kryptonPanel1))->EndInit();
+            this->kryptonPanel1->ResumeLayout(false);
             this->ResumeLayout(false);
             this->PerformLayout();
 

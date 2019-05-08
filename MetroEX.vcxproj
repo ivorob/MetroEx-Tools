@@ -365,6 +365,12 @@
     <ProjectReference Include="$(SolutionDir)libs\MetroEXControls\MetroEXControls.csproj">
       <Project>{c49e5f43-f91a-4e8e-817f-79709f284236}</Project>
     </ProjectReference>
+    <ProjectReference Include="libs\Krypton\ComponentFactory.Krypton.Ribbon\ComponentFactory.Krypton.Ribbon.csproj">
+      <Project>{e90fc375-453d-4fe4-9822-ce1db85b6553}</Project>
+    </ProjectReference>
+    <ProjectReference Include="libs\Krypton\ComponentFactory.Krypton.Toolkit\ComponentFactory.Krypton.Toolkit.csproj">
+      <Project>{96ecaecc-54f8-4aa5-8591-b443c2d9565f}</Project>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <None Include="src\shaders\common.hlsli" />
