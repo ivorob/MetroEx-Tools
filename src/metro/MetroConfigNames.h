@@ -26,8 +26,6 @@ public:
 
 private:
     ConfigNamesDB()	{
-        // List of possible known names, thnx to @Modera
-        // Currently match with ~239 of 2512 files inside of configs.bin (04.04.2019)
         AddName("content\\scripts\\nvidia_types.bin");
         AddName("content\\scripts\\location_types.bin");
         AddName("content\\scripts\\action_types.bin");
@@ -39,7 +37,23 @@ private:
         AddName("content\\scripts\\render_limages.bin");
         AddName("content\\scripts\\render_static_textures.bin");
         AddName("content\\scripts\\color_anim_lib.bin");
+        // FONTS
+        AddName("content\\scripts\\fonts_cn.bin");
+        AddName("content\\scripts\\fonts_cz.bin");
+        AddName("content\\scripts\\fonts_de.bin");
+        AddName("content\\scripts\\fonts_es.bin");
+        AddName("content\\scripts\\fonts_fr.bin");
+        AddName("content\\scripts\\fonts_it.bin");
+        AddName("content\\scripts\\fonts_jp.bin");
+        AddName("content\\scripts\\fonts_ko.bin");
+        AddName("content\\scripts\\fonts_mx.bin");
+        AddName("content\\scripts\\fonts_pl.bin");
+        AddName("content\\scripts\\fonts_pt.bin");
+        AddName("content\\scripts\\fonts_ru.bin");
+        AddName("content\\scripts\\fonts_tw.bin");
+        AddName("content\\scripts\\fonts_uk.bin");
         AddName("content\\scripts\\fonts_us.bin");
+        //
         AddName("content\\scripts\\gamedata.bin");
         AddName("content\\scripts\\loader_data.bin");
         AddName("content\\scripts\\ehit_type.bin");
@@ -170,7 +184,6 @@ private:
         AddName("content\\scripts\\static_data\\8d41ffd3_8d41ffd3_5702e2dc.bin");
         AddName("content\\scripts\\static_data\\05275e6e_05275e6e_4f2ab9f8.bin");
         AddName("content\\scripts\\static_data\\54571bfa_54571bfa_fd805e46.bin");
-        AddName("content\\scripts\\fonts_ru.bin");
         AddName("content\\scripts\\m3\\01_dead_moscow.bin");
         AddName("content\\scripts\\joystick_delay.bin");
         AddName("content\\scripts\\joystick_delay.bin");

@@ -18,7 +18,11 @@ namespace MetroEX {
         this->CheckAndUnlockCreateBtn();
     }
 
-    void DlgCreateArchive::btnChooseSrcFolder_Click(System::Object^ sender, System::EventArgs^ e) {
+    void DlgCreateArchive::txtBlobFileName_TextChanged(System::Object^, System::EventArgs^) {
+        this->CheckAndUnlockCreateBtn();
+    }
+
+    void DlgCreateArchive::btnChooseSrcFolder_Click(System::Object^, System::EventArgs^) {
         fs::path folderPath = ChooseFolderDialog::ChooseFolder("Choose content foder...", this->Handle.ToPointer());
         if (!folderPath.empty()) {
             std::error_code err;
@@ -31,7 +35,7 @@ namespace MetroEX {
         }
     }
 
-    void DlgCreateArchive::btnChooseTarget_Click(System::Object^ sender, System::EventArgs^ e) {
+    void DlgCreateArchive::btnChooseTarget_Click(System::Object^, System::EventArgs^) {
         if (this->radioCreateNewArchive->Checked) {
             SaveFileDialog sfd;
             sfd.Title = L"Save vfx archive...";
@@ -56,10 +60,10 @@ namespace MetroEX {
         }
     }
 
-    void DlgCreateArchive::btnCreateArchive_Click(System::Object^ sender, System::EventArgs^ e) {
+    void DlgCreateArchive::btnCreateArchive_Click(System::Object^, System::EventArgs^) {
         fs::path vfxPath = StringToPath(this->txtTargetPath->Text);
         fs::path vfsName = vfxPath.stem().native() + L".vfs0";
-        if (this->radioExtendArchive->Checked) {
+        if (this->radioModifyArchive->Checked) {
             vfsName = StringToPath(this->txtBlobFileName->Text);
         }
         fs::path vfsPath = vfxPath.parent_path() / vfsName;
@@ -82,6 +86,14 @@ namespace MetroEX {
             MetroEX::ShowErrorMessageBox(this, L"Operation failed :(");
         } else {
             MetroEX::ShowInfoMessageBox(this, L"Operation succeeded :)");
+        }
+    }
+
+    void DlgCreateArchive::radioButtons_CheckedChanged(System::Object^ sender, System::EventArgs^ e) {
+        if (this->radioCreateNewArchive->Checked) {
+            this->txtBlobFileName->Enabled = false;
+        } else {
+            this->txtBlobFileName->Enabled = true;
         }
     }
 
@@ -314,12 +326,71 @@ namespace MetroEX {
         return result;
     }
 
+    struct FileFinderByName {
+        CharString nameToFind;
+
+        bool operator()(const MetroFile& f) {
+            return f.name == nameToFind;
+        }
+    };
+
     bool DlgCreateArchive::ModifyArchiveDescriptionFile(const fs::path& path, const CharString& vfsName, const MyArray<DirEntry>& files) {
         bool result = false;
 
+        LogPrint(LogLevel::Info, "Trying to modify " + path.u8string());
+
         VFXReader vfx;
         if (vfx.LoadFromFile(path)) {
-            //#SK_TODO: finish!
+            auto vfxPaks = vfx.GetAllPacks();
+            auto vfxFiles = vfx.GetAllFiles();
+
+            const size_t newPakIdx = vfxPaks.size();
+
+            size_t numReplacedFiles = 0;
+            for (const DirEntry& e : files) {
+                if (e.file.IsFile()) {
+                    FileFinderByName finder = { e.file.name };
+                    auto it = std::find_if(vfxFiles.begin(), vfxFiles.end(), finder);
+                    if (it != vfxFiles.end()) {
+                        const size_t idx = std::distance(vfxFiles.begin(), it);
+
+                        MetroFile mf = vfx.GetFile(idx);
+                        mf.pakIdx = newPakIdx;
+                        mf.offset = e.file.offset;
+                        mf.sizeCompressed = e.file.sizeCompressed;
+                        mf.sizeUncompressed = e.file.sizeUncompressed;
+                        vfx.ReplaceFileInfo(idx, mf);
+
+                        ++numReplacedFiles;
+
+                        LogPrintF(LogLevel::Info, "Modifying file %s at offset %zu", mf.name.c_str(), mf.offset);
+                    }
+                }
+            }
+
+            if (numReplacedFiles) {
+                const size_t nextChunk = vfxPaks.back().chunk + 1;
+
+                LogPrintF(LogLevel::Info, "Adding new package %s with chunk = %zu", vfsName.c_str(), nextChunk);
+
+                Package newPak;
+                newPak.name = vfsName;
+                newPak.chunk = nextChunk;
+                vfx.AddPackage(newPak);
+
+                if (vfx.SaveToFile(path)) {
+                    LogPrintF(LogLevel::Info, "Replaced %zu files", numReplacedFiles);
+                    LogPrint(LogLevel::Info, "Modification completed succesfully");
+
+                    result = true;
+                } else {
+                    LogPrint(LogLevel::Error, "Failed to overwrite " + path.u8string());
+                }
+            } else {
+                LogPrint(LogLevel::Error, "Couldn't find any file (none matched), modification failed");
+            }
+        } else {
+            LogPrint(LogLevel::Error, "Failed to open vfx file");
         }
 
         return result;

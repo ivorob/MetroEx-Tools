@@ -21,9 +21,6 @@ namespace MetroEX {
     public:
         DlgCreateArchive() {
             InitializeComponent();
-
-            //#NOTE_SK: disabled for now
-            this->groupBox1->Enabled = false;
         }
 
     protected:
@@ -37,7 +34,8 @@ namespace MetroEX {
 
     private: System::Windows::Forms::Button^  btnChooseSrcFolder;
     private: System::Windows::Forms::GroupBox^  groupBox1;
-    private: System::Windows::Forms::RadioButton^  radioExtendArchive;
+    private: System::Windows::Forms::RadioButton^  radioModifyArchive;
+
     private: System::Windows::Forms::RadioButton^  radioCreateNewArchive;
     private: System::Windows::Forms::Label^  label2;
     private: System::Windows::Forms::TextBox^  txtTargetPath;
@@ -69,7 +67,7 @@ namespace MetroEX {
             this->txtSourceFolder = (gcnew System::Windows::Forms::TextBox());
             this->btnChooseSrcFolder = (gcnew System::Windows::Forms::Button());
             this->groupBox1 = (gcnew System::Windows::Forms::GroupBox());
-            this->radioExtendArchive = (gcnew System::Windows::Forms::RadioButton());
+            this->radioModifyArchive = (gcnew System::Windows::Forms::RadioButton());
             this->radioCreateNewArchive = (gcnew System::Windows::Forms::RadioButton());
             this->label2 = (gcnew System::Windows::Forms::Label());
             this->txtTargetPath = (gcnew System::Windows::Forms::TextBox());
@@ -112,7 +110,7 @@ namespace MetroEX {
             // 
             // groupBox1
             // 
-            this->groupBox1->Controls->Add(this->radioExtendArchive);
+            this->groupBox1->Controls->Add(this->radioModifyArchive);
             this->groupBox1->Controls->Add(this->radioCreateNewArchive);
             this->groupBox1->Location = System::Drawing::Point(13, 57);
             this->groupBox1->Name = L"groupBox1";
@@ -121,15 +119,16 @@ namespace MetroEX {
             this->groupBox1->TabStop = false;
             this->groupBox1->Text = L"Operation type:";
             // 
-            // radioExtendArchive
+            // radioModifyArchive
             // 
-            this->radioExtendArchive->AutoSize = true;
-            this->radioExtendArchive->Location = System::Drawing::Point(7, 48);
-            this->radioExtendArchive->Name = L"radioExtendArchive";
-            this->radioExtendArchive->Size = System::Drawing::Size(134, 17);
-            this->radioExtendArchive->TabIndex = 1;
-            this->radioExtendArchive->Text = L"Extend existing archive";
-            this->radioExtendArchive->UseVisualStyleBackColor = true;
+            this->radioModifyArchive->AutoSize = true;
+            this->radioModifyArchive->Location = System::Drawing::Point(7, 48);
+            this->radioModifyArchive->Name = L"radioModifyArchive";
+            this->radioModifyArchive->Size = System::Drawing::Size(132, 17);
+            this->radioModifyArchive->TabIndex = 1;
+            this->radioModifyArchive->Text = L"Modify existing archive";
+            this->radioModifyArchive->UseVisualStyleBackColor = true;
+            this->radioModifyArchive->CheckedChanged += gcnew System::EventHandler(this, &DlgCreateArchive::radioButtons_CheckedChanged);
             // 
             // radioCreateNewArchive
             // 
@@ -142,6 +141,7 @@ namespace MetroEX {
             this->radioCreateNewArchive->TabStop = true;
             this->radioCreateNewArchive->Text = L"Create new archive";
             this->radioCreateNewArchive->UseVisualStyleBackColor = true;
+            this->radioCreateNewArchive->CheckedChanged += gcnew System::EventHandler(this, &DlgCreateArchive::radioButtons_CheckedChanged);
             // 
             // label2
             // 
@@ -181,11 +181,12 @@ namespace MetroEX {
             // 
             // txtBlobFileName
             // 
+            this->txtBlobFileName->Enabled = false;
             this->txtBlobFileName->Location = System::Drawing::Point(179, 117);
             this->txtBlobFileName->Name = L"txtBlobFileName";
-            this->txtBlobFileName->ReadOnly = true;
             this->txtBlobFileName->Size = System::Drawing::Size(533, 20);
             this->txtBlobFileName->TabIndex = 8;
+            this->txtBlobFileName->TextChanged += gcnew System::EventHandler(this, &DlgCreateArchive::txtBlobFileName_TextChanged);
             // 
             // label4
             // 
@@ -256,9 +257,11 @@ namespace MetroEX {
     private:
         void txtSourceFolder_TextChanged(System::Object^ sender, System::EventArgs^ e);
         void txtTargetPath_TextChanged(System::Object^ sender, System::EventArgs^ e);
+        void txtBlobFileName_TextChanged(System::Object^ sender, System::EventArgs^ e);
         void btnChooseSrcFolder_Click(System::Object^ sender, System::EventArgs^ e);
         void btnChooseTarget_Click(System::Object^ sender, System::EventArgs^ e);
         void btnCreateArchive_Click(System::Object^ sender, System::EventArgs^ e);
+        void radioButtons_CheckedChanged(System::Object^ sender, System::EventArgs^ e);
 
         void CheckAndUnlockCreateBtn();
 

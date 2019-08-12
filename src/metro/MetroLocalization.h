@@ -17,6 +17,9 @@ public:
     const WideString&   GetValue(const size_t idx) const;
 
 private:
+    void                DecodeString(const CharString& encodedStr, WideString& resultStr);
+    void                EncodeString(const WideString& srcStr, BytesArray& encodedStr);
+
     MyArray<wchar_t>    CollectUniqueChars() const;
     size_t              CalculateDataSize() const;
 
@@ -27,5 +30,6 @@ private:
     };
 
 private:
+    MyArray<wchar_t>    mCharsTable;
     MyArray<LocPair>    mStrings;
 };

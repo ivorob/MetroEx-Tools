@@ -246,3 +246,43 @@ enum class MetroBodyPart : size_t {
     Chest       = 8,
     Gear        = 9
 };
+
+enum class MetroLanguage : size_t {
+    CN = 0,
+    CZ,
+    DE,
+    ES,
+    FR,
+    IT,
+    JP,
+    KO,
+    MX,
+    PL,
+    PT,
+    RU,
+    TW,
+    UK,
+    US,
+
+    First = CN,
+    Last = US,
+    Count = Last + 1
+};
+
+static const CharString MetroLanguagesStr[scast<size_t>(MetroLanguage::Count)] = {
+    "cn",
+    "cz",
+    "de",
+    "es",
+    "fr",
+    "it",
+    "jp",
+    "ko",
+    "mx",
+    "pl",
+    "pt",
+    "ru",
+    "tw",
+    "uk",
+    "us"
+};

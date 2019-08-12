@@ -114,6 +114,86 @@ bool VFXReader::LoadFromFile(const fs::path& filePath) {
     return result;
 }
 
+void WriteStringZ(std::ofstream& stream, const CharString& str) {
+    stream.write(str.data(), str.length() + 1);
+}
+
+void WriteStringXored(std::ofstream& stream, const CharString& str) {
+    static const char sEmpty[3] = { 1, 0, 0 };
+    if (str.empty()) {
+        stream.write(sEmpty, sizeof(sEmpty));
+    } else {
+        BytesArray temp(str.length() + 1);
+        memcpy(temp.data(), str.data(), temp.size());
+
+        const uint8_t xorMask = scast<uint8_t>(rand() % 235) + 15;
+        for (size_t i = 0, end = temp.size() - 1; i < end; ++i) {
+            temp[i] ^= xorMask;
+        }
+
+        const uint16_t header = (scast<uint16_t>(xorMask) << 8) | scast<uint16_t>(temp.size() & 0xFF);
+        stream.write(rcast<const char*>(&header), sizeof(header));
+        stream.write(rcast<const char*>(temp.data()), temp.size());
+    }
+}
+
+void WriteU16(std::ofstream& stream, const uint16_t value) {
+    stream.write(rcast<const char*>(&value), sizeof(value));
+}
+
+void WriteU32(std::ofstream& stream, const uint32_t value) {
+    stream.write(rcast<const char*>(&value), sizeof(value));
+}
+
+bool VFXReader::SaveToFile(const fs::path& filePath) const {
+    bool result = false;
+
+    std::ofstream vfxFile(filePath, std::ofstream::binary);
+    if (vfxFile.good()) {
+        // write header
+        WriteU32(vfxFile, scast<uint32_t>(mVersion));
+        WriteU32(vfxFile, scast<uint32_t>(mCompressionType));
+        WriteStringZ(vfxFile, mContentVersion);
+        vfxFile.write(rcast<const char*>(&mGUID), sizeof(mGUID));
+        WriteU32(vfxFile, scast<uint32_t>(mPaks.size()));
+        WriteU32(vfxFile, scast<uint32_t>(mFiles.size()));
+        WriteU32(vfxFile, 0); // duplicates
+
+        // write package
+        for (auto& pak : mPaks) {
+            WriteStringZ(vfxFile, pak.name);
+            WriteU32(vfxFile, scast<uint32_t>(pak.levels.size()));
+            for (auto& s : pak.levels) {
+                WriteStringZ(vfxFile, s);
+            }
+            WriteU32(vfxFile, scast<uint32_t>(pak.chunk));
+        }
+
+        for (auto& mf : mFiles) {
+            WriteU16(vfxFile, scast<uint16_t>(mf.flags));
+            if (mf.IsFile()) {
+                WriteU16(vfxFile, scast<uint16_t>(mf.pakIdx));
+                WriteU32(vfxFile, scast<uint32_t>(mf.offset));
+                WriteU32(vfxFile, scast<uint32_t>(mf.sizeUncompressed));
+                WriteU32(vfxFile, scast<uint32_t>(mf.sizeCompressed));
+            } else {
+                WriteU16(vfxFile, scast<uint16_t>(mf.numFiles));
+                WriteU32(vfxFile, scast<uint32_t>(mf.firstFile));
+            }
+            WriteStringXored(vfxFile, mf.name);
+        }
+        WriteU32(vfxFile, 0);
+        WriteU32(vfxFile, 0);
+
+        vfxFile.flush();
+        vfxFile.close();
+
+        result = true;
+    }
+
+    return result;
+}
+
 void VFXReader::Close() {
     mPaks.resize(0);
     mFiles.resize(0);

@@ -3,6 +3,7 @@
 #include "metro/MetroTexturesDatabase.h"
 #include "metro/MetroConfigDatabase.h"
 #include "metro/MetroMaterialsDatabase.h"
+#include "metro/MetroFonts.h"
 
 static void LoadDatabasesFromFile(MetroConfigsDatabase*& cfgDb) {
     size_t fileIdx = 0;
@@ -33,6 +34,18 @@ static void LoadDatabasesFromFile(MetroConfigsDatabase*& cfgDb) {
         if (stream) {
             cfgDb = new MetroConfigsDatabase();
             cfgDb->LoadFromData(stream);
+        }
+    }
+
+    // load fonts
+    if (cfgDb) {
+        for (size_t i = scast<size_t>(MetroLanguage::First); i <= scast<size_t>(MetroLanguage::Last); ++i) {
+            CharString binName = R"(content\scripts\fonts_)";
+            binName += MetroLanguagesStr[i] + ".bin";
+            MemStream stream = cfgDb->GetFileStream(binName);
+            if (stream) {
+                MetroFontsDatabase::Get(scast<MetroLanguage>(i)).LoadFromData(stream);
+            }
         }
     }
 

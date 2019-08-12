@@ -24,6 +24,7 @@ public:
 
 public:
     bool                        LoadFromFile(const fs::path& filePath);
+    bool                        SaveToFile(const fs::path& filePath) const;
     void                        Close();
 
     const CharString&           GetContentVersion() const;
