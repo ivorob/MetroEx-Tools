@@ -1,5 +1,5 @@
 #include "MetroModel.h"
-#include "VFXReader.h"
+#include "MetroFileSystem.h"
 #include "MetroTexturesDatabase.h"
 #include "MetroSkeleton.h"
 #include "MetroMotion.h"
@@ -737,10 +737,10 @@ size_t MetroModel::GetNumMotions() const {
 }
 
 CharString MetroModel::GetMotionName(const size_t idx) const {
-    const size_t fileIdx = mMotions[idx].fileIdx;
-    const MetroFile& mf = VFXReader::Get().GetFile(fileIdx);
+    const MyHandle file = mMotions[idx].file;
+    const CharString& fileName = MetroFileSystem::Get().GetName(file);
 
-    CharString name = mf.name.substr(0, mf.name.length() - 3);
+    CharString name = fileName.substr(0, fileName.length() - 3);
     return name;
 }
 
@@ -757,10 +757,10 @@ const MetroMotion* MetroModel::GetMotion(const size_t idx) {
 
     if (!motion) {
         const CharString& name = this->GetMotionName(idx);
-        const size_t fileIdx = mMotions[idx].fileIdx;
+        const MyHandle file = mMotions[idx].file;
 
         motion = new MetroMotion(name);
-        MemStream stream = VFXReader::Get().ExtractFile(fileIdx);
+        MemStream stream = MetroFileSystem::Get().OpenFileStream(file);
         motion->LoadFromData(stream);
 
         mMotions[idx].motion = motion;
@@ -969,9 +969,9 @@ void MetroModel::ReadSubChunks(MemStream& stream) {
             case MC_SkeletonLink: {
                 CharString skeletonRef = stream.ReadStringZ();
                 mSkeletonPath = "content\\meshes\\" + skeletonRef + ".skeleton.bin";
-                const size_t fileIdx = VFXReader::Get().FindFile(mSkeletonPath);
-                if (MetroFile::InvalidFileIdx != fileIdx) {
-                    MemStream stream = VFXReader::Get().ExtractFile(fileIdx);
+                const MyHandle file = MetroFileSystem::Get().FindFile(mSkeletonPath);
+                if (kInvalidHandle != file) {
+                    MemStream stream = MetroFileSystem::Get().OpenFileStream(file);
                     if (stream) {
                         mSkeleton = new MetroSkeleton();
                         if (!mSkeleton->LoadFromData(stream)) {
@@ -1003,18 +1003,19 @@ void MetroModel::ReadSubChunks(MemStream& stream) {
 void MetroModel::LoadLinkedMeshes(const StringArray& links) {
     mCurrentMesh = nullptr;
 
+    const MetroFileSystem& mfs = MetroFileSystem::Get();
     for (const CharString& lnk : links) {
-        size_t fileIdx = MetroFile::InvalidFileIdx;
+        MyHandle file = kInvalidHandle;
 
-        if (lnk[0] == '.' && lnk[1] == '\\') { // relative path
-            const MetroFile* folder = VFXReader::Get().GetParentFolder(mThisFileIdx);
-            fileIdx = VFXReader::Get().FindFile(lnk.substr(2) + ".mesh", folder);
+        if (lnk[0] == '.' && lnk[1] == kPathSeparator) { // relative path
+            const MyHandle folder = mfs.GetParentFolder(mThisFileIdx);
+            file = mfs.FindFile(lnk.substr(2) + ".mesh", folder);
         } else {
-            CharString meshFilePath = "content\\meshes\\" + lnk + ".mesh";
-            fileIdx = VFXReader::Get().FindFile(meshFilePath);
+            CharString meshFilePath = R"(content\meshes\)" + lnk + ".mesh";
+            file = mfs.FindFile(meshFilePath);
         }
-        if (MetroFile::InvalidFileIdx != fileIdx) {
-            MemStream stream = VFXReader::Get().ExtractFile(fileIdx);
+        if (kInvalidHandle != file) {
+            MemStream stream = mfs.OpenFileStream(file);
             if (stream) {
                 this->ReadSubChunks(stream);
             }
@@ -1034,6 +1035,8 @@ void MetroModel::LoadMotions() {
         return;
     }
 
+    const MetroFileSystem& mfs = MetroFileSystem::Get();
+
     MyArray<size_t> motionFiles;
 
     StringArray motionFolders = StrSplit(motionsStr, ',');
@@ -1041,13 +1044,13 @@ void MetroModel::LoadMotions() {
     for (const CharString& f : motionFolders) {
         CharString fullFolderPath = "content\\motions\\" + f + "\\";
 
-        const auto& v = VFXReader::Get().FindFilesInFolder(fullFolderPath, ".m2");
+        const auto& files = mfs.FindFilesInFolder(fullFolderPath, ".m2");
 
-        for (const size_t idx : v) {
-            motionPaths.push_back(fullFolderPath + VFXReader::Get().GetFile(idx).name);
+        for (const MyHandle file : files) {
+            motionPaths.push_back(fullFolderPath + mfs.GetName(file));
         }
 
-        motionFiles.insert(motionFiles.end(), v.begin(), v.end());
+        motionFiles.insert(motionFiles.end(), files.begin(), files.end());
     }
 
     const size_t numBones = mSkeleton->GetNumBones();
@@ -1055,7 +1058,7 @@ void MetroModel::LoadMotions() {
     mMotions.reserve(motionFiles.size());
     size_t i = 0;
     for (const size_t idx : motionFiles) {
-        MemStream stream = VFXReader::Get().ExtractFile(idx);
+        MemStream stream = mfs.OpenFileStream(idx);
         if (stream) {
             MetroMotion motion(kEmptyString);
             if (motion.LoadHeader(stream) && motion.GetNumBones() == numBones) {

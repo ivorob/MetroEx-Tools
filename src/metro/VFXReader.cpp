@@ -101,6 +101,7 @@ bool VFXReader::LoadFromFile(const fs::path& filePath) {
 
             mBasePath = filePath.parent_path();
             mFileName = filePath.filename().string();
+            mAbsolutePath = fs::absolute(filePath);
             result = true;
 
             LogPrint(LogLevel::Info, "vfx loaded successfully");
@@ -209,7 +210,7 @@ size_t VFXReader::GetVersion() const {
     return mVersion;
 }
 
-MemStream VFXReader::ExtractFile(const size_t fileIdx, const size_t subOffset, const size_t subLength) {
+MemStream VFXReader::ExtractFile(const size_t fileIdx, const size_t subOffset, const size_t subLength) const {
     MemStream result;
 
     const MetroFile& mf = mFiles[fileIdx];
@@ -252,6 +253,10 @@ bool VFXReader::Good() const {
 
 const CharString& VFXReader::GetSelfName() const {
     return mFileName;
+}
+
+const fs::path& VFXReader::GetAbsolutePath() const {
+    return mAbsolutePath;
 }
 
 const MyArray<Package>& VFXReader::GetAllPacks() const {

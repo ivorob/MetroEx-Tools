@@ -138,6 +138,7 @@
     <ClCompile Include="src\metro\MetroCompression.cpp" />
     <ClCompile Include="src\metro\MetroBinArrayArchive.cpp" />
     <ClCompile Include="src\metro\MetroConfigDatabase.cpp" />
+    <ClCompile Include="src\metro\MetroFileSystem.cpp" />
     <ClCompile Include="src\metro\MetroFonts.cpp" />
     <ClCompile Include="src\metro\MetroLevel.cpp" />
     <ClCompile Include="src\metro\MetroDatabases.h" />
@@ -181,6 +182,7 @@
     <ClInclude Include="src\camera.h" />
     <ClInclude Include="src\dds_utils.h" />
     <ClInclude Include="src\metro\MetroConfigDatabase.h" />
+    <ClInclude Include="src\metro\MetroFileSystem.h" />
     <ClInclude Include="src\metro\MetroFonts.h" />
     <ClInclude Include="src\metro\MetroLevel.h" />
     <ClInclude Include="src\metro\MetroLocalization.h" />

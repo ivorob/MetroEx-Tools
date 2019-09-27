@@ -23,9 +23,13 @@ using WideString = std::wstring;
 using StringArray = MyArray<CharString>;
 using BytesArray = MyArray<uint8_t>;
 
+using MyHandle = size_t;
+
 static const uint32_t   kInvalidValue32 = ~0u;
 static const size_t     kInvalidValue = ~0;
+static const MyHandle   kInvalidHandle = ~0;
 static const CharString kEmptyString;
+static const char       kPathSeparator = '\\';
 
 
 #define rcast reinterpret_cast

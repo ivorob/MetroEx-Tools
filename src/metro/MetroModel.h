@@ -43,7 +43,7 @@ private:
 
 private:
     struct MotionInfo {
-        size_t          fileIdx;
+        MyHandle        file;
         size_t          numFrames;
         CharString      path;
         MetroMotion*    motion;

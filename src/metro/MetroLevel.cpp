@@ -1,5 +1,5 @@
 #include "MetroLevel.h"
-#include "VFXReader.h"
+#include "MetroFileSystem.h"
 
 
 enum DescriptionChunk : size_t {
@@ -23,10 +23,12 @@ MetroLevel::~MetroLevel() {
     std::for_each(mMeshes.begin(), mMeshes.end(), [](MetroMesh* mesh) { delete mesh; });
 }
 
-bool MetroLevel::LoadFromData(const uint8_t* data, const size_t length, const size_t fileIdx) {
+bool MetroLevel::LoadFromData(const uint8_t* data, const size_t length, const MyHandle file) {
     bool result = false;
 
-    const MetroFile* folder = VFXReader::Get().GetParentFolder(fileIdx);
+    const MetroFileSystem& mfs = MetroFileSystem::Get();
+
+    MyHandle folder = mfs.GetParentFolder(file);
     if (folder) {
         MemStream stream(data, length);
 
@@ -37,16 +39,16 @@ bool MetroLevel::LoadFromData(const uint8_t* data, const size_t length, const si
 
             for (size_t i = 0; i < numMeshes; ++i) {
                 CharString partName = stream.ReadStringZ();
-                const size_t descriptionFileIdx = VFXReader::Get().FindFile(partName, folder);
-                const size_t geometryFileIdx = VFXReader::Get().FindFile(partName + ".geom_pc", folder);
-                if (MetroFile::InvalidFileIdx != descriptionFileIdx && MetroFile::InvalidFileIdx != geometryFileIdx) {
+                const MyHandle descriptionFile = mfs.FindFile(partName, folder);
+                const MyHandle geometryFile = mfs.FindFile(partName + ".geom_pc", folder);
+                if (kInvalidHandle != descriptionFile && kInvalidHandle != geometryFile) {
                     MyArray<GeomObjectInfo> infos;
-                    MemStream stream = VFXReader::Get().ExtractFile(descriptionFileIdx);
+                    MemStream stream = mfs.OpenFileStream(descriptionFile);
                     if (stream) {
                         this->ReadGeometryDescription(stream, infos);
                     }
 
-                    if (!infos.empty() && (stream = VFXReader::Get().ExtractFile(geometryFileIdx))) {
+                    if (!infos.empty() && (stream = mfs.OpenFileStream(geometryFile))) {
                         this->ReadLevelGeometry(stream, infos);
                     }
                 }

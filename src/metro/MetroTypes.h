@@ -86,6 +86,9 @@ public:
     // duplication
     size_t      baseIdx;
     size_t      duplicates;
+
+    // fs linkage
+    size_t      overrideIdx;
 };
 
 

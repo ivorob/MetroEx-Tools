@@ -7,7 +7,7 @@
 #include "metro/MetroSkeleton.h"
 #include "metro/MetroMotion.h"
 #include "metro/MetroTexture.h"
-#include "metro/VFXReader.h"
+#include "metro/MetroFileSystem.h"
 #include "metro/MetroTexturesDatabase.h"
 
 #include "RenderPanel.h"
@@ -534,6 +534,8 @@ namespace MetroEX {
             return;
         }
 
+        const MetroFileSystem& mfs = MetroFileSystem::Get();
+
         const size_t numMeshes = mModel->GetNumMeshes();
         for (size_t i = 0; i < numMeshes; ++i) {
             const MetroMesh* mesh = mModel->GetMesh(i);
@@ -546,23 +548,21 @@ namespace MetroEX {
 
                 const bool contains = mModelTextures->ContainsKey(texNameManaged);
                 if (!contains) {
-                    CharString texturePath = CharString("content\\textures\\") + (sourceName.empty() ? textureName : sourceName);
+                    CharString texturePath = CharString(R"(content\textures\)") + (sourceName.empty() ? textureName : sourceName);
 
                     CharString texturePathBest = texturePath + ".512";
-                    size_t textureIdx = VFXReader::Get().FindFile(texturePathBest);
+                    MyHandle textureFile = mfs.FindFile(texturePathBest);
 
-                    if (textureIdx == MetroFile::InvalidFileIdx) {
+                    if (textureFile == kInvalidHandle) {
                         texturePathBest = texturePath + ".bin";
-                        textureIdx = VFXReader::Get().FindFile(texturePathBest);
+                        textureFile = mfs.FindFile(texturePathBest);
                     }
 
-                    if (textureIdx != MetroFile::InvalidFileIdx) {
-                        MemStream stream = VFXReader::Get().ExtractFile(textureIdx);
+                    if (textureFile != kInvalidHandle) {
+                        MemStream stream = mfs.OpenFileStream(textureFile);
                         if (stream) {
-                            const MetroFile& mf = VFXReader::Get().GetFile(textureIdx);
-
                             MetroTexture texture;
-                            if (texture.LoadFromData(stream, mf.idx)) {
+                            if (texture.LoadFromData(stream, textureFile)) {
                                 RenderTexture* rt = new RenderTexture;
                                 this->CreateRenderTexture(&texture, rt);
                                 mModelTextures->Add(texNameManaged, IntPtr(rt));

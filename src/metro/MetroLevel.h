@@ -17,7 +17,7 @@ public:
     MetroLevel();
     ~MetroLevel();
 
-    bool                LoadFromData(const uint8_t* data, const size_t length, const size_t fileIdx);
+    bool                LoadFromData(const uint8_t* data, const size_t length, const MyHandle file);
 
     size_t              GetNumMeshes() const;
     const MetroMesh*    GetMesh(const size_t idx) const;

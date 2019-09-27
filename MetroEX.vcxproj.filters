@@ -124,6 +124,9 @@
     <ClCompile Include="src\metro\MetroFonts.cpp">
       <Filter>src\metro</Filter>
     </ClCompile>
+    <ClCompile Include="src\metro\MetroFileSystem.cpp">
+      <Filter>src\metro</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\ui\RenderPanel.h">
@@ -262,6 +265,9 @@
       <Filter>src\ui</Filter>
     </ClInclude>
     <ClInclude Include="src\metro\MetroFonts.h">
+      <Filter>src\metro</Filter>
+    </ClInclude>
+    <ClInclude Include="src\metro\MetroFileSystem.h">
       <Filter>src\metro</Filter>
     </ClInclude>
   </ItemGroup>

@@ -30,11 +30,12 @@ public:
     const CharString&           GetContentVersion() const;
     size_t                      GetVersion() const;
 
-    MemStream                   ExtractFile(const size_t fileIdx, const size_t subOffset = kInvalidValue, const size_t subLength = kInvalidValue);
+    MemStream                   ExtractFile(const size_t fileIdx, const size_t subOffset = kInvalidValue, const size_t subLength = kInvalidValue) const;
 
     bool                        Good() const;
 
     const CharString&           GetSelfName() const;
+    const fs::path&             GetAbsolutePath() const;
 
     const MyArray<Package>&     GetAllPacks() const;
     const MyArray<MetroFile>&   GetAllFiles() const;
@@ -65,6 +66,7 @@ private:
     MetroGuid                   mGUID;
     CharString                  mFileName;
     fs::path                    mBasePath;
+    fs::path                    mAbsolutePath;
     MyArray<Package>            mPaks;
     MyArray<MetroFile>          mFiles;
     MyArray<size_t>             mFolders;

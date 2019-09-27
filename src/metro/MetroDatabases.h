@@ -1,5 +1,5 @@
 #pragma once
-#include "metro/VFXReader.h"
+#include "metro/MetroFileSystem.h"
 #include "metro/MetroTexturesDatabase.h"
 #include "metro/MetroConfigDatabase.h"
 #include "metro/MetroMaterialsDatabase.h"
@@ -10,27 +10,29 @@ static void LoadDatabasesFromFile(MetroConfigsDatabase*& cfgDb) {
 
     cfgDb = nullptr;
 
+    const MetroFileSystem& mfs = MetroFileSystem::Get();
+
     // Load textures_handles_storage.bin
-    fileIdx = VFXReader::Get().FindFile("content\\textures_handles_storage.bin");
+    fileIdx = mfs.FindFile(R"(content\textures_handles_storage.bin)");
     if (MetroFile::InvalidFileIdx != fileIdx) {
-        MemStream stream = VFXReader::Get().ExtractFile(fileIdx);
+        MemStream stream = mfs.OpenFileStream(fileIdx);
         if (stream) {
             MetroTexturesDatabase::Get().LoadFromData(stream);
         }
     }
 
-    fileIdx = VFXReader::Get().FindFile("content\\scripts\\texture_aliases.bin");
+    fileIdx = mfs.FindFile(R"(content\scripts\texture_aliases.bin)");
     if (MetroFile::InvalidFileIdx != fileIdx) {
-        MemStream stream = VFXReader::Get().ExtractFile(fileIdx);
+        MemStream stream = mfs.OpenFileStream(fileIdx);
         if (stream) {
             MetroTexturesDatabase::Get().LoadAliasesFromData(stream);
         }
     }
 
     // Load config.bin
-    fileIdx = VFXReader::Get().FindFile("content\\config.bin");
+    fileIdx = mfs.FindFile(R"(content\config.bin)");
     if (MetroFile::InvalidFileIdx != fileIdx) {
-        MemStream stream = VFXReader::Get().ExtractFile(fileIdx);
+        MemStream stream = mfs.OpenFileStream(fileIdx);
         if (stream) {
             cfgDb = new MetroConfigsDatabase();
             cfgDb->LoadFromData(stream);

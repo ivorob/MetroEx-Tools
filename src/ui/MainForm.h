@@ -1,6 +1,7 @@
 #pragma once
 #include "mycommon.h"
 #include "metro/MetroTypes.h"
+#include "metro/MetroFileSystem.h"
 
 #include <shlobj_core.h>
 
@@ -36,7 +37,7 @@ namespace MetroEX {
     };
 
     struct FileExtractionCtx {
-        size_t      fileIdx;
+        MyHandle    file;
         FileType    type;
 
         size_t      customOffset;
@@ -797,19 +798,19 @@ private: System::Windows::Forms::ToolStripButton^  toolBtnMdlResetCamera;
 
     private:
         void UpdateFilesList();
-        void AddFoldersRecursive(const MetroFile& dir, const size_t folderIdx, TreeNode^ rootItem, const size_t configBinIdx);
-        void AddBinaryArchive(const MetroFile& mf, const size_t fileIdx, TreeNode^ rootItem);
-        void DetectFileAndShow(const size_t fileIdx);
-        void ShowTexture(const size_t fileIdx);
-        void ShowModel(const size_t fileIdx);
-        void ShowSound(const size_t fileIdx);
-        void ShowLocalization(const size_t fileIdx);
+        void AddFoldersRecursive(MyHandle folder, TreeNode^ rootItem, const MyHandle configBinFile);
+        void AddBinaryArchive(MyHandle file, TreeNode^ rootItem);
+        void DetectFileAndShow(MyHandle file);
+        void ShowTexture(MyHandle file);
+        void ShowModel(MyHandle file);
+        void ShowSound(MyHandle file);
+        void ShowLocalization(MyHandle file);
         void SwitchViewPanel(PanelType t);
         void SwitchInfoPanel(PanelType t);
 
         // extraction
         bool EnsureExtractionOptions();
-        CharString MakeFileOutputName(const MetroFile& mf, const FileExtractionCtx& ctx);
+        CharString MakeFileOutputName(MyHandle file, const FileExtractionCtx& ctx);
         void TextureSaveHelper(const fs::path& folderPath, const FileExtractionCtx& ctx, const CharString& name);
         bool ExtractFile(const FileExtractionCtx& ctx, const fs::path& outPath);
         bool ExtractTexture(const FileExtractionCtx& ctx, const fs::path& outPath);

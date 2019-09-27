@@ -35,7 +35,7 @@ public:
     MetroTexture();
     ~MetroTexture();
 
-    bool            LoadFromData(MemStream& stream, const size_t fileIdx);
+    bool            LoadFromData(MemStream& stream, const MyHandle file);
     bool            LoadFromFile(const fs::path& fileName);
 
     bool            SaveAsDDS(const fs::path& filePath);

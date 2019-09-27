@@ -1,5 +1,5 @@
 #include "MetroTexture.h"
-#include "VFXReader.h"
+#include "MetroFileSystem.h"
 #include "MetroCompression.h"
 #include "MetroBinArchive.h"
 #include "MetroReflection.h"
@@ -102,15 +102,16 @@ MetroTexture::~MetroTexture() {
 }
 
 
-bool MetroTexture::LoadFromData(MemStream& stream, const size_t fileIdx) {
+bool MetroTexture::LoadFromData(MemStream& stream, const MyHandle file) {
     bool result = false;
 
     const uint8_t* data = stream.GetDataAtCursor();
     const size_t length = stream.Remains();
 
-    const MetroFile& mf = VFXReader::Get().GetFile(fileIdx);
+    const MetroFileSystem& mfs = MetroFileSystem::Get();
+    const CharString& fileName = mfs.GetName(file);
 
-    const bool isBin = StrEndsWith(mf.name, ".bin");
+    const bool isBin = StrEndsWith(fileName, ".bin");
     if (isBin) { //#NOTE_SK: Redux versions
         MetroBinArchive bin(kEmptyString, stream, MetroBinArchive::kHeaderNotExist);
         MetroReflectionReader reader = bin.ReflectionReader();
@@ -121,18 +122,20 @@ bool MetroTexture::LoadFromData(MemStream& stream, const size_t fileIdx) {
             // save the format so we don't have to guess it
             mFormat = scast<MetroTexture::PixelFormat>(texInfo.format);
 
-            const MetroFile* folder = VFXReader::Get().GetParentFolder(fileIdx);
-            if (folder) {
-                CharString texName = mf.name.substr(0, mf.name.length() - 4) + ".512";
-                size_t textureIdx = VFXReader::Get().FindFile(texName, folder);
-                if (textureIdx == kInvalidValue) {
-                    texName = mf.name.substr(0, mf.name.length() - 4) + ".512c";
-                    textureIdx = VFXReader::Get().FindFile(texName, folder);
+            const MyHandle folder = mfs.GetParentFolder(file);
+            if (folder != kInvalidHandle) {
+                const CharString& folderName = mfs.GetName(folder);
+                CharString texName = folderName.substr(0, folderName.length() - 4) + ".512";
+                MyHandle textureFile = mfs.FindFile(texName, folder);
+                if (textureFile == kInvalidHandle) {
+                    const CharString& textureName = mfs.GetName(textureFile);
+                    texName = textureName.substr(0, textureName.length() - 4) + ".512c";
+                    textureFile = mfs.FindFile(texName, folder);
                 }
-                if (textureIdx != kInvalidValue) {
-                    MemStream stream = VFXReader::Get().ExtractFile(textureIdx);
+                if (textureFile != kInvalidHandle) {
+                    MemStream stream = mfs.OpenFileStream(textureFile);
                     if (stream) {
-                        return this->LoadFromData(stream, textureIdx);
+                        return this->LoadFromData(stream, textureFile);
                     }
                 }
             }
@@ -180,7 +183,7 @@ bool MetroTexture::LoadFromData(MemStream& stream, const size_t fileIdx) {
 
             result = true;
         } else {
-            CharString extension = fs::path(mf.name).extension().string();
+            CharString extension = fs::path(fileName).extension().string();
             size_t dimension = 0, numMips = 0;
             if (extension == ".512" || extension == ".512c") {
                 dimension = 512;

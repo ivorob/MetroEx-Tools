@@ -1,4 +1,3 @@
-#include "metro/VFXReader.h"
 #include "metro/MetroDatabases.h"
 #include "metro/MetroTexture.h"
 #include "metro/MetroModel.h"
@@ -42,26 +41,26 @@ static const int    kImageIdxSound          = 8;
 static const int    kImageIdxModel          = 9;
 static const int    kImageIdxLocalization   = 10;
 
-static const size_t kFileIdxMask            = size_t(~0) >> 1;
+static const size_t kFileHandleMask         = size_t(~0) >> 1;
 static const size_t kFolderSortedFlag       = size_t(1) << ((sizeof(size_t) * 8) - 1);
 
 namespace MetroEX {
     ref struct FileTagData {
-        FileType fileType;      // type of file
-        size_t   fileIdx;       // index inside .vfx
-        size_t   subFileIdx;    // index inside .bin database
+        FileType    fileType;       // type of file
+        MyHandle    fileHandle;     // file system file handle
+        size_t      subFileIdx;     // index inside .bin database
 
-        FileTagData(const FileType _fileType, const size_t _fileIdx, const size_t _subFileIdx)
+        FileTagData(const FileType _fileType, MyHandle _file, const size_t _subFileIdx)
             : fileType(_fileType)
-            , fileIdx(_fileIdx)
+            , fileHandle(_file)
             , subFileIdx(_subFileIdx)
         { }
     };
 
-    static FileType DetectFileType(const MetroFile& mf) {
+    static FileType DetectFileType(const MyHandle file) {
         FileType result = FileType::Unknown;
 
-        String^ name = ToNetString(mf.name);
+        String^ name = ToNetString(MetroFileSystem::Get().GetName(file));
 
         if (name->EndsWith(L".dds") ||
             name->EndsWith(L".512") ||
@@ -224,11 +223,8 @@ namespace MetroEX {
         if (ofd.ShowDialog(this) == System::Windows::Forms::DialogResult::OK) {
             System::Windows::Forms::Cursor::Current = System::Windows::Forms::Cursors::WaitCursor;
 
-            if (VFXReader::Get().LoadFromFile(StringToPath(ofd.FileName))) {
-                MetroConfigsDatabase* cfgDb;
-                LoadDatabasesFromFile(cfgDb);
-                mConfigsDatabase = cfgDb;
-
+            if (MetroFileSystem::Get().InitFromSingleVFX(StringToPath(ofd.FileName))) {
+                mConfigsDatabase = new MetroConfigsDatabase();
                 this->UpdateFilesList();
             }
 
@@ -312,10 +308,11 @@ namespace MetroEX {
         }
 
         FileTagData^ fileData = safe_cast<FileTagData^>(e->Node->Tag);
-        const size_t fileIdx = fileData->fileIdx & kFileIdxMask;
+        MyHandle file = fileData->fileHandle & kFileHandleMask;
         const bool isSubFile = fileData->subFileIdx != kInvalidValue;
 
-        if (VFXReader::Get().Good()) {
+        const MetroFileSystem& mfs = MetroFileSystem::Get();
+        if (!mfs.Empty()) {
             if (isSubFile) {
                 const MetroConfigsDatabase::ConfigInfo& ci = mConfigsDatabase->GetFileByIdx(fileData->subFileIdx);
 
@@ -324,19 +321,19 @@ namespace MetroEX {
                 this->statusLabel3->Text = ci.offset.ToString();
                 this->statusLabel4->Text = ci.length.ToString();
             } else {
-                const MetroFile& mf = VFXReader::Get().GetFile(fileIdx);
-                if (mf.IsFile()) {
-                    this->statusLabel1->Text = mf.pakIdx.ToString();
-                    this->statusLabel2->Text = mf.offset.ToString();
-                    this->statusLabel3->Text = mf.sizeCompressed.ToString();
-                    this->statusLabel4->Text = mf.sizeUncompressed.ToString();
-
-                    this->DetectFileAndShow(fileIdx);
-                } else {
+                const bool isFolder = mfs.IsFolder(file);
+                if (isFolder) {
                     this->statusLabel1->Text = String::Empty;
                     this->statusLabel2->Text = String::Empty;
                     this->statusLabel3->Text = String::Empty;
                     this->statusLabel4->Text = String::Empty;
+                } else {
+                    this->statusLabel1->Text = L"0";//mf.pakIdx.ToString();
+                    this->statusLabel2->Text = L"0";//mf.offset.ToString();
+                    this->statusLabel3->Text = mfs.GetCompressedSize(file).ToString();
+                    this->statusLabel4->Text = mfs.GetUncompressedSize(file).ToString();
+
+                    this->DetectFileAndShow(file);
                 }
             }
         }
@@ -356,8 +353,10 @@ namespace MetroEX {
         UpdateNodeIcon(node, eNodeEventType::Open);
 
         FileTagData^ fileData = safe_cast<FileTagData^>(node->Tag);
-        if (0 == (fileData->fileIdx & kFolderSortedFlag)) {
-            const size_t fileIdx = fileData->fileIdx & kFileIdxMask;
+        const bool isSubTreeSorted = (fileData->fileHandle & kFolderSortedFlag) != 0;
+
+        if (!isSubTreeSorted) {
+            MyHandle file = fileData->fileHandle & kFileHandleMask;
 
             if (node->Nodes->Count > 1) {
                 System::Windows::Forms::Cursor::Current = System::Windows::Forms::Cursors::WaitCursor;
@@ -380,7 +379,7 @@ namespace MetroEX {
             }
 
             if (!this->filterableTreeView->IsFiltering) {
-                fileData->fileIdx = kFolderSortedFlag | fileIdx;
+                fileData->fileHandle = kFolderSortedFlag | file;
             }
         }
     }
@@ -390,19 +389,21 @@ namespace MetroEX {
             FileTagData^ fileData = safe_cast<FileTagData^>(e->Node->Tag);
             const bool isSubFile = fileData->subFileIdx != kInvalidValue;
 
-            const size_t fileIdx = fileData->fileIdx & kFileIdxMask;
-            const MetroFile& mf = VFXReader::Get().GetFile(fileIdx);
+            MyHandle file = fileData->fileHandle & kFileHandleMask;
 
-            const FileType fileType = isSubFile ? fileData->fileType : DetectFileType(mf);
+            const FileType fileType = isSubFile ? fileData->fileType : DetectFileType(file);
 
             memset(mExtractionCtx, 0, sizeof(FileExtractionCtx));
-            mExtractionCtx->fileIdx = fileIdx;
+            mExtractionCtx->file = file;
             mExtractionCtx->type = fileType;
             mExtractionCtx->customOffset = kInvalidValue;
             mExtractionCtx->customLength = kInvalidValue;
             mExtractionCtx->customFileName = "";
 
-            if (mf.IsFile()) {
+            const bool isFolder = MetroFileSystem::Get().IsFolder(file);
+            if (isFolder) {
+                this->ctxMenuExportFolder->Show(this->filterableTreeView->TreeView, e->X, e->Y);
+            } else {
                 switch (fileType) {
                     case FileType::Texture: {
                         this->ctxMenuExportTexture->Show(this->filterableTreeView->TreeView, e->X, e->Y);
@@ -440,8 +441,6 @@ namespace MetroEX {
                         this->ctxMenuExportRaw->Show(this->filterableTreeView->TreeView, e->X, e->Y);
                     } break;
                 }
-            } else {
-                this->ctxMenuExportFolder->Show(this->filterableTreeView->TreeView, e->X, e->Y);
             }
         }
     }
@@ -548,7 +547,7 @@ namespace MetroEX {
         if (!folderPath.empty()) {
             mExtractionCtx->batch = true;
             mExtractionCtx->raw = true;
-            mExtractionCtx->numFilesTotal = VFXReader::Get().CountFilesInFolder(mExtractionCtx->fileIdx);
+            mExtractionCtx->numFilesTotal = MetroFileSystem::Get().CountFilesInFolder(mExtractionCtx->file);
             mExtractionCtx->progress = 0;
 
             pin_ptr<IProgressDialog*> ipdPtr(&mExtractionProgressDlg);
@@ -572,7 +571,7 @@ namespace MetroEX {
             mExtractionCtx->batch = true;
             mExtractionCtx->raw = false;
 
-            mExtractionCtx->numFilesTotal = VFXReader::Get().CountFilesInFolder(mExtractionCtx->fileIdx);
+            mExtractionCtx->numFilesTotal = MetroFileSystem::Get().CountFilesInFolder(mExtractionCtx->file);
             mExtractionCtx->progress = 0;
 
             pin_ptr<IProgressDialog*> ipdPtr(&mExtractionProgressDlg);
@@ -594,13 +593,14 @@ namespace MetroEX {
         this->filterableTreeView->TreeView->BeginUpdate();
         this->filterableTreeView->TreeView->Nodes->Clear();
 
-        if (VFXReader::Get().Good()) {
+        MetroFileSystem& mfs = MetroFileSystem::Get();
+        if (!mfs.Empty()) {
             this->filterableTreeView->FilterTextBox->Text = String::Empty;
 
             // Get idx of config.bin
-            const size_t configBinIdx = VFXReader::Get().FindFile("content\\config.bin");
+            const MyHandle configBinFile = mfs.FindFile("content\\config.bin");
 
-            String^ rootName = ToNetString(VFXReader::Get().GetSelfName());
+            String^ rootName = "FS";//ToNetString(VFXReader::Get().GetSelfName());
             TreeNode^ rootNode = this->filterableTreeView->TreeView->Nodes->Add(rootName);
             size_t rootIdx = 0;
 
@@ -609,17 +609,15 @@ namespace MetroEX {
             rootNode->Tag = gcnew FileTagData(FileType::Folder, rootIdx, kInvalidValue);
             UpdateNodeIcon(rootNode);
 
-            const MetroFile& rootDir = VFXReader::Get().GetRootFolder();
-            for (const size_t idx : rootDir) {
-                const MetroFile& mf = VFXReader::Get().GetFile(idx);
-
-                if (mf.IsFile()) {
-                    const FileType fileType = DetectFileType(mf);
-                    TreeNode^ fileNode = rootNode->Nodes->Add(ToNetString(mf.name));
-                    fileNode->Tag = gcnew FileTagData(fileType, idx, kInvalidValue);
-                    UpdateNodeIcon(fileNode);
+            const MyHandle rootDir = mfs.GetRootFolder();
+            for (MyHandle child = mfs.GetFirstChild(rootDir); child != kInvalidHandle; child = mfs.GetNextChild(child)) {
+                if (mfs.IsFolder(child)) {
+                    this->AddFoldersRecursive(child, rootNode, configBinFile);
                 } else {
-                    this->AddFoldersRecursive(mf, idx, rootNode, configBinIdx);
+                    const FileType fileType = DetectFileType(child);
+                    TreeNode^ fileNode = rootNode->Nodes->Add(ToNetString(mfs.GetName(child)));
+                    fileNode->Tag = gcnew FileTagData(fileType, child, kInvalidValue);
+                    UpdateNodeIcon(fileNode);
                 }
             }
         }
@@ -627,39 +625,41 @@ namespace MetroEX {
         this->filterableTreeView->TreeView->EndUpdate();
     }
 
-    void MainForm::AddFoldersRecursive(const MetroFile& dir, const size_t folderIdx, TreeNode^ rootItem, const size_t configBinIdx) {
-        // Add root folder
-        TreeNode^ dirLeafNode = rootItem->Nodes->Add(ToNetString(dir.name));
+    void MainForm::AddFoldersRecursive(MyHandle folder, TreeNode^ rootItem, const MyHandle configBinFile) {
+        MetroFileSystem& mfs = MetroFileSystem::Get();
 
-        dirLeafNode->Tag = gcnew FileTagData(FileType::Folder, folderIdx, kInvalidValue);
+        // Add root folder
+        TreeNode^ dirLeafNode = rootItem->Nodes->Add(ToNetString(mfs.GetName(folder)));
+
+        dirLeafNode->Tag = gcnew FileTagData(FileType::Folder, folder, kInvalidValue);
         UpdateNodeIcon(dirLeafNode);
 
         // Add files and folders inside
-        for (const size_t idx : dir) {
-            const MetroFile& mf = VFXReader::Get().GetFile(idx);
-
-            if (mf.IsFile()) {
-                //==> Add file to list
-                if (idx == configBinIdx) {
-                    //====> config.bin
-                    this->AddBinaryArchive(mf, idx, dirLeafNode);
+        for (auto child = mfs.GetFirstChild(folder); child != kInvalidHandle; child = mfs.GetNextChild(child)) {
+            if (mfs.IsFolder(child)) {
+                // Add folder to list
+                this->AddFoldersRecursive(child, dirLeafNode, configBinFile);
+            } else {
+                // Add file to list
+                if (child == configBinFile) {
+                    // config.bin
+                    this->AddBinaryArchive(child, dirLeafNode);
                 } else {
                     //====> any other file
-                    const FileType fileType = DetectFileType(mf);
-                    TreeNode^ fileNode = dirLeafNode->Nodes->Add(ToNetString(mf.name));
-                    fileNode->Tag = gcnew FileTagData(fileType, idx, kInvalidValue);
+                    const FileType fileType = DetectFileType(child);
+                    TreeNode^ fileNode = dirLeafNode->Nodes->Add(ToNetString(mfs.GetName(child)));
+                    fileNode->Tag = gcnew FileTagData(fileType, child, kInvalidValue);
                     UpdateNodeIcon(fileNode);
                 }
-            } else {
-                //==> Add folder to list
-                this->AddFoldersRecursive(mf, idx, dirLeafNode, configBinIdx);
             }
         }
     }
 
-    void MainForm::AddBinaryArchive(const MetroFile& mf, const size_t fileIdx, TreeNode^ rootItem) {
-        TreeNode^ fileNode = rootItem->Nodes->Add(ToNetString(mf.name));
-        fileNode->Tag = gcnew FileTagData(FileType::BinArchive, fileIdx, kInvalidValue);
+    void MainForm::AddBinaryArchive(MyHandle file, TreeNode^ rootItem) {
+        MetroFileSystem& mfs = MetroFileSystem::Get();
+
+        TreeNode^ fileNode = rootItem->Nodes->Add(ToNetString(mfs.GetName(file)));
+        fileNode->Tag = gcnew FileTagData(FileType::BinArchive, file, kInvalidValue);
         UpdateNodeIcon(fileNode);
 
         for (size_t idx = 0, numFiles = mConfigsDatabase->GetNumFiles(); idx < numFiles; ++idx) {
@@ -686,7 +686,7 @@ namespace MetroEX {
                         String^ folderName = pathArray[i];
 
                         lastNode = lastNode->Nodes->Add(folderName);
-                        lastNode->Tag = gcnew FileTagData(FileType::FolderBin, fileIdx, 0);
+                        lastNode->Tag = gcnew FileTagData(FileType::FolderBin, file, 0);
                         lastNode->Name = curPath; // for Find()
                         UpdateNodeIcon(lastNode);
                     }
@@ -701,49 +701,47 @@ namespace MetroEX {
 
             // Add binary file
             TreeNode^ chunkNode = lastNode->Nodes->Add(fileName);
-            chunkNode->Tag = gcnew FileTagData(FileType::Bin, fileIdx, idx);
+            chunkNode->Tag = gcnew FileTagData(FileType::Bin, file, idx);
             UpdateNodeIcon(chunkNode);
         }
     }
 
-    void MainForm::DetectFileAndShow(const size_t fileIdx) {
-        const MetroFile& mf = VFXReader::Get().GetFile(fileIdx);
-        if (!mf.IsFile()) {
+    void MainForm::DetectFileAndShow(MyHandle file) {
+        const bool isFolder = MetroFileSystem::Get().IsFolder(file);
+        if (isFolder) {
             return;
         }
 
-        const FileType fileType = DetectFileType(mf);
+        const FileType fileType = DetectFileType(file);
 
         switch (fileType) {
             case FileType::Texture: {
-                this->ShowTexture(fileIdx);
+                this->ShowTexture(file);
             } break;
 
             case FileType::Model: {
-                this->ShowModel(fileIdx);
+                this->ShowModel(file);
             } break;
 
             case FileType::Sound: {
-                this->ShowSound(fileIdx);
+                this->ShowSound(file);
             } break;
 
         //case FileType::Level: {
-        //    this->ShowLevel(fileIdx);
+        //    this->ShowLevel(file);
         //} break;
 
             case FileType::Localization: {
-                this->ShowLocalization(fileIdx);
+                this->ShowLocalization(file);
             } break;
         }
     }
 
-    void MainForm::ShowTexture(const size_t fileIdx) {
-        const MetroFile& mf = VFXReader::Get().GetFile(fileIdx);
-
-        MemStream stream = VFXReader::Get().ExtractFile(fileIdx);
+    void MainForm::ShowTexture(MyHandle file) {
+        MemStream stream = MetroFileSystem::Get().OpenFileStream(file);
         if (stream) {
             MetroTexture texture;
-            if (texture.LoadFromData(stream, mf.idx)) {
+            if (texture.LoadFromData(stream, file)) {
                 if (texture.IsCubemap()) {
                     this->SwitchViewPanel(PanelType::Model);
                     mRenderPanel->SetCubemap(&texture);
@@ -762,15 +760,14 @@ namespace MetroEX {
         }
     }
 
-    void MainForm::ShowModel(const size_t fileIdx) {
+    void MainForm::ShowModel(MyHandle file) {
         this->SwitchViewPanel(PanelType::Model);
         this->SwitchInfoPanel(PanelType::Model);
 
-        const MetroFile& mf = VFXReader::Get().GetFile(fileIdx);
-        MemStream stream = VFXReader::Get().ExtractFile(fileIdx);
+        MemStream stream = MetroFileSystem::Get().OpenFileStream(file);
         if (stream) {
             MetroModel* mdl = new MetroModel();
-            if (mdl->LoadFromData(stream, fileIdx)) {
+            if (mdl->LoadFromData(stream, file)) {
                 mRenderPanel->SetModel(mdl);
 
                 mModelInfoPanel->ClearMotionsList();
@@ -812,12 +809,11 @@ namespace MetroEX {
         }
     }
 
-    void MainForm::ShowSound(const size_t fileIdx) {
+    void MainForm::ShowSound(MyHandle file) {
         this->SwitchViewPanel(PanelType::Sound);
         this->SwitchInfoPanel(PanelType::Sound);
 
-        const MetroFile& mf = VFXReader::Get().GetFile(fileIdx);
-        MemStream stream = VFXReader::Get().ExtractFile(fileIdx);
+        MemStream stream = MetroFileSystem::Get().OpenFileStream(file);
         if (stream) {
             MetroSound* snd = new MetroSound();
             if (snd->LoadFromData(stream)) {
@@ -828,12 +824,11 @@ namespace MetroEX {
         }
     }
 
-    void MainForm::ShowLocalization(const size_t fileIdx) {
+    void MainForm::ShowLocalization(MyHandle file) {
         this->SwitchViewPanel(PanelType::Localization);
         this->SwitchInfoPanel(PanelType::Localization);
 
-        const MetroFile& mf = VFXReader::Get().GetFile(fileIdx);
-        MemStream stream = VFXReader::Get().ExtractFile(fileIdx);
+        MemStream stream = MetroFileSystem::Get().OpenFileStream(file);
         if (stream) {
             MetroLocalization loc;
             if (loc.LoadFromData(stream)) {
@@ -939,8 +934,8 @@ namespace MetroEX {
         return result;
     }
 
-    CharString MainForm::MakeFileOutputName(const MetroFile& mf, const FileExtractionCtx& ctx) {
-        CharString name = mf.name;
+    CharString MainForm::MakeFileOutputName(MyHandle file, const FileExtractionCtx& ctx) {
+        CharString name = MetroFileSystem::Get().GetName(file);
 
         switch (ctx.type) {
             case FileType::Texture: {
@@ -992,33 +987,34 @@ namespace MetroEX {
     void MainForm::TextureSaveHelper(const fs::path& folderPath, const FileExtractionCtx& ctx, const CharString& name) {
         CharString textureName = CharString("content\\textures\\") + name;
 
+        const MetroFileSystem& mfs = MetroFileSystem::Get();
+
         CharString textureNameSrc = textureName + ".2048";
-        size_t textureIdx = VFXReader::Get().FindFile(textureNameSrc);
-        if (textureIdx == MetroFile::InvalidFileIdx) {
+        MyHandle textureHandle = mfs.FindFile(textureNameSrc);
+        if (textureHandle == kInvalidHandle) {
             textureNameSrc = textureName + ".1024";
-            textureIdx = VFXReader::Get().FindFile(textureNameSrc);
+            textureHandle = mfs.FindFile(textureNameSrc);
         }
-        if (textureIdx == MetroFile::InvalidFileIdx) {
+        if (textureHandle == kInvalidHandle) {
             textureNameSrc = textureName + ".512";
-            textureIdx = VFXReader::Get().FindFile(textureNameSrc);
+            textureHandle = mfs.FindFile(textureNameSrc);
         }
 
-        if (textureIdx == MetroFile::InvalidFileIdx) {
+        if (textureHandle == kInvalidHandle) {
             // last try - Redux .bin
             textureNameSrc = textureName + ".bin";
-            textureIdx = VFXReader::Get().FindFile(textureNameSrc);
+            textureHandle = mfs.FindFile(textureNameSrc);
         }
 
-        if (textureIdx != MetroFile::InvalidFileIdx) {
-            const MetroFile& txMf = VFXReader::Get().GetFile(textureIdx);
+        if (textureHandle == kInvalidHandle) {
             FileExtractionCtx tmpCtx = ctx;
             tmpCtx.type = FileType::Texture;
-            tmpCtx.fileIdx = textureIdx;
+            tmpCtx.file = textureHandle;
             tmpCtx.txSaveAsDds = false;
             tmpCtx.txSaveAsTga = true;
             tmpCtx.txSaveAsPng = false;
 
-            CharString outName = this->MakeFileOutputName(txMf, tmpCtx);
+            CharString outName = this->MakeFileOutputName(textureHandle, tmpCtx);
             this->ExtractTexture(tmpCtx, folderPath / outName);
         }
     }
@@ -1026,9 +1022,9 @@ namespace MetroEX {
     bool MainForm::ExtractFile(const FileExtractionCtx& ctx, const fs::path& outPath) {
         bool result = false;
 
-        const MetroFile& mf = VFXReader::Get().GetFile(ctx.fileIdx);
+        const CharString& fileName = MetroFileSystem::Get().GetName(ctx.file);
         String^ name = ctx.customFileName.empty() ?
-            ToNetString(mf.name) :
+            ToNetString(fileName) :
             ToNetString(ctx.customFileName);
 
         fs::path resultPath = outPath;
@@ -1048,7 +1044,7 @@ namespace MetroEX {
         }
 
         if (!resultPath.empty()) {
-            MemStream stream = VFXReader::Get().ExtractFile(ctx.fileIdx);
+            MemStream stream = MetroFileSystem::Get().OpenFileStream(ctx.file);
             if (stream) {
                 std::ofstream file(resultPath, std::ofstream::binary);
                 if (file.good()) {
@@ -1079,8 +1075,6 @@ namespace MetroEX {
     bool MainForm::ExtractTexture(const FileExtractionCtx& ctx, const fs::path& outPath) {
         bool result = false;
 
-        const MetroFile& mf = VFXReader::Get().GetFile(ctx.fileIdx);
-
         fs::path resultPath = outPath;
         if (resultPath.empty()) {
             String^ title;
@@ -1096,7 +1090,7 @@ namespace MetroEX {
                 filter = L"PNG images (*.png)|*.png";
             }
 
-            CharString nameWithExt = this->MakeFileOutputName(mf, ctx);
+            CharString nameWithExt = this->MakeFileOutputName(ctx.file, ctx);
 
             SaveFileDialog sfd;
             sfd.Title = title;
@@ -1113,10 +1107,10 @@ namespace MetroEX {
         }
 
         if (!resultPath.empty()) {
-            MemStream stream = VFXReader::Get().ExtractFile(ctx.fileIdx);
+            MemStream stream = MetroFileSystem::Get().OpenFileStream(ctx.file);
             if (stream) {
                 MetroTexture texture;
-                if (texture.LoadFromData(stream, mf.idx)) {
+                if (texture.LoadFromData(stream, ctx.file)) {
                     if (ctx.txSaveAsDds) {
                         if (ctx.txUseBC3) {
                             result = texture.SaveAsLegacyDDS(resultPath);
@@ -1138,8 +1132,6 @@ namespace MetroEX {
     bool MainForm::ExtractModel(const FileExtractionCtx& ctx, const fs::path& outPath) {
         bool result = false;
 
-        const MetroFile& mf = VFXReader::Get().GetFile(ctx.fileIdx);
-
         fs::path resultPath = outPath;
         if (resultPath.empty()) {
             String^ title;
@@ -1152,7 +1144,7 @@ namespace MetroEX {
                 filter = L"FBX model (*.fbx)|*.fbx";
             }
 
-            CharString nameWithExt = this->MakeFileOutputName(mf, ctx);
+            CharString nameWithExt = this->MakeFileOutputName(ctx.file, ctx);
 
             SaveFileDialog sfd;
             sfd.Title = title;
@@ -1169,10 +1161,10 @@ namespace MetroEX {
         }
 
         if (!resultPath.empty()) {
-            MemStream& stream = VFXReader::Get().ExtractFile(ctx.fileIdx);
+            MemStream& stream = MetroFileSystem::Get().OpenFileStream(ctx.file);
             if (stream) {
                 MetroModel mdl;
-                if (mdl.LoadFromData(stream, ctx.fileIdx)) {
+                if (mdl.LoadFromData(stream, ctx.file)) {
                     if (ctx.mdlSaveAsObj) {
                         mdl.SaveAsOBJ(resultPath, ctx.mdlExcludeCollision);
                     } else {
@@ -1227,8 +1219,6 @@ namespace MetroEX {
     bool MainForm::ExtractSound(const FileExtractionCtx& ctx, const fs::path& outPath) {
         bool result = false;
 
-        const MetroFile& mf = VFXReader::Get().GetFile(ctx.fileIdx);
-
         fs::path resultPath = outPath;
         if (resultPath.empty()) {
             String^ title;
@@ -1241,7 +1231,7 @@ namespace MetroEX {
                 filter = L"Wave sounds (*.wav)|*.wav";
             }
 
-            CharString nameWithExt = this->MakeFileOutputName(mf, ctx);
+            CharString nameWithExt = this->MakeFileOutputName(ctx.file, ctx);
 
             SaveFileDialog sfd;
             sfd.Title = title;
@@ -1258,7 +1248,7 @@ namespace MetroEX {
         }
 
         if (!resultPath.empty()) {
-            MemStream stream = VFXReader::Get().ExtractFile(ctx.fileIdx);
+            MemStream stream = MetroFileSystem::Get().OpenFileStream(ctx.file);
             if (stream) {
                 MetroSound sound;
                 if (sound.LoadFromData(stream)) {
@@ -1277,11 +1267,9 @@ namespace MetroEX {
     bool MainForm::ExtractLocalization(const FileExtractionCtx& ctx, const fs::path& outPath) {
         bool result = false;
 
-        const MetroFile& mf = VFXReader::Get().GetFile(ctx.fileIdx);
-
         fs::path resultPath = outPath;
         if (resultPath.empty()) {
-            CharString nameWithExt = this->MakeFileOutputName(mf, ctx);
+            CharString nameWithExt = this->MakeFileOutputName(ctx.file, ctx);
 
             SaveFileDialog sfd;
             sfd.Title = L"Save Excel 2003 XML...";
@@ -1298,7 +1286,7 @@ namespace MetroEX {
         }
 
         if (!resultPath.empty()) {
-            MemStream stream = VFXReader::Get().ExtractFile(ctx.fileIdx);
+            MemStream stream = MetroFileSystem::Get().OpenFileStream(ctx.file);
             if (stream) {
                 MetroLocalization loc;
                 if (loc.LoadFromData(stream)) {
@@ -1313,24 +1301,27 @@ namespace MetroEX {
     bool MainForm::ExtractFolderComplete(const FileExtractionCtx& ctx, const fs::path& outPath) {
         bool result = false;
 
-        const MetroFile& folder = VFXReader::Get().GetFile(ctx.fileIdx);
+        const MetroFileSystem& mfs = MetroFileSystem::Get();
+        const CharString& folderName = mfs.GetName(ctx.file);
 
-        fs::path curPath = outPath / folder.name;
+        fs::path curPath = outPath / folderName;
         fs::create_directories(curPath);
 
         FileExtractionCtx tmpCtx = ctx;
-        for (const size_t idx : folder) {
-            const MetroFile& mf = VFXReader::Get().GetFile(idx);
+        for (MyHandle child = mfs.GetFirstChild(ctx.file); child != kInvalidHandle; child = mfs.GetNextChild(child)) {
+            tmpCtx.file = child;
+            tmpCtx.type = DetectFileType(child);
 
-            tmpCtx.fileIdx = idx;
-            tmpCtx.type = DetectFileType(mf);
-
-            if (mf.IsFile()) {
+            const bool isFolder = mfs.IsFolder(child);
+            if (isFolder) {
+                this->ExtractFolderComplete(tmpCtx, curPath);
+            } else {
                 if (ctx.raw) {
-                    fs::path filePath = curPath / mf.name;
+                    const CharString& childName = mfs.GetName(child);
+                    fs::path filePath = curPath / childName;
                     this->ExtractFile(tmpCtx, filePath);
                 } else {
-                    fs::path filePath = curPath / this->MakeFileOutputName(mf, tmpCtx);
+                    fs::path filePath = curPath / this->MakeFileOutputName(child, tmpCtx);
                     switch (tmpCtx.type) {
                         case FileType::Texture: {
                             this->ExtractTexture(tmpCtx, filePath);
@@ -1358,8 +1349,6 @@ namespace MetroEX {
                 if (mExtractionProgressDlg) {
                     mExtractionProgressDlg->SetProgress64(mExtractionCtx->progress, mExtractionCtx->numFilesTotal);
                 }
-            } else {
-                this->ExtractFolderComplete(tmpCtx, curPath);
             }
         }
 

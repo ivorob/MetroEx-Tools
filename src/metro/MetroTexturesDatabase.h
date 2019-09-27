@@ -4,6 +4,13 @@
 
 class MetroReflectionReader;
 
+struct SurfaceTexturesList {
+    CharString  albedo;
+    CharString  bumpmap;
+    CharString  normalmap;
+    CharString  detmap;
+};
+
 struct MetroTextureInfo {
     enum class TextureType : uint8_t {
         Diffuse             = 0,
