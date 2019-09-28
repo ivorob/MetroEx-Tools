@@ -20,8 +20,8 @@ static const CharString sVFXList[] = {
     "content.vfx",
     "patch.vfx0",
     "patch_00.vfx",
-    "patch_01.vfx",
     "patch_01_shared.vfx",
+    "patch_01.vfx",
     "patch_02.vfx",
     "patch_03.vfx"
 };
@@ -37,7 +37,22 @@ MetroFileSystem::~MetroFileSystem() {
 
 bool MetroFileSystem::InitFromGameFolder(const fs::path& gameFolder) {
     this->Shutdown();
-    return false;
+
+    LogPrint(LogLevel::Info, "Initializing game FS (" + gameFolder.u8string() + ")");
+
+    bool result = false;
+    for (const CharString& s : sVFXList) {
+        LogPrint(LogLevel::Info, "Adding (" + s + ") to FS");
+
+        fs::path vfxPath = gameFolder / s;
+        result = this->AddVFX(vfxPath);
+        if (!result) {
+            LogPrint(LogLevel::Info, "Failed to add (" + s + ") to FS");
+            break;
+        }
+    }
+
+    return result;
 }
 
 bool MetroFileSystem::InitFromSingleVFX(const fs::path& vfxPath) {
@@ -52,11 +67,23 @@ void MetroFileSystem::Shutdown() {
     mEntries.clear();
 
     // Add root
-    mEntries.push_back({ kEmptyString, 0, kInvalidValue, kInvalidValue, kInvalidValue, kInvalidValue });
+    mEntries.push_back({ kEmptyString, 0, kInvalidValue, kInvalidValue, kInvalidValue, kInvalidValue, kInvalidValue });
 }
 
 bool MetroFileSystem::Empty() const {
     return mEntries.size() <= 1;
+}
+
+bool MetroFileSystem::IsSingleVFX() const {
+    return mLoadedVFX.size() == 1;
+}
+
+const CharString& MetroFileSystem::GetVFXName(const size_t idx) const {
+    if (idx < mLoadedVFX.size()) {
+        return mLoadedVFX[idx]->GetSelfName();
+    } else {
+        return kEmptyString;
+    }
 }
 
 MyHandle MetroFileSystem::GetRootFolder() const {
@@ -320,14 +347,18 @@ bool MetroFileSystem::AddVFX(const fs::path& vfxPath) {
     return result;
 }
 
-void MetroFileSystem::MergeFolderRecursive(const MyHandle parentEntry, const MetroFile& folder, const VFXReader& vfxReader) {
+void MetroFileSystem::MergeFolderRecursive(MyHandle parentEntry, const MetroFile& folder, const VFXReader& vfxReader) {
     MyHandle newFolder = parentEntry;
 
     //#NOTE_SK: this is to skip root folder that some of the game packs have
     if (!folder.name.empty()) {
-        newFolder = this->FindChild(parentEntry, folder.name);
-        if (newFolder == kInvalidHandle) {
-            newFolder = this->AddEntryFolder(parentEntry, folder.name);
+        StringArray parts = StrSplit(folder.name, kPathSeparator);
+        for (const CharString& s : parts) {
+            newFolder = this->FindChild(parentEntry, s);
+            if (newFolder == kInvalidHandle) {
+                newFolder = this->AddEntryFolder(parentEntry, s);
+            }
+            parentEntry = newFolder;
         }
     }
 

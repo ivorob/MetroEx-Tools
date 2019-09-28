@@ -25,6 +25,8 @@ public:
     bool                    InitFromSingleVFX(const fs::path& vfxPath);
     void                    Shutdown();
     bool                    Empty() const;
+    bool                    IsSingleVFX() const;
+    const CharString&       GetVFXName(const size_t idx) const;
 
     MyHandle                GetRootFolder() const;
 
@@ -50,7 +52,7 @@ public:
 
 private:
     bool                    AddVFX(const fs::path& vfxPath);
-    void                    MergeFolderRecursive(const MyHandle parentEntry, const MetroFile& folder, const VFXReader& vfxReader);
+    void                    MergeFolderRecursive(MyHandle parentEntry, const MetroFile& folder, const VFXReader& vfxReader);
     MyHandle                AddEntryFolder(const MyHandle parentEntry, const HashString& name);
     MyHandle                AddEntryFile(const MyHandle parentEntry, const MetroFile& file);
     MyHandle                AddEntryCommon(const MyHandle parentEntry, const MetroFSEntry& entry);

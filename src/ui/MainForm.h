@@ -153,7 +153,7 @@ namespace MetroEX {
     private: System::Windows::Forms::ToolStripMenuItem^  extractFolderWithConversionToolStripMenuItem;
 
     private: System::Windows::Forms::ToolStrip^  toolStrip1;
-    private: System::Windows::Forms::ToolStripButton^  toolBtnFileOpen;
+
     private: System::Windows::Forms::ToolStripButton^  toolBtnAbout;
     private: System::Windows::Forms::ToolStripSeparator^  toolStripSeparator2;
     private: System::Windows::Forms::ToolStripButton^  toolBtnImgEnableAlpha;
@@ -174,20 +174,24 @@ namespace MetroEX {
     private: System::Windows::Forms::ToolStripButton^  toolBtnTexturesDatabase;
     private: System::Windows::Forms::ContextMenuStrip^  ctxMenuExportLocalization;
     private: System::Windows::Forms::ToolStripMenuItem^  saveAsExcel2003XMLToolStripMenuItem;
-private: MetroEXControls::FilterableTreeView^  filterableTreeView;
+    private: MetroEXControls::FilterableTreeView^  filterableTreeView;
     private: System::Windows::Forms::ToolStripSeparator^  toolStripSeparator3;
     private: System::Windows::Forms::ToolStripSeparator^  toolStripSeparator4;
     private: System::Windows::Forms::ToolStripSplitButton^  toolStripSplitButton1;
     private: System::Windows::Forms::ToolStripMenuItem^  texturesConverterToolStripMenuItem;
     private: System::Windows::Forms::ToolStripMenuItem^  archiveToolToolStripMenuItem;
-private: System::Windows::Forms::ToolStripMenuItem^  localizationConversionToolStripMenuItem;
-private: System::Windows::Forms::ToolStripSeparator^  toolStripSeparator5;
-private: System::Windows::Forms::ToolStripButton^  toolBtnSettings;
-private: System::Windows::Forms::ToolStripSeparator^  toolStripSeparator6;
-private: System::Windows::Forms::ToolStripButton^  toolBtnMdlShowWireframe;
-private: System::Windows::Forms::ToolStripButton^  toolBtnMdlShowCollision;
-private: System::Windows::Forms::ToolStripSeparator^  toolStripSeparator7;
-private: System::Windows::Forms::ToolStripButton^  toolBtnMdlResetCamera;
+    private: System::Windows::Forms::ToolStripMenuItem^  localizationConversionToolStripMenuItem;
+    private: System::Windows::Forms::ToolStripSeparator^  toolStripSeparator5;
+    private: System::Windows::Forms::ToolStripButton^  toolBtnSettings;
+    private: System::Windows::Forms::ToolStripSeparator^  toolStripSeparator6;
+    private: System::Windows::Forms::ToolStripButton^  toolBtnMdlShowWireframe;
+    private: System::Windows::Forms::ToolStripButton^  toolBtnMdlShowCollision;
+    private: System::Windows::Forms::ToolStripSeparator^  toolStripSeparator7;
+    private: System::Windows::Forms::ToolStripButton^  toolBtnMdlResetCamera;
+    private: System::Windows::Forms::ToolStripSplitButton^  toolBtnFileOpen;
+    private: System::Windows::Forms::ToolStripMenuItem^  openSingleVFXArchiveToolStripMenuItem;
+    private: System::Windows::Forms::ToolStripMenuItem^  openGameFolderToolStripMenuItem;
+    private: System::Windows::Forms::ToolStripSeparator^  toolStripSeparator8;
     private: System::ComponentModel::IContainer^  components;
 
 
@@ -238,11 +242,16 @@ private: System::Windows::Forms::ToolStripButton^  toolBtnMdlResetCamera;
             this->extractFolderToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
             this->extractFolderWithConversionToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
             this->toolStrip1 = (gcnew System::Windows::Forms::ToolStrip());
-            this->toolBtnFileOpen = (gcnew System::Windows::Forms::ToolStripButton());
+            this->toolBtnFileOpen = (gcnew System::Windows::Forms::ToolStripSplitButton());
+            this->openGameFolderToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
+            this->toolStripSeparator8 = (gcnew System::Windows::Forms::ToolStripSeparator());
+            this->openSingleVFXArchiveToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
             this->toolStripSeparator1 = (gcnew System::Windows::Forms::ToolStripSeparator());
             this->toolBtnImgEnableAlpha = (gcnew System::Windows::Forms::ToolStripButton());
+            this->toolStripSeparator7 = (gcnew System::Windows::Forms::ToolStripSeparator());
             this->toolBtnMdlShowWireframe = (gcnew System::Windows::Forms::ToolStripButton());
             this->toolBtnMdlShowCollision = (gcnew System::Windows::Forms::ToolStripButton());
+            this->toolBtnMdlResetCamera = (gcnew System::Windows::Forms::ToolStripButton());
             this->toolStripSeparator3 = (gcnew System::Windows::Forms::ToolStripSeparator());
             this->toolBtnTexturesDatabase = (gcnew System::Windows::Forms::ToolStripButton());
             this->toolStripSeparator4 = (gcnew System::Windows::Forms::ToolStripSeparator());
@@ -260,8 +269,6 @@ private: System::Windows::Forms::ToolStripButton^  toolBtnMdlResetCamera;
             this->extractBinChunkToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
             this->ctxMenuExportLocalization = (gcnew System::Windows::Forms::ContextMenuStrip(this->components));
             this->saveAsExcel2003XMLToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
-            this->toolBtnMdlResetCamera = (gcnew System::Windows::Forms::ToolStripButton());
-            this->toolStripSeparator7 = (gcnew System::Windows::Forms::ToolStripSeparator());
             this->statusStrip1->SuspendLayout();
             (cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->splitContainer1))->BeginInit();
             this->splitContainer1->Panel1->SuspendLayout();
@@ -488,12 +495,12 @@ private: System::Windows::Forms::ToolStripButton^  toolBtnMdlResetCamera;
             // 
             this->ctxMenuExportRaw->Items->AddRange(gcnew cli::array< System::Windows::Forms::ToolStripItem^  >(1) { this->extractFileToolStripMenuItem });
             this->ctxMenuExportRaw->Name = L"ctxMenuExportRaw";
-            this->ctxMenuExportRaw->Size = System::Drawing::Size(138, 26);
+            this->ctxMenuExportRaw->Size = System::Drawing::Size(139, 26);
             // 
             // extractFileToolStripMenuItem
             // 
             this->extractFileToolStripMenuItem->Name = L"extractFileToolStripMenuItem";
-            this->extractFileToolStripMenuItem->Size = System::Drawing::Size(137, 22);
+            this->extractFileToolStripMenuItem->Size = System::Drawing::Size(138, 22);
             this->extractFileToolStripMenuItem->Text = L"Extract file...";
             this->extractFileToolStripMenuItem->Click += gcnew System::EventHandler(this, &MainForm::extractFileToolStripMenuItem_Click);
             // 
@@ -504,19 +511,19 @@ private: System::Windows::Forms::ToolStripButton^  toolBtnMdlResetCamera;
                     this->extractFolderWithConversionToolStripMenuItem
             });
             this->ctxMenuExportFolder->Name = L"ctxMenuExportFolder";
-            this->ctxMenuExportFolder->Size = System::Drawing::Size(240, 48);
+            this->ctxMenuExportFolder->Size = System::Drawing::Size(241, 48);
             // 
             // extractFolderToolStripMenuItem
             // 
             this->extractFolderToolStripMenuItem->Name = L"extractFolderToolStripMenuItem";
-            this->extractFolderToolStripMenuItem->Size = System::Drawing::Size(239, 22);
+            this->extractFolderToolStripMenuItem->Size = System::Drawing::Size(240, 22);
             this->extractFolderToolStripMenuItem->Text = L"Extract folder...";
             this->extractFolderToolStripMenuItem->Click += gcnew System::EventHandler(this, &MainForm::extractFolderToolStripMenuItem_Click);
             // 
             // extractFolderWithConversionToolStripMenuItem
             // 
             this->extractFolderWithConversionToolStripMenuItem->Name = L"extractFolderWithConversionToolStripMenuItem";
-            this->extractFolderWithConversionToolStripMenuItem->Size = System::Drawing::Size(239, 22);
+            this->extractFolderWithConversionToolStripMenuItem->Size = System::Drawing::Size(240, 22);
             this->extractFolderWithConversionToolStripMenuItem->Text = L"Extract folder with conversion...";
             this->extractFolderWithConversionToolStripMenuItem->Click += gcnew System::EventHandler(this, &MainForm::extractFolderWithConversionToolStripMenuItem_Click);
             // 
@@ -538,12 +545,35 @@ private: System::Windows::Forms::ToolStripButton^  toolBtnMdlResetCamera;
             // toolBtnFileOpen
             // 
             this->toolBtnFileOpen->DisplayStyle = System::Windows::Forms::ToolStripItemDisplayStyle::Image;
+            this->toolBtnFileOpen->DropDownItems->AddRange(gcnew cli::array< System::Windows::Forms::ToolStripItem^  >(3) {
+                this->openGameFolderToolStripMenuItem,
+                    this->toolStripSeparator8, this->openSingleVFXArchiveToolStripMenuItem
+            });
             this->toolBtnFileOpen->Image = (cli::safe_cast<System::Drawing::Image^>(resources->GetObject(L"toolBtnFileOpen.Image")));
             this->toolBtnFileOpen->ImageTransparentColor = System::Drawing::Color::Magenta;
             this->toolBtnFileOpen->Name = L"toolBtnFileOpen";
-            this->toolBtnFileOpen->Size = System::Drawing::Size(23, 22);
-            this->toolBtnFileOpen->ToolTipText = L"Open Metro Exodus archive...";
-            this->toolBtnFileOpen->Click += gcnew System::EventHandler(this, &MainForm::toolBtnFileOpen_Click);
+            this->toolBtnFileOpen->Size = System::Drawing::Size(32, 22);
+            this->toolBtnFileOpen->ToolTipText = L"Open Metro Exodus data folder...";
+            this->toolBtnFileOpen->ButtonClick += gcnew System::EventHandler(this, &MainForm::openGameFolderToolStripMenuItem_Click);
+            // 
+            // openGameFolderToolStripMenuItem
+            // 
+            this->openGameFolderToolStripMenuItem->Name = L"openGameFolderToolStripMenuItem";
+            this->openGameFolderToolStripMenuItem->Size = System::Drawing::Size(210, 22);
+            this->openGameFolderToolStripMenuItem->Text = L"Open game folder...";
+            this->openGameFolderToolStripMenuItem->Click += gcnew System::EventHandler(this, &MainForm::openGameFolderToolStripMenuItem_Click);
+            // 
+            // toolStripSeparator8
+            // 
+            this->toolStripSeparator8->Name = L"toolStripSeparator8";
+            this->toolStripSeparator8->Size = System::Drawing::Size(207, 6);
+            // 
+            // openSingleVFXArchiveToolStripMenuItem
+            // 
+            this->openSingleVFXArchiveToolStripMenuItem->Name = L"openSingleVFXArchiveToolStripMenuItem";
+            this->openSingleVFXArchiveToolStripMenuItem->Size = System::Drawing::Size(210, 22);
+            this->openSingleVFXArchiveToolStripMenuItem->Text = L"Open single VFX archive...";
+            this->openSingleVFXArchiveToolStripMenuItem->Click += gcnew System::EventHandler(this, &MainForm::openSingleVFXArchiveToolStripMenuItem_Click);
             // 
             // toolStripSeparator1
             // 
@@ -563,6 +593,11 @@ private: System::Windows::Forms::ToolStripButton^  toolBtnMdlResetCamera;
             this->toolBtnImgEnableAlpha->Text = L"A";
             this->toolBtnImgEnableAlpha->ToolTipText = L"Enable alpha";
             this->toolBtnImgEnableAlpha->Click += gcnew System::EventHandler(this, &MainForm::toolBtnImgEnableAlpha_Click);
+            // 
+            // toolStripSeparator7
+            // 
+            this->toolStripSeparator7->Name = L"toolStripSeparator7";
+            this->toolStripSeparator7->Size = System::Drawing::Size(6, 25);
             // 
             // toolBtnMdlShowWireframe
             // 
@@ -587,6 +622,17 @@ private: System::Windows::Forms::ToolStripButton^  toolBtnMdlResetCamera;
             this->toolBtnMdlShowCollision->Text = L"C";
             this->toolBtnMdlShowCollision->ToolTipText = L"Show collision (if any)";
             this->toolBtnMdlShowCollision->Click += gcnew System::EventHandler(this, &MainForm::toolBtnMdlShowCollision_Click);
+            // 
+            // toolBtnMdlResetCamera
+            // 
+            this->toolBtnMdlResetCamera->DisplayStyle = System::Windows::Forms::ToolStripItemDisplayStyle::Image;
+            this->toolBtnMdlResetCamera->Image = (cli::safe_cast<System::Drawing::Image^>(resources->GetObject(L"toolBtnMdlResetCamera.Image")));
+            this->toolBtnMdlResetCamera->ImageTransparentColor = System::Drawing::Color::Magenta;
+            this->toolBtnMdlResetCamera->Name = L"toolBtnMdlResetCamera";
+            this->toolBtnMdlResetCamera->Size = System::Drawing::Size(23, 22);
+            this->toolBtnMdlResetCamera->Text = L"R";
+            this->toolBtnMdlResetCamera->ToolTipText = L"Reset camera";
+            this->toolBtnMdlResetCamera->Click += gcnew System::EventHandler(this, &MainForm::toolBtnMdlResetCamera_Click);
             // 
             // toolStripSeparator3
             // 
@@ -686,19 +732,19 @@ private: System::Windows::Forms::ToolStripButton^  toolBtnMdlResetCamera;
             });
             this->ctxMenuExportBin->Name = L"ctxMenuExportBin";
             this->ctxMenuExportBin->RenderMode = System::Windows::Forms::ToolStripRenderMode::System;
-            this->ctxMenuExportBin->Size = System::Drawing::Size(163, 48);
+            this->ctxMenuExportBin->Size = System::Drawing::Size(164, 48);
             // 
             // extractBinRootToolStripMenuItem
             // 
             this->extractBinRootToolStripMenuItem->Name = L"extractBinRootToolStripMenuItem";
-            this->extractBinRootToolStripMenuItem->Size = System::Drawing::Size(162, 22);
+            this->extractBinRootToolStripMenuItem->Size = System::Drawing::Size(163, 22);
             this->extractBinRootToolStripMenuItem->Text = L"Extract root file...";
             this->extractBinRootToolStripMenuItem->Click += gcnew System::EventHandler(this, &MainForm::extractBinRootToolStripMenuItem_Click);
             // 
             // extractBinChunkToolStripMenuItem
             // 
             this->extractBinChunkToolStripMenuItem->Name = L"extractBinChunkToolStripMenuItem";
-            this->extractBinChunkToolStripMenuItem->Size = System::Drawing::Size(162, 22);
+            this->extractBinChunkToolStripMenuItem->Size = System::Drawing::Size(163, 22);
             this->extractBinChunkToolStripMenuItem->Text = L"Extract this file...";
             this->extractBinChunkToolStripMenuItem->Click += gcnew System::EventHandler(this, &MainForm::extractBinChunkToolStripMenuItem_Click);
             // 
@@ -706,30 +752,14 @@ private: System::Windows::Forms::ToolStripButton^  toolBtnMdlResetCamera;
             // 
             this->ctxMenuExportLocalization->Items->AddRange(gcnew cli::array< System::Windows::Forms::ToolStripItem^  >(1) { this->saveAsExcel2003XMLToolStripMenuItem });
             this->ctxMenuExportLocalization->Name = L"ctxMenuExportLocalization";
-            this->ctxMenuExportLocalization->Size = System::Drawing::Size(196, 26);
+            this->ctxMenuExportLocalization->Size = System::Drawing::Size(197, 26);
             // 
             // saveAsExcel2003XMLToolStripMenuItem
             // 
             this->saveAsExcel2003XMLToolStripMenuItem->Name = L"saveAsExcel2003XMLToolStripMenuItem";
-            this->saveAsExcel2003XMLToolStripMenuItem->Size = System::Drawing::Size(195, 22);
+            this->saveAsExcel2003XMLToolStripMenuItem->Size = System::Drawing::Size(196, 22);
             this->saveAsExcel2003XMLToolStripMenuItem->Text = L"Save as Excel 2003 XML";
             this->saveAsExcel2003XMLToolStripMenuItem->Click += gcnew System::EventHandler(this, &MainForm::saveAsExcel2003XMLToolStripMenuItem_Click);
-            // 
-            // toolBtnMdlResetCamera
-            // 
-            this->toolBtnMdlResetCamera->DisplayStyle = System::Windows::Forms::ToolStripItemDisplayStyle::Image;
-            this->toolBtnMdlResetCamera->Image = (cli::safe_cast<System::Drawing::Image^>(resources->GetObject(L"toolBtnMdlResetCamera.Image")));
-            this->toolBtnMdlResetCamera->ImageTransparentColor = System::Drawing::Color::Magenta;
-            this->toolBtnMdlResetCamera->Name = L"toolBtnMdlResetCamera";
-            this->toolBtnMdlResetCamera->Size = System::Drawing::Size(23, 22);
-            this->toolBtnMdlResetCamera->Text = L"R";
-            this->toolBtnMdlResetCamera->ToolTipText = L"Reset camera";
-            this->toolBtnMdlResetCamera->Click += gcnew System::EventHandler(this, &MainForm::toolBtnMdlResetCamera_Click);
-            // 
-            // toolStripSeparator7
-            // 
-            this->toolStripSeparator7->Name = L"toolStripSeparator7";
-            this->toolStripSeparator7->Size = System::Drawing::Size(6, 25);
             // 
             // MainForm
             // 
@@ -768,7 +798,8 @@ private: System::Windows::Forms::ToolStripButton^  toolBtnMdlResetCamera;
     private:
         void MainForm_Load(System::Object^ sender, System::EventArgs^ e);
         // toolstrip buttons
-        void toolBtnFileOpen_Click(System::Object^ sender, System::EventArgs^ e);
+        void openGameFolderToolStripMenuItem_Click(System::Object^ sender, System::EventArgs^ e);
+        void openSingleVFXArchiveToolStripMenuItem_Click(System::Object^ sender, System::EventArgs^ e);
         void toolBtnAbout_Click(System::Object^ sender, System::EventArgs^ e);
         void toolBtnImgEnableAlpha_Click(System::Object^  sender, System::EventArgs^ e);
         void toolBtnMdlShowWireframe_Click(System::Object^ sender, System::EventArgs^ e);

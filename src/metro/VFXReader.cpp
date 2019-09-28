@@ -271,131 +271,14 @@ const MyArray<size_t>& VFXReader::GetAllFolders() const {
     return mFolders;
 }
 
-const MetroFile* VFXReader::GetFolder(const CharString& folderPath, const MetroFile* inFolder) const {
-    CharString::size_type slashPos = folderPath.find_first_of('\\'), lastSlashPos = 0;
-    const MetroFile* folder = (inFolder == nullptr) ? &mFiles.front() : inFolder;
-    while (slashPos != CharString::npos) {
-        size_t folderIdx = MetroFile::InvalidFileIdx;
-
-        CharString name = folderPath.substr(lastSlashPos, slashPos - lastSlashPos);
-        for (const size_t idx : *folder) {
-            const MetroFile& mf = mFiles[idx];
-            if (name == mf.name) {
-                folderIdx = idx;
-                break;
-            }
-        }
-
-        if (folderIdx == MetroFile::InvalidFileIdx) { // failed to find
-            return nullptr;
-        }
-
-        lastSlashPos = slashPos + 1;
-        slashPos = folderPath.find_first_of('\\', lastSlashPos);
-        folder = &mFiles[folderIdx];
-    }
-
-    return folder;
-}
-
-size_t VFXReader::FindFile(const CharString& fileName, const MetroFile* inFolder) const {
-    size_t result = MetroFile::InvalidFileIdx;
-
-    const MetroFile* folder = (inFolder == nullptr) ? &mFiles.front() : inFolder;
-
-    CharString::size_type lastSlashPos = fileName.find_last_of('\\');
-    if (lastSlashPos != CharString::npos) {
-        lastSlashPos++;
-        folder = this->GetFolder(fileName.substr(0, lastSlashPos), inFolder);
-    } else {
-        lastSlashPos = 0;
-    }
-
-    if (folder) {
-        CharString name = fileName.substr(lastSlashPos);
-
-        for (const size_t idx : *folder) {
-            const MetroFile& mf = mFiles[idx];
-            if (name == mf.name) {
-                result = idx;
-                break;
-            }
-        }
-    }
-
-    return result;
-}
-
 const MetroFile& VFXReader::GetRootFolder() const {
     return mFiles.front();
-}
-
-const MetroFile* VFXReader::GetParentFolder(const size_t fileIdx) const {
-    const MetroFile* result = nullptr;
-
-    for (const size_t idx : mFolders) {
-        const MetroFile* folder = &mFiles[idx];
-        if (folder->ContainsFile(fileIdx)) {
-            result = folder;
-            break;
-        }
-    }
-
-    return result;
 }
 
 const MetroFile& VFXReader::GetFile(const size_t idx) const {
     return mFiles[idx];
 }
 
-size_t VFXReader::CountFilesInFolder(const size_t idx) const {
-    size_t result = 0;
-
-    const MetroFile& folder = mFiles[idx];
-    for (const size_t idx : folder) {
-        const MetroFile& mf = mFiles[idx];
-        if (mf.IsFile()) {
-            result++;
-        } else {
-            result += this->CountFilesInFolder(idx);
-        }
-    }
-
-    return result;
-}
-
-MyArray<size_t> VFXReader::FindFilesInFolder(const size_t folderIdx, const CharString& extension, const bool withSubfolders) {
-    MyArray<size_t> result;
-
-    const MetroFile& folder = mFiles[folderIdx];
-    if (!folder.IsFile()) {
-        for (const size_t idx : folder) {
-            const MetroFile& mf = mFiles[idx];
-
-            if (!mf.IsFile()) {
-                const MyArray<size_t>& v = this->FindFilesInFolder(mf.idx, extension, withSubfolders);
-                result.insert(result.end(), v.begin(), v.end());
-            } else {
-                if (StrEndsWith(mf.name, extension)) {
-                    result.push_back(mf.idx);
-                }
-            }
-        }
-    }
-
-    return std::move(result);
-}
-
-MyArray<size_t> VFXReader::FindFilesInFolder(const CharString& folder, const CharString& extension, const bool withSubfolders) {
-    MyArray<size_t> result;
-
-    const MetroFile* folderPtr = this->GetFolder(folder);
-    if (folderPtr) {
-        result = this->FindFilesInFolder(folderPtr->idx, extension, withSubfolders);
-    }
-
-    return std::move(result);
-}
 
 // modification
 void VFXReader::AddPackage(const Package& pak) {

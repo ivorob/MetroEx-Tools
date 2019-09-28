@@ -214,7 +214,22 @@ namespace MetroEX {
     }
 
     // toolstrip buttons
-    void MainForm::toolBtnFileOpen_Click(System::Object^, System::EventArgs^) {
+    void MainForm::openGameFolderToolStripMenuItem_Click(System::Object^ sender, System::EventArgs^ e) {
+        fs::path folderPath = ChooseFolderDialog::ChooseFolder("Choose game directory...", this->Handle.ToPointer());
+        if (!folderPath.empty()) {
+            System::Windows::Forms::Cursor::Current = System::Windows::Forms::Cursors::WaitCursor;
+
+            if (MetroFileSystem::Get().InitFromGameFolder(folderPath)) {
+                mConfigsDatabase = new MetroConfigsDatabase();
+                this->UpdateFilesList();
+            }
+
+            this->toolBtnTexturesDatabase->Enabled = true;
+            System::Windows::Forms::Cursor::Current = System::Windows::Forms::Cursors::Arrow;
+        }
+    }
+
+    void MainForm::openSingleVFXArchiveToolStripMenuItem_Click(System::Object^ sender, System::EventArgs^ e) {
         OpenFileDialog ofd;
         ofd.Title = L"Open Metro Exodus vfx file...";
         ofd.Filter = L"VFX files (*.vfx)|*.vfx";
@@ -600,7 +615,10 @@ namespace MetroEX {
             // Get idx of config.bin
             const MyHandle configBinFile = mfs.FindFile("content\\config.bin");
 
-            String^ rootName = "FS";//ToNetString(VFXReader::Get().GetSelfName());
+            String^ rootName = "FileSystem";
+            if (mfs.IsSingleVFX()) {
+                rootName = ToNetString(mfs.GetVFXName(0));
+            }
             TreeNode^ rootNode = this->filterableTreeView->TreeView->Nodes->Add(rootName);
             size_t rootIdx = 0;
 
