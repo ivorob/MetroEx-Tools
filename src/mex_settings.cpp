@@ -112,6 +112,7 @@ void MEXSettings::InitDefaults() {
     this->extraction.modelAnimsSeparate = false;
     this->extraction.modelSaveWithTextures = true;
     this->extraction.modelExcludeCollision = true;
+    this->extraction.modelSaveSurfaceSet = false;
     // textures
     this->extraction.textureFormat = Extraction::TexFormat::Tga;
     // sounds
@@ -132,6 +133,7 @@ bool MEXSettings::LoadExtraction(pugi::xml_document& doc) {
         this->extraction.modelAnimsSeparate = GetBoolValue(extractionNode, "modelAnimsSeparate", false);
         this->extraction.modelSaveWithTextures = GetBoolValue(extractionNode, "modelSaveWithTextures", true);
         this->extraction.modelExcludeCollision = GetBoolValue(extractionNode, "modelExcludeCollision", true);
+        this->extraction.modelSaveSurfaceSet = GetBoolValue(extractionNode, "modelSaveSurfaceSet", false);
 
         // textures
         this->extraction.textureFormat = NameToEnum<Extraction::TexFormat>(extractionNode.child("textureFormat").text().get(), sTexFormatNames);
@@ -158,6 +160,7 @@ bool MEXSettings::SaveExtraction(pugi::xml_document& doc) {
     SetBoolValue(extractionNode, "modelAnimsSeparate", this->extraction.modelAnimsSeparate);
     SetBoolValue(extractionNode, "modelSaveWithTextures", this->extraction.modelSaveWithTextures);
     SetBoolValue(extractionNode, "modelExcludeCollision", this->extraction.modelExcludeCollision);
+    SetBoolValue(extractionNode, "modelSaveSurfaceSet", this->extraction.modelSaveSurfaceSet);
 
     // textures
     extractionNode.append_child("textureFormat").text() = sTexFormatNames[scast<size_t>(this->extraction.textureFormat)].c_str();

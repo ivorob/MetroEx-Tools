@@ -192,6 +192,8 @@ namespace MetroEX {
     private: System::Windows::Forms::ToolStripMenuItem^  openSingleVFXArchiveToolStripMenuItem;
     private: System::Windows::Forms::ToolStripMenuItem^  openGameFolderToolStripMenuItem;
     private: System::Windows::Forms::ToolStripSeparator^  toolStripSeparator8;
+private: System::Windows::Forms::ToolStripSeparator^  toolStripSeparator9;
+private: System::Windows::Forms::ToolStripMenuItem^  saveSurfaceSetToolStripMenuItem;
     private: System::ComponentModel::IContainer^  components;
 
 
@@ -269,6 +271,8 @@ namespace MetroEX {
             this->extractBinChunkToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
             this->ctxMenuExportLocalization = (gcnew System::Windows::Forms::ContextMenuStrip(this->components));
             this->saveAsExcel2003XMLToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
+            this->toolStripSeparator9 = (gcnew System::Windows::Forms::ToolStripSeparator());
+            this->saveSurfaceSetToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
             this->statusStrip1->SuspendLayout();
             (cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->splitContainer1))->BeginInit();
             this->splitContainer1->Panel1->SuspendLayout();
@@ -410,12 +414,13 @@ namespace MetroEX {
             // 
             // ctxMenuExportTexture
             // 
-            this->ctxMenuExportTexture->Items->AddRange(gcnew cli::array< System::Windows::Forms::ToolStripItem^  >(4) {
+            this->ctxMenuExportTexture->Items->AddRange(gcnew cli::array< System::Windows::Forms::ToolStripItem^  >(6) {
                 this->saveAsDDSToolStripMenuItem,
-                    this->saveAsLegacyDDSToolStripMenuItem, this->saveAsTGAToolStripMenuItem, this->saveAsPNGToolStripMenuItem
+                    this->saveAsLegacyDDSToolStripMenuItem, this->saveAsTGAToolStripMenuItem, this->saveAsPNGToolStripMenuItem, this->toolStripSeparator9,
+                    this->saveSurfaceSetToolStripMenuItem
             });
             this->ctxMenuExportTexture->Name = L"ctxMenuExportTexture";
-            this->ctxMenuExportTexture->Size = System::Drawing::Size(184, 92);
+            this->ctxMenuExportTexture->Size = System::Drawing::Size(184, 142);
             // 
             // saveAsDDSToolStripMenuItem
             // 
@@ -761,6 +766,18 @@ namespace MetroEX {
             this->saveAsExcel2003XMLToolStripMenuItem->Text = L"Save as Excel 2003 XML";
             this->saveAsExcel2003XMLToolStripMenuItem->Click += gcnew System::EventHandler(this, &MainForm::saveAsExcel2003XMLToolStripMenuItem_Click);
             // 
+            // toolStripSeparator9
+            // 
+            this->toolStripSeparator9->Name = L"toolStripSeparator9";
+            this->toolStripSeparator9->Size = System::Drawing::Size(180, 6);
+            // 
+            // saveSurfaceSetToolStripMenuItem
+            // 
+            this->saveSurfaceSetToolStripMenuItem->Name = L"saveSurfaceSetToolStripMenuItem";
+            this->saveSurfaceSetToolStripMenuItem->Size = System::Drawing::Size(183, 22);
+            this->saveSurfaceSetToolStripMenuItem->Text = L"Save surface set...";
+            this->saveSurfaceSetToolStripMenuItem->Click += gcnew System::EventHandler(this, &MainForm::saveSurfaceSetToolStripMenuItem_Click);
+            // 
             // MainForm
             // 
             this->AutoScaleDimensions = System::Drawing::SizeF(6, 13);
@@ -816,6 +833,7 @@ namespace MetroEX {
         void saveAsLegacyDDSToolStripMenuItem_Click(System::Object^ sender, System::EventArgs^ e);
         void saveAsTGAToolStripMenuItem_Click(System::Object^ sender, System::EventArgs^ e);
         void saveAsPNGToolStripMenuItem_Click(System::Object^ sender, System::EventArgs^ e);
+        void saveSurfaceSetToolStripMenuItem_Click(System::Object^ sender, System::EventArgs^ e);
         void saveAsOBJToolStripMenuItem_Click(System::Object^ sender, System::EventArgs^ e);
         void saveAsFBXToolStripMenuItem_Click(System::Object^ sender, System::EventArgs^ e);
         void saveAsOGGToolStripMenuItem_Click(System::Object^ sender, System::EventArgs^ e);
@@ -845,6 +863,7 @@ namespace MetroEX {
         void TextureSaveHelper(const fs::path& folderPath, const FileExtractionCtx& ctx, const CharString& name);
         bool ExtractFile(const FileExtractionCtx& ctx, const fs::path& outPath);
         bool ExtractTexture(const FileExtractionCtx& ctx, const fs::path& outPath);
+        bool ExtractSurfaceSet(const FileExtractionCtx& ctx, const MetroSurfaceDescription& surface, const fs::path& outFolder);
         bool ExtractModel(const FileExtractionCtx& ctx, const fs::path& outPath);
         bool ExtractSound(const FileExtractionCtx& ctx, const fs::path& outPath);
         bool ExtractLocalization(const FileExtractionCtx& ctx, const fs::path& outPath);

@@ -1,15 +1,9 @@
 #pragma once
 #include "mycommon.h"
 #include "mymath.h"
+#include "MetroTypes.h"
 
 class MetroReflectionReader;
-
-struct SurfaceTexturesList {
-    CharString  albedo;
-    CharString  bumpmap;
-    CharString  normalmap;
-    CharString  detmap;
-};
 
 struct MetroTextureInfo {
     enum class TextureType : uint8_t {
@@ -111,6 +105,11 @@ public:
 
     const size_t            GetNumTextures() const;
     const MetroTextureInfo& GetTextureInfo(const size_t idx) const;
+
+    bool                    IsAlbedo(const MyHandle file) const;
+
+    MetroSurfaceDescription GetSurfaceSet(const MyHandle file) const;
+    MetroSurfaceDescription GetSurfaceSet(const HashString& textureName) const;
 
 private:
     MyArray<MetroTextureInfo>             mPool;

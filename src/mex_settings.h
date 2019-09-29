@@ -48,6 +48,7 @@ public:
         bool        modelAnimsSeparate;
         bool        modelSaveWithTextures;
         bool        modelExcludeCollision;
+        bool        modelSaveSurfaceSet;
         // textures
         TexFormat   textureFormat;
         // sounds

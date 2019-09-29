@@ -289,3 +289,10 @@ static const CharString MetroLanguagesStr[scast<size_t>(MetroLanguage::Count)] =
     "uk",
     "us"
 };
+
+struct MetroSurfaceDescription {
+    CharString  albedoPath;
+    CharString  bumpPath;
+    CharString  normalmapPath;
+    CharString  detailPath;
+};

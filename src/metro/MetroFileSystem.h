@@ -10,7 +10,7 @@ private:
     struct MetroFSEntry {
         HashString  name;
         size_t      idx;
-        size_t      parent;
+        MyHandle    parent;
         size_t      firstChild;
         size_t      nextSibling;
         size_t      vfxIdx;
@@ -33,6 +33,7 @@ public:
     bool                    IsFolder(const MyHandle entry) const;
     bool                    IsFile(const MyHandle entry) const;
     const CharString&       GetName(const MyHandle entry) const;
+    CharString              GetFullPath(const MyHandle entry) const;
     size_t                  GetCompressedSize(const MyHandle entry) const;
     size_t                  GetUncompressedSize(const MyHandle entry) const;
 

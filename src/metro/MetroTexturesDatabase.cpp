@@ -3,6 +3,10 @@
 #include "MetroTypes.h"
 #include "MetroBinArrayArchive.h"
 #include "MetroBinArchive.h"
+#include "MetroFileSystem.h"
+
+
+static const CharString kTexturesFolder = R"(content\textures\)";
 
 
 void MetroTextureInfo::Serialize(MetroReflectionReader& s) {
@@ -165,4 +169,61 @@ const size_t MetroTexturesDatabase::GetNumTextures() const {
 
 const MetroTextureInfo& MetroTexturesDatabase::GetTextureInfo(const size_t idx) const {
     return mPool[idx];
+}
+
+bool MetroTexturesDatabase::IsAlbedo(const MyHandle file) const {
+    bool result = false;
+
+    CharString fullPath = MetroFileSystem::Get().GetFullPath(file);
+    CharString relativePath = fullPath.substr(kTexturesFolder.length());
+
+    // remove extension
+    const CharString::size_type dotPos = relativePath.find_last_of('.');
+    if (dotPos != CharString::npos) {
+        relativePath = relativePath.substr(0, dotPos);
+    }
+
+    const MetroTextureInfo* mti = this->GetInfoByName(relativePath);
+    result = (mti != nullptr && mti->type == scast<uint32_t>(MetroTextureInfo::TextureType::Diffuse));
+
+    return result;
+}
+
+MetroSurfaceDescription MetroTexturesDatabase::GetSurfaceSet(const MyHandle file) const {
+    CharString fullPath = MetroFileSystem::Get().GetFullPath(file);
+    CharString relativePath = fullPath.substr(kTexturesFolder.length());
+
+    // remove extension
+    const CharString::size_type dotPos = relativePath.find_last_of('.');
+    if (dotPos != CharString::npos) {
+        relativePath = relativePath.substr(0, dotPos);
+    }
+
+    return this->GetSurfaceSet(relativePath);
+}
+
+MetroSurfaceDescription MetroTexturesDatabase::GetSurfaceSet(const HashString& textureName) const {
+    MetroSurfaceDescription result;
+
+    const MetroTextureInfo* mti = this->GetInfoByName(textureName);
+    if (mti) {
+        result.albedoPath = kTexturesFolder + mti->source_name + '.' + std::to_string(mti->width);
+
+        const MetroTextureInfo* mtiBump;
+        if (!mti->bump_name.empty() && (mtiBump = this->GetInfoByName(mti->bump_name), mtiBump != nullptr)) {
+            result.bumpPath = kTexturesFolder + mtiBump->source_name + '.' + std::to_string(mtiBump->width);
+
+            const MetroTextureInfo* mtiNormalMap;
+            if (!mtiBump->bump_name.empty() && (mtiNormalMap = this->GetInfoByName(mtiBump->bump_name), mtiNormalMap != nullptr)) {
+                result.normalmapPath = kTexturesFolder + mtiNormalMap->source_name + '.' + std::to_string(mtiNormalMap->width);
+            }
+
+            const MetroTextureInfo* mtiDetail;
+            if (!mtiBump->det_name.empty() && (mtiDetail = this->GetInfoByName(mtiBump->det_name), mtiDetail != nullptr)) {
+                result.detailPath = kTexturesFolder + mtiDetail->source_name + '.' + std::to_string(mtiDetail->width);
+            }
+        }
+    }
+
+    return result;
 }

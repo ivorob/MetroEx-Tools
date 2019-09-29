@@ -67,7 +67,7 @@ void MetroFileSystem::Shutdown() {
     mEntries.clear();
 
     // Add root
-    mEntries.push_back({ kEmptyString, 0, kInvalidValue, kInvalidValue, kInvalidValue, kInvalidValue, kInvalidValue });
+    mEntries.push_back({ kEmptyString, 0, kInvalidHandle, kInvalidValue, kInvalidValue, kInvalidValue, kInvalidValue });
 }
 
 bool MetroFileSystem::Empty() const {
@@ -112,6 +112,26 @@ const CharString& MetroFileSystem::GetName(const MyHandle entry) const {
     } else {
         return kEmptyString;
     }
+}
+
+CharString MetroFileSystem::GetFullPath(const MyHandle entry) const {
+    CharString result;
+
+    if (entry < mEntries.size()) {
+        const MetroFSEntry& fsEntry = mEntries[entry];
+        result = fsEntry.name.str;
+
+        MyHandle parentHandle = fsEntry.parent;
+        const MyHandle rootHandle = this->GetRootFolder();
+        while (parentHandle != kInvalidHandle && parentHandle != rootHandle) {
+            const CharString& parentName = mEntries[parentHandle].name.str;
+            result = parentName + kPathSeparator + result;
+
+            parentHandle = mEntries[parentHandle].parent;
+        }
+    }
+
+    return result;
 }
 
 size_t MetroFileSystem::GetCompressedSize(const MyHandle entry) const {

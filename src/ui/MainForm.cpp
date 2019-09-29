@@ -220,7 +220,10 @@ namespace MetroEX {
             System::Windows::Forms::Cursor::Current = System::Windows::Forms::Cursors::WaitCursor;
 
             if (MetroFileSystem::Get().InitFromGameFolder(folderPath)) {
-                mConfigsDatabase = new MetroConfigsDatabase();
+                MetroConfigsDatabase* cfgDb;
+                LoadDatabasesFromFile(cfgDb);
+                mConfigsDatabase = cfgDb;
+
                 this->UpdateFilesList();
             }
 
@@ -239,7 +242,10 @@ namespace MetroEX {
             System::Windows::Forms::Cursor::Current = System::Windows::Forms::Cursors::WaitCursor;
 
             if (MetroFileSystem::Get().InitFromSingleVFX(StringToPath(ofd.FileName))) {
-                mConfigsDatabase = new MetroConfigsDatabase();
+                MetroConfigsDatabase* cfgDb;
+                LoadDatabasesFromFile(cfgDb);
+                mConfigsDatabase = cfgDb;
+
                 this->UpdateFilesList();
             }
 
@@ -421,6 +427,10 @@ namespace MetroEX {
             } else {
                 switch (fileType) {
                     case FileType::Texture: {
+                        //#NOTE_SK: if this is an albedo texture - enable whole set extraction option
+                        const bool isAlbedo = MetroTexturesDatabase::Get().IsAlbedo(file);
+                        this->saveSurfaceSetToolStripMenuItem->Enabled = isAlbedo;
+
                         this->ctxMenuExportTexture->Show(this->filterableTreeView->TreeView, e->X, e->Y);
                     } break;
 
@@ -499,6 +509,16 @@ namespace MetroEX {
         if (!this->ExtractTexture(*mExtractionCtx, fs::path())) {
             MetroEX::ShowErrorMessageBox(this, L"Failed to extract texture!");
         }
+    }
+
+    void MainForm::saveSurfaceSetToolStripMenuItem_Click(System::Object^ sender, System::EventArgs^ e) {
+        MetroSurfaceDescription surface = MetroTexturesDatabase::Get().GetSurfaceSet(mExtractionCtx->file);
+
+        this->EnsureExtractionOptions();
+        mExtractionCtx->batch = false;
+        mExtractionCtx->raw = false;
+
+        this->ExtractSurfaceSet(*mExtractionCtx, surface, fs::path());
     }
 
     void MainForm::saveAsOBJToolStripMenuItem_Click(System::Object^, System::EventArgs^) {
@@ -1147,6 +1167,41 @@ namespace MetroEX {
         return result;
     }
 
+    bool MainForm::ExtractSurfaceSet(const FileExtractionCtx& ctx, const MetroSurfaceDescription& surface, const fs::path& outFolder) {
+        bool result = false;
+
+        fs::path folderPath = outFolder;
+        if (folderPath.empty()) {
+            folderPath = ChooseFolderDialog::ChooseFolder("Choose output directory...", this->Handle.ToPointer());
+        }
+
+        if (!folderPath.empty()) {
+            const MetroFileSystem& mfs = MetroFileSystem::Get();
+
+            FileExtractionCtx setCtx = ctx;
+            setCtx.type = FileType::Texture;
+
+#define EXTRACT_SURFACE_TEXTURE(tex_name)                                                       \
+            if (!surface.tex_name##Path.empty()) {                                              \
+                const MyHandle file = mfs.FindFile(surface.tex_name##Path);                     \
+                if (file != kInvalidHandle) {                                                   \
+                    setCtx.file = file;                                                         \
+                    CharString nameWithExt = this->MakeFileOutputName(file, setCtx);            \
+                    result = this->ExtractTexture(setCtx, folderPath / nameWithExt) && result;  \
+                }                                                                               \
+            }
+
+            EXTRACT_SURFACE_TEXTURE(albedo);
+            EXTRACT_SURFACE_TEXTURE(bump);
+            EXTRACT_SURFACE_TEXTURE(normalmap);
+            EXTRACT_SURFACE_TEXTURE(detail);
+
+#undef EXTRACT_SURFACE_TEXTURE
+        }
+
+        return result;
+    }
+
     bool MainForm::ExtractModel(const FileExtractionCtx& ctx, const fs::path& outPath) {
         bool result = false;
 
@@ -1178,6 +1233,8 @@ namespace MetroEX {
             }
         }
 
+        const MEXSettings& settings = MEXSettings::Get();
+
         if (!resultPath.empty()) {
             MemStream& stream = MetroFileSystem::Get().OpenFileStream(ctx.file);
             if (stream) {
@@ -1190,13 +1247,13 @@ namespace MetroEX {
                         if (ctx.mdlExcludeCollision) {
                             fbxOptions |= MetroModel::FBX_Export_ExcludeCollision;
                         }
-                        if (MEXSettings::Get().extraction.modelSaveWithAnims && !MEXSettings::Get().extraction.modelAnimsSeparate) {
+                        if (settings.extraction.modelSaveWithAnims && !settings.extraction.modelAnimsSeparate) {
                             fbxOptions |= MetroModel::FBX_Export_Animation;
                         }
 
                         mdl.SaveAsFBX(resultPath, fbxOptions);
 
-                        if (MEXSettings::Get().extraction.modelSaveWithAnims && MEXSettings::Get().extraction.modelAnimsSeparate) {
+                        if (settings.extraction.modelSaveWithAnims && settings.extraction.modelAnimsSeparate) {
                             fbxOptions = MetroModel::FBX_Export_Skeleton | MetroModel::FBX_Export_Animation;
 
                             fs::path modelBasePath = resultPath.parent_path() / resultPath.stem();
@@ -1215,12 +1272,12 @@ namespace MetroEX {
                             if (!mesh->materials.empty()) {
                                 const CharString& textureName = mesh->materials.front();
 
-                                CharString sourceName = MetroTexturesDatabase::Get().GetSourceName(textureName);
-                                CharString bumpName = MetroTexturesDatabase::Get().GetSourceName(textureName);
-
-                                this->TextureSaveHelper(folderPath, ctx, sourceName);
-                                if (!bumpName.empty()) {
-                                    this->TextureSaveHelper(folderPath, ctx, bumpName + "_nm");
+                                if (settings.extraction.modelSaveSurfaceSet) {
+                                    MetroSurfaceDescription surface = MetroTexturesDatabase::Get().GetSurfaceSet(textureName);
+                                    this->ExtractSurfaceSet(ctx, surface, folderPath);
+                                } else {
+                                    const CharString& sourceName = MetroTexturesDatabase::Get().GetSourceName(textureName);
+                                    this->TextureSaveHelper(folderPath, ctx, sourceName);
                                 }
                             }
                         }

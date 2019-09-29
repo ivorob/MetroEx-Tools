@@ -52,6 +52,8 @@ namespace MetroEX {
     private: System::Windows::Forms::CheckBox^  chkMdlExcludeCollision;
     private: System::Windows::Forms::CheckBox^  chkMdlSaveWithTextures;
     private: System::Windows::Forms::Label^  label2;
+    private: System::Windows::Forms::CheckBox^  chkMdlSaveSurfaceTextures;
+
 
     protected:
 
@@ -76,6 +78,10 @@ namespace MetroEX {
             this->radioSndAsWAV = (gcnew System::Windows::Forms::RadioButton());
             this->radioSndAsOGG = (gcnew System::Windows::Forms::RadioButton());
             this->groupBox2 = (gcnew System::Windows::Forms::GroupBox());
+            this->chkMdlSaveSurfaceTextures = (gcnew System::Windows::Forms::CheckBox());
+            this->chkMdlExcludeCollision = (gcnew System::Windows::Forms::CheckBox());
+            this->chkMdlSaveWithTextures = (gcnew System::Windows::Forms::CheckBox());
+            this->label2 = (gcnew System::Windows::Forms::Label());
             this->chkMdlExportAnimsSeparate = (gcnew System::Windows::Forms::CheckBox());
             this->chkMdlExportAnims = (gcnew System::Windows::Forms::CheckBox());
             this->radioMdlAsFBX = (gcnew System::Windows::Forms::RadioButton());
@@ -89,9 +95,6 @@ namespace MetroEX {
             this->btnOK = (gcnew System::Windows::Forms::Button());
             this->label1 = (gcnew System::Windows::Forms::Label());
             this->btnCancel = (gcnew System::Windows::Forms::Button());
-            this->label2 = (gcnew System::Windows::Forms::Label());
-            this->chkMdlSaveWithTextures = (gcnew System::Windows::Forms::CheckBox());
-            this->chkMdlExcludeCollision = (gcnew System::Windows::Forms::CheckBox());
             this->tableLayoutPanel1->SuspendLayout();
             this->tabControl1->SuspendLayout();
             this->tabPageExport->SuspendLayout();
@@ -189,6 +192,7 @@ namespace MetroEX {
             // 
             // groupBox2
             // 
+            this->groupBox2->Controls->Add(this->chkMdlSaveSurfaceTextures);
             this->groupBox2->Controls->Add(this->chkMdlExcludeCollision);
             this->groupBox2->Controls->Add(this->chkMdlSaveWithTextures);
             this->groupBox2->Controls->Add(this->label2);
@@ -202,6 +206,46 @@ namespace MetroEX {
             this->groupBox2->TabIndex = 4;
             this->groupBox2->TabStop = false;
             this->groupBox2->Text = L"Models options:";
+            // 
+            // chkMdlSaveSurfaceTextures
+            // 
+            this->chkMdlSaveSurfaceTextures->AutoSize = true;
+            this->chkMdlSaveSurfaceTextures->Location = System::Drawing::Point(242, 68);
+            this->chkMdlSaveSurfaceTextures->Name = L"chkMdlSaveSurfaceTextures";
+            this->chkMdlSaveSurfaceTextures->Size = System::Drawing::Size(142, 17);
+            this->chkMdlSaveSurfaceTextures->TabIndex = 7;
+            this->chkMdlSaveSurfaceTextures->Text = L"Save all surface textures";
+            this->chkMdlSaveSurfaceTextures->UseVisualStyleBackColor = true;
+            // 
+            // chkMdlExcludeCollision
+            // 
+            this->chkMdlExcludeCollision->AutoSize = true;
+            this->chkMdlExcludeCollision->Location = System::Drawing::Point(242, 44);
+            this->chkMdlExcludeCollision->Name = L"chkMdlExcludeCollision";
+            this->chkMdlExcludeCollision->Size = System::Drawing::Size(150, 17);
+            this->chkMdlExcludeCollision->TabIndex = 6;
+            this->chkMdlExcludeCollision->Text = L"Exclude collision geometry";
+            this->chkMdlExcludeCollision->UseVisualStyleBackColor = true;
+            // 
+            // chkMdlSaveWithTextures
+            // 
+            this->chkMdlSaveWithTextures->AutoSize = true;
+            this->chkMdlSaveWithTextures->Checked = true;
+            this->chkMdlSaveWithTextures->CheckState = System::Windows::Forms::CheckState::Checked;
+            this->chkMdlSaveWithTextures->Location = System::Drawing::Point(242, 20);
+            this->chkMdlSaveWithTextures->Name = L"chkMdlSaveWithTextures";
+            this->chkMdlSaveWithTextures->Size = System::Drawing::Size(113, 17);
+            this->chkMdlSaveWithTextures->TabIndex = 5;
+            this->chkMdlSaveWithTextures->Text = L"Save with textures";
+            this->chkMdlSaveWithTextures->UseVisualStyleBackColor = true;
+            // 
+            // label2
+            // 
+            this->label2->BorderStyle = System::Windows::Forms::BorderStyle::Fixed3D;
+            this->label2->Location = System::Drawing::Point(233, 9);
+            this->label2->Name = L"label2";
+            this->label2->Size = System::Drawing::Size(2, 106);
+            this->label2->TabIndex = 4;
             // 
             // chkMdlExportAnimsSeparate
             // 
@@ -346,38 +390,6 @@ namespace MetroEX {
             this->btnCancel->Text = L"Cancel";
             this->btnCancel->UseVisualStyleBackColor = true;
             this->btnCancel->Click += gcnew System::EventHandler(this, &DlgSettings::btnCancel_Click);
-            // 
-            // label2
-            // 
-            this->label2->BorderStyle = System::Windows::Forms::BorderStyle::Fixed3D;
-            this->label2->Location = System::Drawing::Point(233, 9);
-            this->label2->Name = L"label2";
-            this->label2->Size = System::Drawing::Size(2, 106);
-            this->label2->TabIndex = 4;
-            // 
-            // chkMdlSaveWithTextures
-            // 
-            this->chkMdlSaveWithTextures->AutoSize = true;
-            this->chkMdlSaveWithTextures->Checked = true;
-            this->chkMdlSaveWithTextures->CheckState = System::Windows::Forms::CheckState::Checked;
-            this->chkMdlSaveWithTextures->Location = System::Drawing::Point(242, 20);
-            this->chkMdlSaveWithTextures->Name = L"chkMdlSaveWithTextures";
-            this->chkMdlSaveWithTextures->Size = System::Drawing::Size(113, 17);
-            this->chkMdlSaveWithTextures->TabIndex = 5;
-            this->chkMdlSaveWithTextures->Text = L"Save with textures";
-            this->chkMdlSaveWithTextures->UseVisualStyleBackColor = true;
-            // 
-            // chkMdlExcludeCollision
-            // 
-            this->chkMdlExcludeCollision->AutoSize = true;
-            this->chkMdlSaveWithTextures->Checked = true;
-            this->chkMdlSaveWithTextures->CheckState = System::Windows::Forms::CheckState::Checked;
-            this->chkMdlExcludeCollision->Location = System::Drawing::Point(242, 44);
-            this->chkMdlExcludeCollision->Name = L"chkMdlExcludeCollision";
-            this->chkMdlExcludeCollision->Size = System::Drawing::Size(150, 17);
-            this->chkMdlExcludeCollision->TabIndex = 6;
-            this->chkMdlExcludeCollision->Text = L"Exclude collision geometry";
-            this->chkMdlExcludeCollision->UseVisualStyleBackColor = true;
             // 
             // DlgSettings
             // 
