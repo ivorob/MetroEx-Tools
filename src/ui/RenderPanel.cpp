@@ -542,15 +542,17 @@ namespace MetroEX {
             RenderGeometry* rg = mModelGeometries[scast<int>(i)];
             if (rg) {
                 const CharString& textureName = mesh->materials.front();
-                const CharString& sourceName = MetroTexturesDatabase::Get().GetSourceName(textureName);
+                const CharString sourceName = MetroTexturesDatabase::Get().GetSourceName(textureName);
 
                 String^ texNameManaged = ToNetString(textureName);
 
                 const bool contains = mModelTextures->ContainsKey(texNameManaged);
                 if (!contains) {
+                    const MetroTextureInfo* mti = MetroTexturesDatabase::Get().GetInfoByName(textureName);
+
                     CharString texturePath = CharString(R"(content\textures\)") + (sourceName.empty() ? textureName : sourceName);
 
-                    CharString texturePathBest = texturePath + ".512";
+                    CharString texturePathBest = (mti == nullptr) ? texturePath + ".512" : (texturePath + '.' + std::to_string(mti->width));
                     MyHandle textureFile = mfs.FindFile(texturePathBest);
 
                     if (textureFile == kInvalidHandle) {

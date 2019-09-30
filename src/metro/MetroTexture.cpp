@@ -124,12 +124,15 @@ bool MetroTexture::LoadFromData(MemStream& stream, const MyHandle file) {
 
             const MyHandle folder = mfs.GetParentFolder(file);
             if (folder != kInvalidHandle) {
-                const CharString& folderName = mfs.GetName(folder);
-                CharString texName = folderName.substr(0, folderName.length() - 4) + ".512";
+                CharString textureName = mfs.GetName(file);
+
+                CharString resStr = std::to_string(texInfo.width);
+
+                CharString texName = textureName.substr(0, textureName.length() - 4) + '.' + resStr;
                 MyHandle textureFile = mfs.FindFile(texName, folder);
                 if (textureFile == kInvalidHandle) {
-                    const CharString& textureName = mfs.GetName(textureFile);
-                    texName = textureName.substr(0, textureName.length() - 4) + ".512c";
+                    textureName = mfs.GetName(file);
+                    texName = textureName.substr(0, textureName.length() - 4) + '.' + resStr + 'c';
                     textureFile = mfs.FindFile(texName, folder);
                 }
                 if (textureFile != kInvalidHandle) {
