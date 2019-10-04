@@ -75,28 +75,28 @@ namespace MetroEX {
         }
 
     public:
-        bool        InitGraphics();
-        void        SetModel(MetroModel* model);
-        MetroModel* GetModel();
-        void        SetCubemap(MetroTexture* cubemap);
-        void        SetShowWireframe(const bool wireframe);
-        void        SetShowCollision(const bool collision);
+        bool                InitGraphics();
+        void                SetModel(MetroModel* model);
+        MetroModel*         GetModel();
+        void                SetCubemap(MetroTexture* cubemap);
+        void                SetShowWireframe(const bool wireframe);
+        void                SetShowCollision(const bool collision);
 
-        void        SwitchMotion(const size_t idx);
-        bool        IsPlayingAnim();
-        void        PlayAnim(const bool play);
+        void                SwitchMotion(const size_t idx);
+        bool                IsPlayingAnim();
+        void                PlayAnim(const bool play);
 
-        void        ResetCamera(const bool forceRender);
+        void                ResetCamera(const bool forceRender);
 
     private:
-        bool        CreateRenderTargets();
-        void        UpdateCamera();
-        void        CreateModelGeometries();
-        void        CreateTextures();
-        void        CreateRenderTexture(const MetroTexture* srcTexture, RenderTexture* rt);
-        void        ResetAnimation();
-        void        UpdateAnimation(const float dt);
-        void        Render();
+        bool                CreateRenderTargets();
+        void                UpdateCamera();
+        void                CreateModelGeometries();
+        void                CreateTextures();
+        void                CreateRenderTexture(const MetroTexture* srcTexture, RenderTexture* rt);
+        void                ResetAnimation();
+        void                UpdateAnimation(const float dt);
+        void                Render();
 
     protected:
         virtual void OnResize(System::EventArgs^ e) override;

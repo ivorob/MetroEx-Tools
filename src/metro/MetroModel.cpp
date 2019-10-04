@@ -909,7 +909,7 @@ void MetroModel::ReadSubChunks(MemStream& stream) {
                         if (mCurrentMesh->version >= kModelVersionArktika1) {
                             numShadowFaces = stream.ReadTyped<uint16_t>();
                         } else {
-                            numFaces /= 3;  //#NOTE_SK: Exodus models store number of indices, not faces
+                            numFaces /= 3;  //#NOTE_SK: Redux models store number of indices, not faces
                         }
                     } else {
                         numFaces = stream.ReadTyped<uint16_t>();

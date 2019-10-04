@@ -865,6 +865,7 @@ private: System::Windows::Forms::ToolStripMenuItem^  saveSurfaceSetToolStripMenu
         bool ExtractTexture(const FileExtractionCtx& ctx, const fs::path& outPath);
         bool ExtractSurfaceSet(const FileExtractionCtx& ctx, const MetroSurfaceDescription& surface, const fs::path& outFolder);
         bool ExtractModel(const FileExtractionCtx& ctx, const fs::path& outPath);
+        bool ExtractMotion(const FileExtractionCtx& ctx, const fs::path& outPath);
         bool ExtractSound(const FileExtractionCtx& ctx, const fs::path& outPath);
         bool ExtractLocalization(const FileExtractionCtx& ctx, const fs::path& outPath);
         bool ExtractFolderComplete(const FileExtractionCtx& ctx, const fs::path& outPath);
@@ -875,6 +876,7 @@ private: System::Windows::Forms::ToolStripMenuItem^  saveSurfaceSetToolStripMenu
         void lstMdlPropMotions_SelectedIndexChanged(int selection);
         void btnMdlPropPlayStopAnim_Click(System::Object^ sender);
         void btnModelInfo_Click(System::Object^ sender);
+        void btnModelExportMotion_Click(System::Object^ sender);
         void OnDlgModelInfo_Closed(System::Object^ sender, System::EventArgs^ e);
 
         // patch creation

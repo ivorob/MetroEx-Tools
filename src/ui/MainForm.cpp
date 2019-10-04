@@ -207,6 +207,7 @@ namespace MetroEX {
         mModelInfoPanel->OnMotionsListSelectionChanged += gcnew MetroEXControls::ModelInfoPanel::OnListSelectionChanged(this, &MainForm::lstMdlPropMotions_SelectedIndexChanged);
         mModelInfoPanel->OnPlayButtonClicked += gcnew MetroEXControls::ModelInfoPanel::OnButtonClicked(this, &MainForm::btnMdlPropPlayStopAnim_Click);
         mModelInfoPanel->OnInfoButtonClicked += gcnew MetroEXControls::ModelInfoPanel::OnButtonClicked(this, &MainForm::btnModelInfo_Click);
+        mModelInfoPanel->OnMotionExportButtonClicked += gcnew MetroEXControls::ModelInfoPanel::OnButtonClicked(this, &MainForm::btnModelExportMotion_Click);
         ////
 
         this->SwitchViewPanel(PanelType::Texture);
@@ -414,7 +415,7 @@ namespace MetroEX {
 
             const FileType fileType = isSubFile ? fileData->fileType : DetectFileType(file);
 
-            memset(mExtractionCtx, 0, sizeof(FileExtractionCtx));
+            *mExtractionCtx = {};
             mExtractionCtx->file = file;
             mExtractionCtx->type = fileType;
             mExtractionCtx->customOffset = kInvalidValue;
@@ -1213,7 +1214,7 @@ namespace MetroEX {
                 title = L"Save OBJ model...";
                 filter = L"OBJ model (*.obj)|*.obj";
             } else {
-                title = L"Save FBX nodel...";
+                title = L"Save FBX model...";
                 filter = L"FBX model (*.fbx)|*.fbx";
             }
 
@@ -1286,6 +1287,46 @@ namespace MetroEX {
                     result = true;
                 }
             }
+        }
+
+        return result;
+    }
+
+    bool MainForm::ExtractMotion(const FileExtractionCtx& ctx, const fs::path& outPath) {
+        bool result = false;
+
+        MetroModel* model = mRenderPanel->GetModel();
+        const int motionIdx = mModelInfoPanel->SelectedMotionIdx;
+
+        if (!model || motionIdx < 0) {
+            return false;
+        }
+
+        fs::path resultPath = outPath;
+        if (resultPath.empty()) {
+            String^ name = ToNetString(model->GetMotionName(scast<size_t>(motionIdx)));
+
+            SaveFileDialog sfd;
+            sfd.Title = L"Save FBX animation...";
+            sfd.Filter = L"FBX animation (*.fbx)|*.fbx";
+            sfd.FileName = name + L".fbx";
+            sfd.RestoreDirectory = true;
+            sfd.OverwritePrompt = true;
+
+            if (sfd.ShowDialog(this) == System::Windows::Forms::DialogResult::OK) {
+                resultPath = StringToPath(sfd.FileName);
+            } else {
+                return true;
+            }
+        }
+
+        if (!resultPath.empty()) {
+            System::Windows::Forms::Cursor::Current = System::Windows::Forms::Cursors::WaitCursor;
+            const size_t fbxOptions = MetroModel::FBX_Export_Skeleton | MetroModel::FBX_Export_Animation;
+
+            result = model->SaveAsFBX(resultPath, fbxOptions, scast<size_t>(motionIdx));
+
+            System::Windows::Forms::Cursor::Current = System::Windows::Forms::Cursors::Arrow;
         }
 
         return result;
@@ -1462,6 +1503,12 @@ namespace MetroEX {
             mDlgModelInfo->Icon = this->Icon;
             mDlgModelInfo->SetModel(mRenderPanel->GetModel());
             mDlgModelInfo->Show();
+        }
+    }
+
+    void MainForm::btnModelExportMotion_Click(System::Object^) {
+        if (!this->ExtractMotion(*mExtractionCtx, fs::path())) {
+            MetroEX::ShowErrorMessageBox(this, L"Failed to extract motion!");
         }
     }
 

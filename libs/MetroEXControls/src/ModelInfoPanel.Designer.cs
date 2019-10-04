@@ -26,6 +26,7 @@
         /// </summary>
         private void InitializeComponent() {
             this.pnlMdlProps = new System.Windows.Forms.Panel();
+            this.btnModelExportMotion = new System.Windows.Forms.Button();
             this.lblMdlPropNumAnims = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
             this.btnModelInfo = new System.Windows.Forms.Button();
@@ -44,6 +45,7 @@
             // 
             // pnlMdlProps
             // 
+            this.pnlMdlProps.Controls.Add(this.btnModelExportMotion);
             this.pnlMdlProps.Controls.Add(this.lblMdlPropNumAnims);
             this.pnlMdlProps.Controls.Add(this.label1);
             this.pnlMdlProps.Controls.Add(this.btnModelInfo);
@@ -63,6 +65,16 @@
             this.pnlMdlProps.Name = "pnlMdlProps";
             this.pnlMdlProps.Size = new System.Drawing.Size(577, 84);
             this.pnlMdlProps.TabIndex = 2;
+            // 
+            // btnModelExportMotion
+            // 
+            this.btnModelExportMotion.Location = new System.Drawing.Point(480, 53);
+            this.btnModelExportMotion.Name = "btnModelExportMotion";
+            this.btnModelExportMotion.Size = new System.Drawing.Size(75, 23);
+            this.btnModelExportMotion.TabIndex = 13;
+            this.btnModelExportMotion.Text = "Export...";
+            this.btnModelExportMotion.UseVisualStyleBackColor = true;
+            this.btnModelExportMotion.Click += new System.EventHandler(this.btnModelExportMotion_Click);
             // 
             // lblMdlPropNumAnims
             // 
@@ -84,7 +96,7 @@
             // 
             // btnModelInfo
             // 
-            this.btnModelInfo.Location = new System.Drawing.Point(481, 47);
+            this.btnModelInfo.Location = new System.Drawing.Point(480, 27);
             this.btnModelInfo.Name = "btnModelInfo";
             this.btnModelInfo.Size = new System.Drawing.Size(75, 23);
             this.btnModelInfo.TabIndex = 10;
@@ -94,7 +106,7 @@
             // 
             // btnMdlPropPlayStopAnim
             // 
-            this.btnMdlPropPlayStopAnim.Location = new System.Drawing.Point(480, 5);
+            this.btnMdlPropPlayStopAnim.Location = new System.Drawing.Point(480, 1);
             this.btnMdlPropPlayStopAnim.Name = "btnMdlPropPlayStopAnim";
             this.btnMdlPropPlayStopAnim.Size = new System.Drawing.Size(75, 23);
             this.btnMdlPropPlayStopAnim.TabIndex = 9;
@@ -214,5 +226,6 @@
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Label lblMdlPropNumAnims;
         private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.Button btnModelExportMotion;
     }
 }

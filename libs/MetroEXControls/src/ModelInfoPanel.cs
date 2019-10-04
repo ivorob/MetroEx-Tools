@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Drawing;
 using System.Windows.Forms;
 
 namespace MetroEXControls {
@@ -16,6 +17,11 @@ namespace MetroEXControls {
             set;
         }
 
+        public OnButtonClicked OnMotionExportButtonClicked {
+            get;
+            set;
+        }
+
         public OnListSelectionChanged OnMotionsListSelectionChanged {
             get;
             set;
@@ -26,7 +32,10 @@ namespace MetroEXControls {
 
             this.OnPlayButtonClicked = null;
             this.OnInfoButtonClicked = null;
+            this.OnMotionExportButtonClicked = null;
             this.OnMotionsListSelectionChanged = null;
+
+            this.btnModelExportMotion.Enabled = false;
         }
 
         public String MdlPropTypeText {
@@ -65,6 +74,12 @@ namespace MetroEXControls {
             }
         }
 
+        public int SelectedMotionIdx {
+            get {
+                return this.lstMdlPropMotions.SelectedIndex;
+            }
+        }
+
         public void ClearMotionsList() {
             this.lstMdlPropMotions.Items.Clear();
         }
@@ -82,7 +97,16 @@ namespace MetroEXControls {
         }
 
         private void lstMdlPropMotions_SelectedIndexChanged(object sender, EventArgs e) {
-            this.OnMotionsListSelectionChanged?.Invoke(this.lstMdlPropMotions.SelectedIndex);
+            if (this.lstMdlPropMotions.SelectedIndex >= 0) {
+                this.btnModelExportMotion.Enabled = true;
+                this.OnMotionsListSelectionChanged?.Invoke(this.lstMdlPropMotions.SelectedIndex);
+            }
+        }
+
+        private void btnModelExportMotion_Click(object sender, EventArgs e) {
+            if (this.lstMdlPropMotions.SelectedIndex >= 0) {
+                this.OnMotionExportButtonClicked(sender);
+            }
         }
     }
 }
