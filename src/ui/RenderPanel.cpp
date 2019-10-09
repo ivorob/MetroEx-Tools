@@ -302,6 +302,27 @@ namespace MetroEX {
         }
     }
 
+    void RenderPanel::SetLod(const int lodId) {
+        if (mModel && lodId >= 0 && lodId <= 2) {
+            MetroModel* model = mModel;
+
+            if (lodId == 1 && model->HasLodModel(0))
+                mModel = model->GetLodModel(0);
+            else if (lodId == 2 && model->HasLodModel(1))
+                mModel = model->GetLodModel(1);
+            mCurrentMotion = nullptr;
+
+            mCamera->SwitchMode(Camera::Mode::Arcball);
+
+            this->ResetAnimation();
+            this->CreateModelGeometries();
+            this->CreateTextures();
+            this->Render();
+
+            mModel = model;
+        }
+    }
+
     MetroModel* RenderPanel::GetModel() {
         return mModel;
     }

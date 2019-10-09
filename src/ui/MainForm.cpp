@@ -208,6 +208,7 @@ namespace MetroEX {
         mModelInfoPanel->OnPlayButtonClicked += gcnew MetroEXControls::ModelInfoPanel::OnButtonClicked(this, &MainForm::btnMdlPropPlayStopAnim_Click);
         mModelInfoPanel->OnInfoButtonClicked += gcnew MetroEXControls::ModelInfoPanel::OnButtonClicked(this, &MainForm::btnModelInfo_Click);
         mModelInfoPanel->OnMotionExportButtonClicked += gcnew MetroEXControls::ModelInfoPanel::OnButtonClicked(this, &MainForm::btnModelExportMotion_Click);
+        mModelInfoPanel->OnLodsListSelectionChanged += gcnew MetroEXControls::ModelInfoPanel::OnListSelectionChanged(this, &MainForm::lstLods_SelectedIndexChanged);
         ////
 
         this->SwitchViewPanel(PanelType::Texture);
@@ -807,6 +808,18 @@ namespace MetroEX {
         if (stream) {
             MetroModel* mdl = new MetroModel();
             if (mdl->LoadFromData(stream, file)) {
+                mRenderPanel->SetModel(nullptr);
+
+                mModelInfoPanel->ClearLodsList();
+                mModelInfoPanel->AddLodIdToList(0);
+                if (mdl->HasLodModel(0)) {
+                    mModelInfoPanel->AddLodIdToList(1);
+                    if (mdl->HasLodModel(1)) {
+                        mModelInfoPanel->AddLodIdToList(2);
+                    }
+                }
+                mModelInfoPanel->SelectLod(0);
+
                 mRenderPanel->SetModel(mdl);
 
                 mModelInfoPanel->ClearMotionsList();
@@ -1487,6 +1500,12 @@ namespace MetroEX {
     void MainForm::lstMdlPropMotions_SelectedIndexChanged(int selection) {
         if (selection >= 0) {
             mRenderPanel->SwitchMotion(scast<size_t>(selection));
+        }
+    }
+
+    void MainForm::lstLods_SelectedIndexChanged(int selection) {
+        if (selection >= 0 && selection <= 2) {
+            mRenderPanel->SetLod(selection);
         }
     }
 

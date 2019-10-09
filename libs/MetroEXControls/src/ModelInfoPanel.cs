@@ -27,6 +27,12 @@ namespace MetroEXControls {
             set;
         }
 
+        public OnListSelectionChanged OnLodsListSelectionChanged
+        {
+            get;
+            set;
+        }
+
         public ModelInfoPanel() {
             InitializeComponent();
 
@@ -34,8 +40,10 @@ namespace MetroEXControls {
             this.OnInfoButtonClicked = null;
             this.OnMotionExportButtonClicked = null;
             this.OnMotionsListSelectionChanged = null;
+            this.OnLodsListSelectionChanged = null;
 
             this.btnModelExportMotion.Enabled = false;
+            this.lstLods.Enabled = false;
         }
 
         public String MdlPropTypeText {
@@ -94,6 +102,32 @@ namespace MetroEXControls {
 
         private void btnModelInfo_Click(object sender, EventArgs e) {
             this.OnInfoButtonClicked?.Invoke(sender);
+        }
+
+        public void ClearLodsList()
+        {
+            this.lstLods.Items.Clear();
+            this.lstLods.Enabled = false;
+        }
+
+        public void AddLodIdToList(int lodId)
+        {
+            this.lstLods.Items.Add("Lod " + lodId.ToString());
+            if (this.lstLods.Items.Count > 1) {
+                this.lstLods.Enabled = true;
+            }
+        }
+
+        public void SelectLod(int lodId)
+        {
+            this.lstLods.SelectedIndex = lodId;
+        }
+
+        private void lstMdlLods_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (this.lstLods.SelectedIndex >= 0) {
+                this.OnLodsListSelectionChanged?.Invoke(this.lstLods.SelectedIndex);
+            }
         }
 
         private void lstMdlPropMotions_SelectedIndexChanged(object sender, EventArgs e) {

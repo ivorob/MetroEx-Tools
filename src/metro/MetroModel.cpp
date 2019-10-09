@@ -34,13 +34,18 @@ enum ModelChunks {
     MC_Comment              = 0x00000024,   // 36
 };
 
+enum MeshesChunks {
+    MC_Lod_0_MeshChunk      = 0x00000000,
+    MC_Lod_1_MeshChunk      = 0x00000001,
+    MC_Lod_2_MeshChunk      = 0x00000002,
+};
+
 
 static const size_t kModelVersionRedux      = 22;
 static const size_t kModelVersionArktika1   = 32;
 static const size_t kModelVersionExodus     = 42;
 
 static const size_t kMetroModelMaxMaterials = 4;
-
 
 PACKED_STRUCT_BEGIN
 struct MdlHeader {          // size = 64
@@ -74,11 +79,17 @@ MetroModel::MetroModel()
     , mCurrentMesh(nullptr)
     , mThisFileIdx(MetroFile::InvalidFileIdx)
 {
+    for (size_t i = 0; i < kMetroModelMaxLods; ++i) {
+        mLodModels[i] = nullptr;
+    }
 }
 MetroModel::~MetroModel() {
     std::for_each(mMeshes.begin(), mMeshes.end(), [](MetroMesh* mesh) { delete mesh; });
     std::for_each(mMotions.begin(), mMotions.end(), [](MetroModel::MotionInfo& mi) { MySafeDelete(mi.motion); });
     MySafeDelete(mSkeleton);
+    for (size_t i = 0; i < kMetroModelMaxLods; ++i) {
+        MySafeDelete(mLodModels[i]);
+    }
 }
 
 bool MetroModel::LoadFromData(MemStream& stream, const size_t fileIdx) {
@@ -708,6 +719,10 @@ bool MetroModel::IsAnimated() const {
     return mSkeleton != nullptr;
 }
 
+bool MetroModel::HasLodModel(const size_t idx) const {
+    return idx <= kMetroModelMaxLods && mLodModels[idx] != nullptr;
+}
+
 const AABBox& MetroModel::GetBBox() const {
     return mBBox;
 }
@@ -730,6 +745,10 @@ const CharString& MetroModel::GetSkeletonPath() const {
 
 const MetroSkeleton* MetroModel::GetSkeleton() const {
     return mSkeleton;
+}
+
+MetroModel* MetroModel::GetLodModel(const size_t idx) const {
+    return mLodModels[idx];
 }
 
 size_t MetroModel::GetNumMotions() const {
@@ -942,6 +961,24 @@ void MetroModel::ReadSubChunks(MemStream& stream) {
                     }
                 }
                 mCurrentMesh = nullptr;
+            } break;
+
+            case MC_Lod_1_Chunk: {
+                MetroModel* model = new MetroModel();
+                if (model->LoadFromData(stream, mThisFileIdx)) {
+                    mLodModels[0] = model;
+                } else {
+                    MySafeDelete(model);
+                }
+            } break;
+
+            case MC_Lod_2_Chunk: {
+                MetroModel* model = new MetroModel();
+                if (model->LoadFromData(stream, mThisFileIdx)) {
+                    mLodModels[1] = model;
+                } else {
+                    MySafeDelete(model);
+                }
             } break;
 
             case MC_MeshesInline: {
