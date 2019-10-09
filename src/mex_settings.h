@@ -49,6 +49,7 @@ public:
         bool        modelSaveWithTextures;
         bool        modelExcludeCollision;
         bool        modelSaveSurfaceSet;
+        bool        modelSaveLods;
         // textures
         TexFormat   textureFormat;
         // sounds

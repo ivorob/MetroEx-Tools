@@ -53,6 +53,7 @@ namespace MetroEX {
     private: System::Windows::Forms::CheckBox^  chkMdlSaveWithTextures;
     private: System::Windows::Forms::Label^  label2;
     private: System::Windows::Forms::CheckBox^  chkMdlSaveSurfaceTextures;
+    private: System::Windows::Forms::CheckBox^  chkMdlExportLods;
 
 
     protected:
@@ -95,6 +96,7 @@ namespace MetroEX {
             this->btnOK = (gcnew System::Windows::Forms::Button());
             this->label1 = (gcnew System::Windows::Forms::Label());
             this->btnCancel = (gcnew System::Windows::Forms::Button());
+            this->chkMdlExportLods = (gcnew System::Windows::Forms::CheckBox());
             this->tableLayoutPanel1->SuspendLayout();
             this->tabControl1->SuspendLayout();
             this->tabPageExport->SuspendLayout();
@@ -192,6 +194,7 @@ namespace MetroEX {
             // 
             // groupBox2
             // 
+            this->groupBox2->Controls->Add(this->chkMdlExportLods);
             this->groupBox2->Controls->Add(this->chkMdlSaveSurfaceTextures);
             this->groupBox2->Controls->Add(this->chkMdlExcludeCollision);
             this->groupBox2->Controls->Add(this->chkMdlSaveWithTextures);
@@ -390,6 +393,16 @@ namespace MetroEX {
             this->btnCancel->Text = L"Cancel";
             this->btnCancel->UseVisualStyleBackColor = true;
             this->btnCancel->Click += gcnew System::EventHandler(this, &DlgSettings::btnCancel_Click);
+            // 
+            // chkMdlExportLods
+            // 
+            this->chkMdlExportLods->AutoSize = true;
+            this->chkMdlExportLods->Location = System::Drawing::Point(242, 91);
+            this->chkMdlExportLods->Name = L"chkMdlExportLods";
+            this->chkMdlExportLods->Size = System::Drawing::Size(78, 17);
+            this->chkMdlExportLods->TabIndex = 8;
+            this->chkMdlExportLods->Text = L"Export lods";
+            this->chkMdlExportLods->UseVisualStyleBackColor = true;
             // 
             // DlgSettings
             // 

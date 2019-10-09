@@ -51,6 +51,7 @@ namespace MetroEX {
         bool        mdlAnimsSeparate;
         bool        mdlSaveWithTextures;
         bool        mdlExcludeCollision;
+        bool        mdlSaveLods;
         // textures
         bool        txUseBC3;
         bool        txSaveAsDds;

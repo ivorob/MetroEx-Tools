@@ -83,6 +83,7 @@ namespace MetroEX {
         s.extraction.modelSaveWithTextures = this->chkMdlSaveWithTextures->Checked;
         s.extraction.modelExcludeCollision = this->chkMdlExcludeCollision->Checked;
         s.extraction.modelSaveSurfaceSet = this->chkMdlSaveSurfaceTextures->Checked;
+        s.extraction.modelSaveLods = this->chkMdlExportLods->Checked;
 
         // sounds
         if (this->radioSndAsOGG->Checked) {

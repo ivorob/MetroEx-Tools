@@ -974,6 +974,7 @@ namespace MetroEX {
         mExtractionCtx->mdlAnimsSeparate = s.extraction.modelAnimsSeparate;
         mExtractionCtx->mdlSaveWithTextures = s.extraction.modelSaveWithTextures;
         mExtractionCtx->mdlExcludeCollision = s.extraction.modelExcludeCollision;
+        mExtractionCtx->mdlSaveLods = s.extraction.modelSaveLods;
         // textures
         mExtractionCtx->txSaveAsDds = (s.extraction.textureFormat == MEXSettings::Extraction::TexFormat::Dds || s.extraction.textureFormat == MEXSettings::Extraction::TexFormat::LegacyDds);
         mExtractionCtx->txUseBC3 = (s.extraction.textureFormat == MEXSettings::Extraction::TexFormat::LegacyDds);
@@ -1256,6 +1257,17 @@ namespace MetroEX {
                 if (mdl.LoadFromData(stream, ctx.file)) {
                     if (ctx.mdlSaveAsObj) {
                         mdl.SaveAsOBJ(resultPath, ctx.mdlExcludeCollision);
+                        if (ctx.mdlSaveLods) {
+                            fs::path resultLodPath;
+                            if (mdl.HasLodModel(0)) {
+                                resultLodPath = resultPath.replace_extension("").native() + L"_lod1.obj";
+                                mdl.GetLodModel(0)->SaveAsOBJ(resultLodPath, ctx.mdlExcludeCollision);
+                            }
+                            if (mdl.HasLodModel(1)) {
+                                resultLodPath = resultPath.replace_extension("").native() + L"_lod2.obj";
+                                mdl.GetLodModel(1)->SaveAsOBJ(resultLodPath, ctx.mdlExcludeCollision);
+                            }
+                        }
                     } else {
                         size_t fbxOptions = MetroModel::FBX_Export_Mesh | MetroModel::FBX_Export_Skeleton;
                         if (ctx.mdlExcludeCollision) {
@@ -1266,6 +1278,18 @@ namespace MetroEX {
                         }
 
                         mdl.SaveAsFBX(resultPath, fbxOptions);
+
+                        if (ctx.mdlSaveLods) {
+                            fs::path resultLodPath;
+                            if (mdl.HasLodModel(0)) {
+                                resultLodPath = resultPath.replace_extension("").native() + L"_lod1.fbx";
+                                mdl.GetLodModel(0)->SaveAsFBX(resultLodPath, ctx.mdlExcludeCollision);
+                            }
+                            if (mdl.HasLodModel(1)) {
+                                resultLodPath = resultPath.replace_extension("").native() + L"_lod2.fbx";
+                                mdl.GetLodModel(1)->SaveAsFBX(resultLodPath, ctx.mdlExcludeCollision);
+                            }
+                        }
 
                         if (settings.extraction.modelSaveWithAnims && settings.extraction.modelAnimsSeparate) {
                             fbxOptions = MetroModel::FBX_Export_Skeleton | MetroModel::FBX_Export_Animation;
