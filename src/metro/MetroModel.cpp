@@ -720,7 +720,7 @@ bool MetroModel::IsAnimated() const {
 }
 
 bool MetroModel::HasLodModel(const size_t idx) const {
-    return idx <= kMetroModelMaxLods && mLodModels[idx] != nullptr;
+    return idx < kMetroModelMaxLods && mLodModels[idx] != nullptr;
 }
 
 const AABBox& MetroModel::GetBBox() const {
@@ -964,6 +964,9 @@ void MetroModel::ReadSubChunks(MemStream& stream) {
             } break;
 
             case MC_Lod_1_Chunk: {
+                if (mLodModels[0] != nullptr) {
+                    MySafeDelete(mLodModels[0]);
+                }
                 MetroModel* model = new MetroModel();
                 if (model->LoadFromData(stream, mThisFileIdx)) {
                     mLodModels[0] = model;
@@ -973,6 +976,9 @@ void MetroModel::ReadSubChunks(MemStream& stream) {
             } break;
 
             case MC_Lod_2_Chunk: {
+                if (mLodModels[1] != nullptr) {
+                    MySafeDelete(mLodModels[1]);
+                }
                 MetroModel* model = new MetroModel();
                 if (model->LoadFromData(stream, mThisFileIdx)) {
                     mLodModels[1] = model;
@@ -989,17 +995,41 @@ void MetroModel::ReadSubChunks(MemStream& stream) {
 
             case MC_MeshesLinks: {
                 const size_t numStrings = stream.ReadTyped<uint32_t>();
-                StringArray links;
+                StringArray links, linksLod1, linksLod2;
                 for (size_t i = 0; i < numStrings; ++i) {
                     CharString linksString = stream.ReadStringZ();
                     if (!linksString.empty()) {
                         StringArray splittedLinks = StrSplit(linksString, ',');
-                        links.insert(links.end(), splittedLinks.begin(), splittedLinks.end());
+                        if (this->IsAnimated() && numStrings <= 3) { // is it correct to find lods of dynamic models this way?
+                            if (i == 1) {
+                                linksLod1.insert(linksLod1.end(), splittedLinks.begin(), splittedLinks.end());
+                            } else if (i == 2) {
+                                linksLod2.insert(linksLod2.end(), splittedLinks.begin(), splittedLinks.end());
+                            } else {
+                                links.insert(links.end(), splittedLinks.begin(), splittedLinks.end());
+                            }
+                        } else {
+                            links.insert(links.end(), splittedLinks.begin(), splittedLinks.end());
+                        }
                     }
                 }
 
                 if (!links.empty()) {
                     this->LoadLinkedMeshes(links);
+                }
+                if (!linksLod1.empty()) {
+                    if (mLodModels[0] == nullptr) {
+                        mLodModels[0] = new MetroModel();
+                        mLodModels[0]->mThisFileIdx = this->mThisFileIdx;
+                    }
+                    mLodModels[0]->LoadLinkedMeshes(linksLod1);
+                }
+                if (!linksLod2.empty()) {
+                    if (mLodModels[1] == nullptr) {
+                        mLodModels[1] = new MetroModel();
+                        mLodModels[1]->mThisFileIdx = this->mThisFileIdx;
+                    }
+                    mLodModels[1]->LoadLinkedMeshes(linksLod2);
                 }
             } break;
 
