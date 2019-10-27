@@ -51,6 +51,7 @@ namespace MetroEX {
         bool        mdlAnimsSeparate;
         bool        mdlSaveWithTextures;
         bool        mdlExcludeCollision;
+        bool        mdlSaveLods;
         // textures
         bool        txUseBC3;
         bool        txSaveAsDds;
@@ -874,6 +875,7 @@ private: System::Windows::Forms::ToolStripMenuItem^  saveSurfaceSetToolStripMenu
         // property panels
         // model props
         void lstMdlPropMotions_SelectedIndexChanged(int selection);
+        void lstLods_SelectedIndexChanged(int selection);
         void btnMdlPropPlayStopAnim_Click(System::Object^ sender);
         void btnModelInfo_Click(System::Object^ sender);
         void btnModelExportMotion_Click(System::Object^ sender);

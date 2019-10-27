@@ -34,13 +34,18 @@ enum ModelChunks {
     MC_Comment              = 0x00000024,   // 36
 };
 
+enum MeshesChunks {
+    MC_Lod_0_MeshChunk      = 0x00000000,
+    MC_Lod_1_MeshChunk      = 0x00000001,
+    MC_Lod_2_MeshChunk      = 0x00000002,
+};
+
 
 static const size_t kModelVersionRedux      = 22;
 static const size_t kModelVersionArktika1   = 32;
 static const size_t kModelVersionExodus     = 42;
 
 static const size_t kMetroModelMaxMaterials = 4;
-
 
 PACKED_STRUCT_BEGIN
 struct MdlHeader {          // size = 64
@@ -74,11 +79,17 @@ MetroModel::MetroModel()
     , mCurrentMesh(nullptr)
     , mThisFileIdx(MetroFile::InvalidFileIdx)
 {
+    for (size_t i = 0; i < kMetroModelMaxLods; ++i) {
+        mLodModels[i] = nullptr;
+    }
 }
 MetroModel::~MetroModel() {
     std::for_each(mMeshes.begin(), mMeshes.end(), [](MetroMesh* mesh) { delete mesh; });
     std::for_each(mMotions.begin(), mMotions.end(), [](MetroModel::MotionInfo& mi) { MySafeDelete(mi.motion); });
     MySafeDelete(mSkeleton);
+    for (size_t i = 0; i < kMetroModelMaxLods; ++i) {
+        MySafeDelete(mLodModels[i]);
+    }
 }
 
 bool MetroModel::LoadFromData(MemStream& stream, const size_t fileIdx) {
@@ -708,6 +719,10 @@ bool MetroModel::IsAnimated() const {
     return mSkeleton != nullptr;
 }
 
+bool MetroModel::HasLodModel(const size_t idx) const {
+    return idx < kMetroModelMaxLods && mLodModels[idx] != nullptr;
+}
+
 const AABBox& MetroModel::GetBBox() const {
     return mBBox;
 }
@@ -730,6 +745,10 @@ const CharString& MetroModel::GetSkeletonPath() const {
 
 const MetroSkeleton* MetroModel::GetSkeleton() const {
     return mSkeleton;
+}
+
+MetroModel* MetroModel::GetLodModel(const size_t idx) const {
+    return mLodModels[idx];
 }
 
 size_t MetroModel::GetNumMotions() const {
@@ -944,6 +963,30 @@ void MetroModel::ReadSubChunks(MemStream& stream) {
                 mCurrentMesh = nullptr;
             } break;
 
+            case MC_Lod_1_Chunk: {
+                if (mLodModels[0] != nullptr) {
+                    MySafeDelete(mLodModels[0]);
+                }
+                MetroModel* model = new MetroModel();
+                if (model->LoadFromData(stream, mThisFileIdx)) {
+                    mLodModels[0] = model;
+                } else {
+                    MySafeDelete(model);
+                }
+            } break;
+
+            case MC_Lod_2_Chunk: {
+                if (mLodModels[1] != nullptr) {
+                    MySafeDelete(mLodModels[1]);
+                }
+                MetroModel* model = new MetroModel();
+                if (model->LoadFromData(stream, mThisFileIdx)) {
+                    mLodModels[1] = model;
+                } else {
+                    MySafeDelete(model);
+                }
+            } break;
+
             case MC_MeshesInline: {
                 stream.SkipBytes(16); // wtf ???
                 MemStream subStream = stream.Substream(chunkSize - 16);
@@ -952,17 +995,41 @@ void MetroModel::ReadSubChunks(MemStream& stream) {
 
             case MC_MeshesLinks: {
                 const size_t numStrings = stream.ReadTyped<uint32_t>();
-                StringArray links;
+                StringArray links, linksLod1, linksLod2;
                 for (size_t i = 0; i < numStrings; ++i) {
                     CharString linksString = stream.ReadStringZ();
                     if (!linksString.empty()) {
                         StringArray splittedLinks = StrSplit(linksString, ',');
-                        links.insert(links.end(), splittedLinks.begin(), splittedLinks.end());
+                        if (this->IsAnimated() && numStrings <= 3) { // is it correct to find lods of dynamic models this way?
+                            if (i == 1) {
+                                linksLod1.insert(linksLod1.end(), splittedLinks.begin(), splittedLinks.end());
+                            } else if (i == 2) {
+                                linksLod2.insert(linksLod2.end(), splittedLinks.begin(), splittedLinks.end());
+                            } else {
+                                links.insert(links.end(), splittedLinks.begin(), splittedLinks.end());
+                            }
+                        } else {
+                            links.insert(links.end(), splittedLinks.begin(), splittedLinks.end());
+                        }
                     }
                 }
 
                 if (!links.empty()) {
                     this->LoadLinkedMeshes(links);
+                }
+                if (!linksLod1.empty()) {
+                    if (mLodModels[0] == nullptr) {
+                        mLodModels[0] = new MetroModel();
+                        mLodModels[0]->mThisFileIdx = this->mThisFileIdx;
+                    }
+                    mLodModels[0]->LoadLinkedMeshes(linksLod1);
+                }
+                if (!linksLod2.empty()) {
+                    if (mLodModels[1] == nullptr) {
+                        mLodModels[1] = new MetroModel();
+                        mLodModels[1]->mThisFileIdx = this->mThisFileIdx;
+                    }
+                    mLodModels[1]->LoadLinkedMeshes(linksLod2);
                 }
             } break;
 

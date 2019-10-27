@@ -208,6 +208,7 @@ namespace MetroEX {
         mModelInfoPanel->OnPlayButtonClicked += gcnew MetroEXControls::ModelInfoPanel::OnButtonClicked(this, &MainForm::btnMdlPropPlayStopAnim_Click);
         mModelInfoPanel->OnInfoButtonClicked += gcnew MetroEXControls::ModelInfoPanel::OnButtonClicked(this, &MainForm::btnModelInfo_Click);
         mModelInfoPanel->OnMotionExportButtonClicked += gcnew MetroEXControls::ModelInfoPanel::OnButtonClicked(this, &MainForm::btnModelExportMotion_Click);
+        mModelInfoPanel->OnLodsListSelectionChanged += gcnew MetroEXControls::ModelInfoPanel::OnListSelectionChanged(this, &MainForm::lstLods_SelectedIndexChanged);
         ////
 
         this->SwitchViewPanel(PanelType::Texture);
@@ -807,6 +808,18 @@ namespace MetroEX {
         if (stream) {
             MetroModel* mdl = new MetroModel();
             if (mdl->LoadFromData(stream, file)) {
+                mRenderPanel->SetModel(nullptr);
+
+                mModelInfoPanel->ClearLodsList();
+                mModelInfoPanel->AddLodIdToList(0);
+                if (mdl->HasLodModel(0)) {
+                    mModelInfoPanel->AddLodIdToList(1);
+                    if (mdl->HasLodModel(1)) {
+                        mModelInfoPanel->AddLodIdToList(2);
+                    }
+                }
+                mModelInfoPanel->SelectLod(0);
+
                 mRenderPanel->SetModel(mdl);
 
                 mModelInfoPanel->ClearMotionsList();
@@ -961,6 +974,7 @@ namespace MetroEX {
         mExtractionCtx->mdlAnimsSeparate = s.extraction.modelAnimsSeparate;
         mExtractionCtx->mdlSaveWithTextures = s.extraction.modelSaveWithTextures;
         mExtractionCtx->mdlExcludeCollision = s.extraction.modelExcludeCollision;
+        mExtractionCtx->mdlSaveLods = s.extraction.modelSaveLods;
         // textures
         mExtractionCtx->txSaveAsDds = (s.extraction.textureFormat == MEXSettings::Extraction::TexFormat::Dds || s.extraction.textureFormat == MEXSettings::Extraction::TexFormat::LegacyDds);
         mExtractionCtx->txUseBC3 = (s.extraction.textureFormat == MEXSettings::Extraction::TexFormat::LegacyDds);
@@ -1243,6 +1257,17 @@ namespace MetroEX {
                 if (mdl.LoadFromData(stream, ctx.file)) {
                     if (ctx.mdlSaveAsObj) {
                         mdl.SaveAsOBJ(resultPath, ctx.mdlExcludeCollision);
+                        if (ctx.mdlSaveLods) {
+                            fs::path resultLodPath;
+                            if (mdl.HasLodModel(0)) {
+                                resultLodPath = resultPath.replace_extension("").native() + L"_lod1.obj";
+                                mdl.GetLodModel(0)->SaveAsOBJ(resultLodPath, ctx.mdlExcludeCollision);
+                            }
+                            if (mdl.HasLodModel(1)) {
+                                resultLodPath = resultPath.replace_extension("").native() + L"_lod2.obj";
+                                mdl.GetLodModel(1)->SaveAsOBJ(resultLodPath, ctx.mdlExcludeCollision);
+                            }
+                        }
                     } else {
                         size_t fbxOptions = MetroModel::FBX_Export_Mesh | MetroModel::FBX_Export_Skeleton;
                         if (ctx.mdlExcludeCollision) {
@@ -1253,6 +1278,18 @@ namespace MetroEX {
                         }
 
                         mdl.SaveAsFBX(resultPath, fbxOptions);
+
+                        if (ctx.mdlSaveLods) {
+                            fs::path resultLodPath;
+                            if (mdl.HasLodModel(0)) {
+                                resultLodPath = resultPath.replace_extension("").native() + L"_lod1.fbx";
+                                mdl.GetLodModel(0)->SaveAsFBX(resultLodPath, ctx.mdlExcludeCollision);
+                            }
+                            if (mdl.HasLodModel(1)) {
+                                resultLodPath = resultPath.replace_extension("").native() + L"_lod2.fbx";
+                                mdl.GetLodModel(1)->SaveAsFBX(resultLodPath, ctx.mdlExcludeCollision);
+                            }
+                        }
 
                         if (settings.extraction.modelSaveWithAnims && settings.extraction.modelAnimsSeparate) {
                             fbxOptions = MetroModel::FBX_Export_Skeleton | MetroModel::FBX_Export_Animation;
@@ -1487,6 +1524,12 @@ namespace MetroEX {
     void MainForm::lstMdlPropMotions_SelectedIndexChanged(int selection) {
         if (selection >= 0) {
             mRenderPanel->SwitchMotion(scast<size_t>(selection));
+        }
+    }
+
+    void MainForm::lstLods_SelectedIndexChanged(int selection) {
+        if (selection >= 0 && selection <= 2) {
+            mRenderPanel->SetLod(selection);
         }
     }
 
