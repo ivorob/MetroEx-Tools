@@ -68,6 +68,7 @@ METRO_REGISTER_TYPE_ALIAS(quat, vec4f)
 METRO_REGISTER_TYPE_ALIAS(CharString, stringz)
 
 METRO_REGISTER_INHERITED_TYPE_ALIAS(color4f, vec4f, color)
+METRO_REGISTER_INHERITED_TYPE_ALIAS(posemat, matrix_43T, pose)
 
 METRO_REGISTER_TYPE_ARRAY_ALIAS(bool, bool)
 METRO_REGISTER_TYPE_ARRAY_ALIAS(uint8_t, u8)
@@ -347,26 +348,20 @@ public:
         (*this) >> v.a;
     }
 
-
-#define IMPLEMENT_TYPE_ARRAY_READ(type)     \
-    void operator >>(MyArray<type>& v) {    \
-        uint32_t numElements = 0;           \
-        (*this) >> numElements;             \
-        v.resize(numElements);              \
-        for (type& e : v) {                 \
-            (*this) >> e;                   \
-        }                                   \
+    inline void operator >>(posemat& v) {
+        mStream.ReadStruct(v);
     }
 
-    IMPLEMENT_TYPE_ARRAY_READ(int8_t)
-    IMPLEMENT_TYPE_ARRAY_READ(uint8_t)
-    IMPLEMENT_TYPE_ARRAY_READ(int16_t)
-    IMPLEMENT_TYPE_ARRAY_READ(uint16_t)
-    IMPLEMENT_TYPE_ARRAY_READ(int32_t)
-    IMPLEMENT_TYPE_ARRAY_READ(uint32_t)
-    IMPLEMENT_TYPE_ARRAY_READ(float)
 
-#undef IMPLEMENT_TYPE_ARRAY_READ
+    template <typename TElement, typename TSize>
+    void ReadArray(MyArray<TElement>& v) {
+        TSize numElements = 0;
+        (*this) >> numElements;
+        v.resize(numElements);
+        for (TElement& e : v) {
+            (*this) >> e;
+        }
+    }
 
 private:
     MemStream           mStream;
@@ -393,7 +388,11 @@ struct ArrayElementTypeGetter {
 
 #define METRO_READ_ARRAY_MEMBER(s, memberName)                                                                                  \
     s.VerifyTypeInfo(STRINGIFY(memberName), MetroTypeArrayGetAlias<ArrayElementTypeGetter<decltype(memberName)>::elem_type>()); \
-    s >> memberName;
+    s.ReadArray<ArrayElementTypeGetter<decltype(memberName)>::elem_type, uint32_t>(memberName); //s >> memberName;
+
+#define METRO_READ_ARRAY_16_MEMBER(s, memberName)                                                                               \
+    s.VerifyTypeInfo(STRINGIFY(memberName), MetroTypeArrayGetAlias<ArrayElementTypeGetter<decltype(memberName)>::elem_type>()); \
+    s.ReadArray<ArrayElementTypeGetter<decltype(memberName)>::elem_type, uint16_t>(memberName);
 
 #define METRO_READ_STRUCT_ARRAY_MEMBER(s, memberName) s.ReadStructArray(STRINGIFY(memberName), memberName)
 

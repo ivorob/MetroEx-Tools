@@ -13,7 +13,7 @@
 #include "ChooseFolderDlg.h"
 
 #include "MainForm.h"
-#include "AboutDlg.h"
+//#include "AboutDlg.h"
 #include "TexturesDatabaseViewer.h"
 #include "NodeSorter.h"
 #include "DlgSettings.h"
@@ -256,7 +256,7 @@ namespace MetroEX {
     }
 
     void MainForm::toolBtnAbout_Click(System::Object^, System::EventArgs^) {
-        AboutDlg dlg;
+        MetroEXControls::AboutDlg dlg;
         dlg.Icon = this->Icon;
         dlg.Text = this->Text;
         dlg.ShowDialog(this);

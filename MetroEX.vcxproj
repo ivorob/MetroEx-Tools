@@ -150,9 +150,9 @@
     <ClCompile Include="src\metro\MetroSound.cpp" />
     <ClCompile Include="src\metro\MetroTexture.cpp" />
     <ClCompile Include="src\metro\MetroTexturesDatabase.cpp" />
+    <ClCompile Include="src\metro\MetroWeaponsDatabase.cpp" />
     <ClCompile Include="src\metro\VFXReader.cpp" />
     <ClCompile Include="src\mex_settings.cpp" />
-    <ClCompile Include="src\ui\AboutDlg.cpp" />
     <ClCompile Include="src\ui\ChooseFolderDlg.cpp" />
     <ClCompile Include="src\ui\DlgModelInfo.cpp" />
     <ClCompile Include="src\ui\DlgSettings.cpp" />
@@ -173,7 +173,6 @@
     <ClInclude Include="libs\lz4\lz4hc.h" />
     <ClInclude Include="libs\pugixml\src\pugixml.hpp" />
     <ClInclude Include="libs\xxhash\xxhash.h" />
-    <ClInclude Include="src\metro\MetroBinTemplateEngine.h" />
     <ClInclude Include="src\metro\MetroBinArchive.h" />
     <ClInclude Include="src\log.h" />
     <ClInclude Include="src\metro\MetroCompression.h" />
@@ -195,13 +194,11 @@
     <ClInclude Include="src\metro\MetroTexture.h" />
     <ClInclude Include="src\metro\MetroTexturesDatabase.h" />
     <ClInclude Include="src\metro\MetroTypes.h" />
+    <ClInclude Include="src\metro\MetroWeaponsDatabase.h" />
     <ClInclude Include="src\metro\VFXReader.h" />
     <ClInclude Include="src\mex_settings.h" />
     <ClInclude Include="src\mycommon.h" />
     <ClInclude Include="src\mymath.h" />
-    <ClInclude Include="src\ui\AboutDlg.h">
-      <FileType>CppForm</FileType>
-    </ClInclude>
     <ClInclude Include="src\ui\ChooseFolderDlg.h" />
     <ClInclude Include="src\ui\DlgModelInfo.h">
       <FileType>CppForm</FileType>
@@ -245,11 +242,6 @@
       <DependentUpon>src\ui\MainForm.h</DependentUpon>
       <LogicalName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">MetroEX.MainForm.resources</LogicalName>
       <LogicalName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">MetroEX.MainForm.resources</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="src\ui\AboutDlg.resx">
-      <DependentUpon>src\ui\AboutDlg.h</DependentUpon>
-      <LogicalName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">MetroEX.AboutDlg.resources</LogicalName>
-      <LogicalName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">MetroEX.AboutDlg.resources</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="src\ui\SoundPanel.resx">
       <DependentUpon>src\ui\SoundPanel.h</DependentUpon>

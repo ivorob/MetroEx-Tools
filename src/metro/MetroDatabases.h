@@ -4,6 +4,7 @@
 #include "metro/MetroConfigDatabase.h"
 #include "metro/MetroMaterialsDatabase.h"
 #include "metro/MetroFonts.h"
+#include "metro/MetroWeaponsDatabase.h"
 
 static void LoadDatabasesFromFile(MetroConfigsDatabase*& cfgDb) {
     size_t fileIdx = 0;
@@ -50,6 +51,8 @@ static void LoadDatabasesFromFile(MetroConfigsDatabase*& cfgDb) {
             }
         }
     }
+
+    MetroWeaponsDatabase::Get().Initialize();
 
     // load materials database
     //if (cfgDb) {

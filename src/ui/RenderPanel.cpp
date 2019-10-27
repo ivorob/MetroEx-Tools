@@ -669,6 +669,8 @@ namespace MetroEX {
             const MetroSkeleton* skeleton = mModel->GetSkeleton();
             const size_t numBones = skeleton->GetNumBones();
 
+            mAnimation->numBones = numBones;
+
             MyArray<HierarchyBone> hierarchy(numBones);
 
             size_t rootBoneIdx = 0;
@@ -687,7 +689,7 @@ namespace MetroEX {
                 mAnimation->bindPoseInv[i] = MatInverse(skeleton->GetBoneFullTransform(i));
             }
 
-            // now we flatten our hierarchy so that parent bones are always come befor their children
+            // now we flatten our hierarchy so that parent bones are always come before their children
             mAnimation->bones[0] = mAnimation->bones[rootBoneIdx];
             AnimBone* arr = &mAnimation->bones[1];
             FlattenHierarchyToArray(arr, &hierarchy[rootBoneIdx]);
@@ -699,7 +701,7 @@ namespace MetroEX {
             const size_t numBones = mCurrentMotion->GetNumBones();
             const float animLen = mCurrentMotion->GetMotionTimeInSeconds();
 
-            if (mAnimation->time >= animLen) {
+            if (mAnimation->time > animLen) {
                 mAnimation->time -= animLen;
             }
 
@@ -710,13 +712,17 @@ namespace MetroEX {
             for (size_t i = 0; i < numBones; ++i) {
                 const AnimBone& b = mAnimation->bones[i];
 
-                quat q = mCurrentMotion->GetBoneRotation(b.idx, key);
-                vec3 t = mCurrentMotion->GetBonePosition(b.idx, key);
-
                 mat4& m = mConstantBufferData->bones[b.idx];
 
-                m = MatFromQuat(q);
-                m[3] = vec4(t, 1.0f);
+                if (mCurrentMotion->IsBoneAnimated(b.idx)) {
+                    quat q = mCurrentMotion->GetBoneRotation(b.idx, key);
+                    vec3 t = mCurrentMotion->GetBonePosition(b.idx, key);
+
+                    m = MatFromQuat(q);
+                    m[3] = vec4(t, 1.0f);
+                } else {
+                    m = MatIdentity;
+                }
 
                 if (b.parentIdx != MetroBone::InvalidIdx) {
                     m = mConstantBufferData->bones[b.parentIdx] * m;

@@ -1,7 +1,7 @@
 #include "common.hlsli"
 
 struct VSInput {
-    float3  pos     : POSITION; 
+    float3  pos     : POSITION;
     uint4   bones   : TEXCOORD0;
     float4  normal  : TEXCOORD1;
     float4  weights : TEXCOORD2;
@@ -10,10 +10,16 @@ struct VSInput {
 
 void Skin(VSInput IN, out float3 skinnedPos, out float3 skinnedNorm) {
     if (IN.weights.x > 0.0f) {
-        matrix skinMat = Bones[IN.bones.x] * IN.weights.x +
-                         Bones[IN.bones.y] * IN.weights.y +
-                         Bones[IN.bones.z] * IN.weights.z +
-                         Bones[IN.bones.w] * IN.weights.w;
+        matrix skinMat = Bones[IN.bones.x] * IN.weights.x;
+        if (IN.weights.y > 0.0f) {
+            skinMat += Bones[IN.bones.y] * IN.weights.y;
+
+            if (IN.weights.z > 0.0f) {
+                skinMat += Bones[IN.bones.z] * IN.weights.z;
+                skinMat += Bones[IN.bones.w] * IN.weights.w;
+            }
+        }
+
         skinnedPos = mul(float4(IN.pos, 1.0f), skinMat).xyz;
         skinnedNorm = mul(IN.normal.xyz, (float3x3)skinMat);
     } else {

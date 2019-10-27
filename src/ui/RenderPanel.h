@@ -58,6 +58,7 @@ namespace MetroEX {
 
     struct Animation {
         float       time;
+        size_t      numBones;
         AnimBone    bones[256];
         mat4        bindPoseInv[256];
     };
