@@ -302,14 +302,12 @@ namespace MetroEX {
         }
     }
 
-    void RenderPanel::SetLod(const int lodId) {
+    void RenderPanel::SetLod(const size_t lodId) {
         if (mModel && lodId >= 0 && lodId <= 2) {
-            MetroModel* model = mModel;
+            MetroModel* baseModel = mModel;
 
-            if (lodId == 1 && model->HasLodModel(0))
-                mModel = model->GetLodModel(0);
-            else if (lodId == 2 && model->HasLodModel(1))
-                mModel = model->GetLodModel(1);
+            mModel = (lodId == 0) ? baseModel : baseModel->GetLodModel(lodId - 1);
+
             mCurrentMotion = nullptr;
 
             mCamera->SwitchMode(Camera::Mode::Arcball);
@@ -319,7 +317,7 @@ namespace MetroEX {
             this->CreateTextures();
             this->Render();
 
-            mModel = model;
+            mModel = baseModel;
         }
     }
 

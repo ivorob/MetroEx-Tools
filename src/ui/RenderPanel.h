@@ -78,7 +78,7 @@ namespace MetroEX {
     public:
         bool                InitGraphics();
         void                SetModel(MetroModel* model);
-        void                SetLod(const int lodId);
+        void                SetLod(const size_t lodId);
         MetroModel*         GetModel();
         void                SetCubemap(MetroTexture* cubemap);
         void                SetShowWireframe(const bool wireframe);

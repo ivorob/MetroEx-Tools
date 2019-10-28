@@ -812,9 +812,9 @@ namespace MetroEX {
 
                 mModelInfoPanel->ClearLodsList();
                 mModelInfoPanel->AddLodIdToList(0);
-                if (mdl->HasLodModel(0)) {
+                if (mdl->GetLodModel(0) != nullptr) {
                     mModelInfoPanel->AddLodIdToList(1);
-                    if (mdl->HasLodModel(1)) {
+                    if (mdl->GetLodModel(1) != nullptr) {
                         mModelInfoPanel->AddLodIdToList(2);
                     }
                 }
@@ -1258,14 +1258,15 @@ namespace MetroEX {
                     if (ctx.mdlSaveAsObj) {
                         mdl.SaveAsOBJ(resultPath, ctx.mdlExcludeCollision);
                         if (ctx.mdlSaveLods) {
-                            fs::path resultLodPath;
-                            if (mdl.HasLodModel(0)) {
-                                resultLodPath = resultPath.replace_extension("").native() + L"_lod1.obj";
-                                mdl.GetLodModel(0)->SaveAsOBJ(resultLodPath, ctx.mdlExcludeCollision);
+                            WideString resultLodPath = resultPath.parent_path() / resultPath.stem();
+                            MetroModel* lod1 = mdl.GetLodModel(0);
+                            MetroModel* lod2 = mdl.GetLodModel(1);
+
+                            if (lod1) {
+                                lod1->SaveAsOBJ(resultLodPath + L"_lod1.obj", ctx.mdlExcludeCollision);
                             }
-                            if (mdl.HasLodModel(1)) {
-                                resultLodPath = resultPath.replace_extension("").native() + L"_lod2.obj";
-                                mdl.GetLodModel(1)->SaveAsOBJ(resultLodPath, ctx.mdlExcludeCollision);
+                            if (lod2) {
+                                lod2->SaveAsOBJ(resultLodPath + L"_lod2.obj", ctx.mdlExcludeCollision);
                             }
                         }
                     } else {
@@ -1280,14 +1281,15 @@ namespace MetroEX {
                         mdl.SaveAsFBX(resultPath, fbxOptions);
 
                         if (ctx.mdlSaveLods) {
-                            fs::path resultLodPath;
-                            if (mdl.HasLodModel(0)) {
-                                resultLodPath = resultPath.replace_extension("").native() + L"_lod1.fbx";
-                                mdl.GetLodModel(0)->SaveAsFBX(resultLodPath, ctx.mdlExcludeCollision);
+                            WideString resultLodPath = resultPath.parent_path() / resultPath.stem();
+                            MetroModel* lod1 = mdl.GetLodModel(0);
+                            MetroModel* lod2 = mdl.GetLodModel(1);
+
+                            if (lod1) {
+                                lod1->SaveAsFBX(resultLodPath + L"_lod1.fbx", ctx.mdlExcludeCollision);
                             }
-                            if (mdl.HasLodModel(1)) {
-                                resultLodPath = resultPath.replace_extension("").native() + L"_lod2.fbx";
-                                mdl.GetLodModel(1)->SaveAsFBX(resultLodPath, ctx.mdlExcludeCollision);
+                            if (lod2) {
+                                lod2->SaveAsFBX(resultLodPath + L"_lod2.fbx", ctx.mdlExcludeCollision);
                             }
                         }
 
@@ -1528,8 +1530,8 @@ namespace MetroEX {
     }
 
     void MainForm::lstLods_SelectedIndexChanged(int selection) {
-        if (selection >= 0 && selection <= 2) {
-            mRenderPanel->SetLod(selection);
+        if (selection >= 0 && selection <= scast<int>(MetroModel::kMetroModelMaxLods)) {
+            mRenderPanel->SetLod(scast<size_t>(selection));
         }
     }
 

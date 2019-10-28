@@ -34,12 +34,6 @@ enum ModelChunks {
     MC_Comment              = 0x00000024,   // 36
 };
 
-enum MeshesChunks {
-    MC_Lod_0_MeshChunk      = 0x00000000,
-    MC_Lod_1_MeshChunk      = 0x00000001,
-    MC_Lod_2_MeshChunk      = 0x00000002,
-};
-
 
 static const size_t kModelVersionRedux      = 22;
 static const size_t kModelVersionArktika1   = 32;
@@ -719,10 +713,6 @@ bool MetroModel::IsAnimated() const {
     return mSkeleton != nullptr;
 }
 
-bool MetroModel::HasLodModel(const size_t idx) const {
-    return idx < kMetroModelMaxLods && mLodModels[idx] != nullptr;
-}
-
 const AABBox& MetroModel::GetBBox() const {
     return mBBox;
 }
@@ -748,7 +738,11 @@ const MetroSkeleton* MetroModel::GetSkeleton() const {
 }
 
 MetroModel* MetroModel::GetLodModel(const size_t idx) const {
-    return mLodModels[idx];
+    if (idx < kMetroModelMaxLods) {
+        return mLodModels[idx];
+    } else {
+        return nullptr;
+    }
 }
 
 size_t MetroModel::GetNumMotions() const {

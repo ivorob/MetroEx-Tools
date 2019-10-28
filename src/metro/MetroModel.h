@@ -23,7 +23,6 @@ public:
     bool                    SaveAsFBX(const fs::path& filePath, const size_t options, const size_t motionIdx = kInvalidValue);
 
     bool                    IsAnimated() const;
-    bool                    HasLodModel(const size_t lodId) const;
     const AABBox&           GetBBox() const;
     const vec4&             GetBSphere() const;
     size_t                  GetNumMeshes() const;
