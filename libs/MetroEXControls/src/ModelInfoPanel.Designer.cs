@@ -40,11 +40,15 @@
             this.label7 = new System.Windows.Forms.Label();
             this.lblMdlPropType = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
+            this.labelLods = new System.Windows.Forms.Label();
+            this.lstLods = new System.Windows.Forms.ComboBox();
             this.pnlMdlProps.SuspendLayout();
             this.SuspendLayout();
             // 
             // pnlMdlProps
             // 
+            this.pnlMdlProps.Controls.Add(this.lstLods);
+            this.pnlMdlProps.Controls.Add(this.labelLods);
             this.pnlMdlProps.Controls.Add(this.btnModelExportMotion);
             this.pnlMdlProps.Controls.Add(this.lblMdlPropNumAnims);
             this.pnlMdlProps.Controls.Add(this.label1);
@@ -63,7 +67,7 @@
             this.pnlMdlProps.Location = new System.Drawing.Point(0, 0);
             this.pnlMdlProps.Margin = new System.Windows.Forms.Padding(0);
             this.pnlMdlProps.Name = "pnlMdlProps";
-            this.pnlMdlProps.Size = new System.Drawing.Size(577, 84);
+            this.pnlMdlProps.Size = new System.Drawing.Size(680, 84);
             this.pnlMdlProps.TabIndex = 2;
             // 
             // btnModelExportMotion
@@ -196,6 +200,26 @@
             this.label3.TabIndex = 0;
             this.label3.Text = "Type:";
             // 
+            // labelLods
+            // 
+            this.labelLods.AutoSize = true;
+            this.labelLods.Location = new System.Drawing.Point(561, 5);
+            this.labelLods.Name = "labelLods";
+            this.labelLods.Size = new System.Drawing.Size(54, 13);
+            this.labelLods.TabIndex = 14;
+            this.labelLods.Text = "Show lod:";
+            // 
+            // lstLods
+            // 
+            this.lstLods.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.lstLods.Enabled = false;
+            this.lstLods.FormattingEnabled = true;
+            this.lstLods.Location = new System.Drawing.Point(621, 1);
+            this.lstLods.Name = "lstLods";
+            this.lstLods.Size = new System.Drawing.Size(56, 21);
+            this.lstLods.TabIndex = 15;
+            this.lstLods.SelectedIndexChanged += new System.EventHandler(this.lstMdlLods_SelectedIndexChanged);
+            // 
             // ModelInfoPanel
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -203,7 +227,7 @@
             this.Controls.Add(this.pnlMdlProps);
             this.Margin = new System.Windows.Forms.Padding(0);
             this.Name = "ModelInfoPanel";
-            this.Size = new System.Drawing.Size(577, 84);
+            this.Size = new System.Drawing.Size(680, 84);
             this.pnlMdlProps.ResumeLayout(false);
             this.pnlMdlProps.PerformLayout();
             this.ResumeLayout(false);
@@ -227,5 +251,7 @@
         private System.Windows.Forms.Label lblMdlPropNumAnims;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Button btnModelExportMotion;
+        private System.Windows.Forms.ComboBox lstLods;
+        private System.Windows.Forms.Label labelLods;
     }
 }

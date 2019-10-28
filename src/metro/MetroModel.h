@@ -12,6 +12,8 @@ public:
     static const size_t FBX_Export_Animation        = 4;
     static const size_t FBX_Export_ExcludeCollision = 8;
 
+    static const size_t kMetroModelMaxLods          = 2;
+
 public:
     MetroModel();
     ~MetroModel();
@@ -21,6 +23,7 @@ public:
     bool                    SaveAsFBX(const fs::path& filePath, const size_t options, const size_t motionIdx = kInvalidValue);
 
     bool                    IsAnimated() const;
+    bool                    HasLodModel(const size_t lodId) const;
     const AABBox&           GetBBox() const;
     const vec4&             GetBSphere() const;
     size_t                  GetNumMeshes() const;
@@ -28,6 +31,7 @@ public:
 
     const CharString&       GetSkeletonPath() const;
     const MetroSkeleton*    GetSkeleton() const;
+    MetroModel*             GetLodModel(const size_t lodId) const;
     size_t                  GetNumMotions() const;
     CharString              GetMotionName(const size_t idx) const;
     const CharString&       GetMotionPath(const size_t idx) const;
@@ -53,6 +57,7 @@ private:
     AABBox                  mBBox;
     vec4                    mBSphere;
     MyArray<MetroMesh*>     mMeshes;
+    MetroModel*             mLodModels[kMetroModelMaxLods];
     CharString              mSkeletonPath;
     MetroSkeleton*          mSkeleton;
     MyArray<MotionInfo>     mMotions;
