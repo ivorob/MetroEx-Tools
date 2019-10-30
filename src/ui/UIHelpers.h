@@ -25,13 +25,13 @@ namespace MetroEX {
     }
 
     // Message boxes
-    static void ShowErrorMessageBox(System::Windows::Forms::Control^ parent, String^ message) {
+    static void ShowErrorMessageBox(System::Windows::Forms::Control^ parent, System::String^ message) {
         System::Windows::Forms::MessageBoxButtons buttons = System::Windows::Forms::MessageBoxButtons::OK;
         System::Windows::Forms::MessageBoxIcon mbicon = System::Windows::Forms::MessageBoxIcon::Error;
         System::Windows::Forms::MessageBox::Show(parent, message, parent->Text, buttons, mbicon);
     }
 
-    static void ShowInfoMessageBox(System::Windows::Forms::Control^ parent, String^ message) {
+    static void ShowInfoMessageBox(System::Windows::Forms::Control^ parent, System::String^ message) {
         System::Windows::Forms::MessageBoxButtons buttons = System::Windows::Forms::MessageBoxButtons::OK;
         System::Windows::Forms::MessageBoxIcon mbicon = System::Windows::Forms::MessageBoxIcon::Information;
         System::Windows::Forms::MessageBox::Show(parent, message, parent->Text, buttons, mbicon);

@@ -2,7 +2,6 @@
 #include <msclr/marshal_cppstd.h>
 #include "mycommon.h"
 #include "metro/MetroTexturesDatabase.h"
-#include "MainForm.h"
 #include "ui/TexturePropertiesViewer.h"
 #include "ui/NodeSorter.h"
 
@@ -20,7 +19,7 @@ namespace MetroEX {
     /// </summary>
     public ref class TexturesDatabaseViewer : public System::Windows::Forms::Form {
     public:
-        TexturesDatabaseViewer(MainForm^ form, System::Windows::Forms::ImageList^ imageList);
+        TexturesDatabaseViewer(/*MainForm^ form,*/ System::Windows::Forms::ImageList^ imageList);
 
     protected:
         ~TexturesDatabaseViewer();
@@ -122,7 +121,7 @@ namespace MetroEX {
     private:
         void FillWithData();
         TreeNode^ mOriginalRootNode;
-        MainForm^ mMainForm;
+        //MainForm^ mMainForm;
         array<String^>^ mFileExtensions;
         TexturePropertiesViewer^ mPropertiesViewer;
         String^ GetRealPath(const size_t index);

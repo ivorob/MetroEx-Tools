@@ -1,7 +1,7 @@
 #include "mycommon.h"
 #include "mex_settings.h"
 
-#include "ui/MainForm.h"
+#include "ui/MainWindowImpl.h"
 #include <VersionHelpers.h>
 
 #include "ui/UIHelpers.h"
@@ -42,8 +42,8 @@ void Main(array<String^>^ args) {
     //          same icon in Forms's resx, so I just grab it from app and re-use ;)
     Icon^ appIcon = Icon::ExtractAssociatedIcon(System::Reflection::Assembly::GetExecutingAssembly()->Location);
 
-    MetroEX::MainForm form;
-    form.Icon = appIcon;
+    MetroEX::MainWindowImpl mainWnd;
+    mainWnd.Icon = appIcon;
 
     fs::path folder = MetroEX::StringToPath(Application::StartupPath);
     LogOpen(folder);
@@ -59,7 +59,7 @@ void Main(array<String^>^ args) {
         Application::AddMessageFilter(gcnew WheelFilter());
     }
 
-    Application::Run(%form);
+    Application::Run(%mainWnd);
 
     MEXSettings::Get().Save();
 

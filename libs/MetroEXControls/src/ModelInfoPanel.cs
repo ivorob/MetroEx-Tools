@@ -7,6 +7,7 @@ namespace MetroEXControls {
         public delegate void OnButtonClicked(Object sender);
         public delegate void OnListSelectionChanged(int selection);
 
+        #region Delegates
         public OnButtonClicked OnPlayButtonClicked {
             get;
             set;
@@ -31,6 +32,7 @@ namespace MetroEXControls {
             get;
             set;
         }
+        #endregion
 
         public ModelInfoPanel() {
             InitializeComponent();

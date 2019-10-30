@@ -1,5 +1,4 @@
 #include "TexturesDatabaseViewer.h"
-#include "ui/MainForm.h"
 #include "ui/NodeSorter.h"
 #include "ui/UIHelpers.h"
 
@@ -9,10 +8,10 @@ static const int kImageIdxFolderClosed = 0;
 static const int kImageIdxFolderOpen = 1;
 
 namespace MetroEX {
-    TexturesDatabaseViewer::TexturesDatabaseViewer(MainForm^ form, System::Windows::Forms::ImageList^ imageList) {
+    TexturesDatabaseViewer::TexturesDatabaseViewer(/*MainForm^ form,*/ System::Windows::Forms::ImageList^ imageList) {
         InitializeComponent();
 
-        mMainForm = form;
+        //mMainForm = form;
         mOriginalRootNode = nullptr;
         mPropertiesViewer = nullptr;
 
@@ -175,10 +174,10 @@ namespace MetroEX {
         size_t index = safe_cast<size_t>(node->Tag);
         String^ path = this->GetRealPath(index);
 
-        mMainForm->ResetTreeView();
+        /*mMainForm->ResetTreeView();
         if (!mMainForm->FindAndSelect(L"content\\textures\\" + path, mFileExtensions)) {
             MetroEX::ShowErrorMessageBox(this, L"Couldn't find texture!");
-        }
+        }*/
     }
 
 }

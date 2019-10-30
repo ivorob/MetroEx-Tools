@@ -7,9 +7,6 @@
     <ClCompile Include="src\ui\ImagePanel.cpp">
       <Filter>src\ui</Filter>
     </ClCompile>
-    <ClCompile Include="src\ui\MainForm.cpp">
-      <Filter>src\ui</Filter>
-    </ClCompile>
     <ClCompile Include="src\Application.cpp">
       <Filter>src</Filter>
     </ClCompile>
@@ -127,15 +124,15 @@
     <ClCompile Include="src\metro\MetroWeaponsDatabase.cpp">
       <Filter>src\metro</Filter>
     </ClCompile>
+    <ClCompile Include="src\ui\MainWindowImpl.cpp">
+      <Filter>src\ui</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\ui\RenderPanel.h">
       <Filter>src\ui</Filter>
     </ClInclude>
     <ClInclude Include="src\ui\ImagePanel.h">
-      <Filter>src\ui</Filter>
-    </ClInclude>
-    <ClInclude Include="src\ui\MainForm.h">
       <Filter>src\ui</Filter>
     </ClInclude>
     <ClInclude Include="src\mycommon.h">
@@ -267,6 +264,9 @@
     <ClInclude Include="src\metro\MetroWeaponsDatabase.h">
       <Filter>src\metro</Filter>
     </ClInclude>
+    <ClInclude Include="src\ui\MainWindowImpl.h">
+      <Filter>src\ui</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="src\ui\ImagePanel.resx">
@@ -276,9 +276,6 @@
       <Filter>src\ui</Filter>
     </EmbeddedResource>
     <EmbeddedResource Include="src\ui\MainForm.resx">
-      <Filter>src\ui</Filter>
-    </EmbeddedResource>
-    <EmbeddedResource Include="src\ui\AboutDlg.resx">
       <Filter>src\ui</Filter>
     </EmbeddedResource>
     <EmbeddedResource Include="src\ui\DlgModelInfo.resx">
