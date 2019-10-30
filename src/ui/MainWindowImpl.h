@@ -73,6 +73,9 @@ namespace MetroEX {
         MainWindowImpl();
         ~MainWindowImpl();
 
+        void ResetTreeView();
+        bool FindAndSelect(String^ text, array<String^>^ extensions);
+
     protected:
         virtual void OnFormLoad() override;
         // toolbar

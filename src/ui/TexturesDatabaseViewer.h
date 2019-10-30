@@ -1,7 +1,7 @@
 #pragma once
-#include <msclr/marshal_cppstd.h>
 #include "mycommon.h"
 #include "metro/MetroTexturesDatabase.h"
+#include "ui/MainWindowImpl.h"
 #include "ui/TexturePropertiesViewer.h"
 #include "ui/NodeSorter.h"
 
@@ -19,7 +19,7 @@ namespace MetroEX {
     /// </summary>
     public ref class TexturesDatabaseViewer : public System::Windows::Forms::Form {
     public:
-        TexturesDatabaseViewer(/*MainForm^ form,*/ System::Windows::Forms::ImageList^ imageList);
+        TexturesDatabaseViewer(MainWindowImpl^ mainWnd, System::Windows::Forms::ImageList^ imageList);
 
     protected:
         ~TexturesDatabaseViewer();
@@ -28,18 +28,7 @@ namespace MetroEX {
     private: System::Windows::Forms::SplitContainer^  splitContainer1;
     private: System::Windows::Forms::PropertyGrid^  propertyGrid;
     private: MetroEXControls::FilterableTreeView^  filterableTreeView;
-
-
-
-
-
-
     private: System::ComponentModel::IContainer^  components;
-
-
-
-
-
 
     private:
         /// <summary>
@@ -121,7 +110,7 @@ namespace MetroEX {
     private:
         void FillWithData();
         TreeNode^ mOriginalRootNode;
-        //MainForm^ mMainForm;
+        MainWindowImpl^ mMainWindow;
         array<String^>^ mFileExtensions;
         TexturePropertiesViewer^ mPropertiesViewer;
         String^ GetRealPath(const size_t index);

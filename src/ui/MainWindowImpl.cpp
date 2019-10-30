@@ -163,8 +163,29 @@ MainWindowImpl::~MainWindowImpl() {
     MySafeDelete(mExtractionCtx);
 }
 
+void MainWindowImpl::ResetTreeView() {
+    if (this->filterableTreeView->TreeView == nullptr ||
+        this->filterableTreeView->TreeView->Nodes->Count == 0 ||
+        this->filterableTreeView->TreeView->Nodes[0] == this->mOriginalRootNode) {
+        return;
+    }
+
+    this->filterableTreeView->TreeView->BeginUpdate();
+    this->filterableTreeView->TreeView->Nodes->Clear();
+    this->filterableTreeView->TreeView->Nodes->Add(this->mOriginalRootNode);
+    this->filterableTreeView->TreeView->EndUpdate();
+
+    this->filterableTreeView->FilterTextBox->Text = String::Empty;
+}
+
+bool MainWindowImpl::FindAndSelect(String^ text, array<String^>^ extensions) {
+    return this->filterableTreeView->FindAndSelect(text, extensions);
+}
+
+
+
 void MainWindowImpl::OnFormLoad() {
-    //#ifdef _DEBUG
+//#ifdef _DEBUG
 //        //#NOTE_SK: for debugging purposes we might want to extract raw files
 //        this->ctxMenuExportModel->Items->Add(this->extractFileToolStripMenuItem);
 //        this->ctxMenuExportModel->Size.Height += this->extractFileToolStripMenuItem->Size.Height;
@@ -448,7 +469,7 @@ void MainWindowImpl::OnFilesTreeAfterSelect(System::Windows::Forms::TreeNode^ no
 // tools
 void MainWindowImpl::OnTexturesDatabaseClick() {
     if (MetroTexturesDatabase::Get().Good()) {
-        TexturesDatabaseViewer wnd(/*this, */this->imageListMain);
+        TexturesDatabaseViewer wnd(this, this->imageListMain);
         wnd.Icon = this->Icon;
         wnd.ShowDialog(this);
     }
@@ -661,7 +682,7 @@ void MainWindowImpl::UpdateFilesList() {
         TreeNode^ rootNode = this->filterableTreeView->TreeView->Nodes->Add(rootName);
         size_t rootIdx = 0;
 
-        //mOriginalRootNode = rootNode;
+        mOriginalRootNode = rootNode;
 
         rootNode->Tag = gcnew FileTagData(FileType::Folder, rootIdx, kInvalidValue);
         UpdateNodeIcon(rootNode);
