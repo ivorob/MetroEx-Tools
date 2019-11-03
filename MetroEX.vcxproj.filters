@@ -106,9 +106,6 @@
     <ClCompile Include="libs\pugixml\src\pugixml.cpp">
       <Filter>libs\pugixml</Filter>
     </ClCompile>
-    <ClCompile Include="src\ui\tools\DlgCreateArchive.cpp">
-      <Filter>src\ui\tools</Filter>
-    </ClCompile>
     <ClCompile Include="src\mex_settings.cpp">
       <Filter>src</Filter>
     </ClCompile>
@@ -126,6 +123,9 @@
     </ClCompile>
     <ClCompile Include="src\ui\MainWindowImpl.cpp">
       <Filter>src\ui</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ui\tools\CreateArchiveDlgImpl.cpp">
+      <Filter>src\ui\tools</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -246,9 +246,6 @@
     <ClInclude Include="libs\pugixml\src\pugixml.hpp">
       <Filter>libs\pugixml</Filter>
     </ClInclude>
-    <ClInclude Include="src\ui\tools\DlgCreateArchive.h">
-      <Filter>src\ui\tools</Filter>
-    </ClInclude>
     <ClInclude Include="src\mex_settings.h">
       <Filter>src</Filter>
     </ClInclude>
@@ -267,15 +264,15 @@
     <ClInclude Include="src\ui\MainWindowImpl.h">
       <Filter>src\ui</Filter>
     </ClInclude>
+    <ClInclude Include="src\ui\tools\CreateArchiveDlgImpl.h">
+      <Filter>src\ui\tools</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="src\ui\ImagePanel.resx">
       <Filter>src\ui</Filter>
     </EmbeddedResource>
     <EmbeddedResource Include="src\ui\SoundPanel.resx">
-      <Filter>src\ui</Filter>
-    </EmbeddedResource>
-    <EmbeddedResource Include="src\ui\MainForm.resx">
       <Filter>src\ui</Filter>
     </EmbeddedResource>
     <EmbeddedResource Include="src\ui\DlgModelInfo.resx">

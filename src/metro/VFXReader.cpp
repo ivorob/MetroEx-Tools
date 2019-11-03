@@ -10,7 +10,10 @@ static const CharString sGameVersions[] = {
     "Exodus"
 };
 
-VFXReader::VFXReader() {
+VFXReader::VFXReader()
+    : mVersion(kVFXVersionExodus)
+    , mCompressionType(MetroCompression::Type_Unknown)
+{
 
 }
 
@@ -154,7 +157,9 @@ bool VFXReader::SaveToFile(const fs::path& filePath) const {
         // write header
         WriteU32(vfxFile, scast<uint32_t>(mVersion));
         WriteU32(vfxFile, scast<uint32_t>(mCompressionType));
-        WriteStringZ(vfxFile, mContentVersion);
+        if (mVersion >= kVFXVersionExodus) {
+            WriteStringZ(vfxFile, mContentVersion);
+        }
         vfxFile.write(rcast<const char*>(&mGUID), sizeof(mGUID));
         WriteU32(vfxFile, scast<uint32_t>(mPaks.size()));
         WriteU32(vfxFile, scast<uint32_t>(mFiles.size()));

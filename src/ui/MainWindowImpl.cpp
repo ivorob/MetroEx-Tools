@@ -19,7 +19,7 @@
 #include "DlgSettings.h"
 
 #include "ui/tools/DlgConvertTextures.h"
-#include "ui/tools/DlgCreateArchive.h"
+#include "ui/tools/CreateArchiveDlgImpl.h"
 
 #include "UIHelpers.h"
 
@@ -515,7 +515,7 @@ void MainWindowImpl::OnLocalizationConversionClick() {
 }
 
 void MainWindowImpl::OnArchiveToolClick() {
-    DlgCreateArchive dlg;
+    CreateArchiveDlgImpl dlg;
     dlg.Icon = this->Icon;
     dlg.ShowDialog(this);
 }

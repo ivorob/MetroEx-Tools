@@ -163,8 +163,8 @@
     <ClCompile Include="src\ui\SoundPanel.cpp" />
     <ClCompile Include="src\ui\TexturePropertiesViewer.cpp" />
     <ClCompile Include="src\ui\TexturesDatabaseViewer.cpp" />
+    <ClCompile Include="src\ui\tools\CreateArchiveDlgImpl.cpp" />
     <ClCompile Include="src\ui\tools\DlgConvertTextures.cpp" />
-    <ClCompile Include="src\ui\tools\DlgCreateArchive.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="libs\bc7enc16\bc7decomp.h" />
@@ -222,10 +222,8 @@
     <ClInclude Include="src\ui\TexturesDatabaseViewer.h">
       <FileType>CppForm</FileType>
     </ClInclude>
+    <ClInclude Include="src\ui\tools\CreateArchiveDlgImpl.h" />
     <ClInclude Include="src\ui\tools\DlgConvertTextures.h">
-      <FileType>CppForm</FileType>
-    </ClInclude>
-    <ClInclude Include="src\ui\tools\DlgCreateArchive.h">
       <FileType>CppForm</FileType>
     </ClInclude>
     <ClInclude Include="src\ui\UIHelpers.h" />
@@ -260,11 +258,6 @@
       <DependentUpon>src\ui\LocalizationPanel.h</DependentUpon>
       <LogicalName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">MetroEX.LocalizationPanel.resources</LogicalName>
       <LogicalName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">MetroEX.LocalizationPanel.resources</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="src\ui\tools\DlgCreateArchive.resx">
-      <DependentUpon>src\ui\tools\DlgCreateArchive.h</DependentUpon>
-      <LogicalName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">MetroEX.DlgCreateArchive.resources</LogicalName>
-      <LogicalName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">MetroEX.DlgCreateArchive.resources</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="src\ui\DlgSettings.resx">
       <DependentUpon>src\ui\DlgSettings.h</DependentUpon>

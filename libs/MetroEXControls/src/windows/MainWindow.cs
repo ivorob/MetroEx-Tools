@@ -3,8 +3,6 @@ using System.Windows.Forms;
 
 namespace MetroEXControls {
     public abstract partial class MainWindow : Form {
-        public delegate void OnButtonClicked(Object sender);
-
         #region Abstract methods
         protected abstract void OnFormLoad();
         // toolbar
