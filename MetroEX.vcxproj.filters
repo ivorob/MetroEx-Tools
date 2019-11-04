@@ -109,9 +109,6 @@
     <ClCompile Include="src\mex_settings.cpp">
       <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="src\ui\DlgSettings.cpp">
-      <Filter>src\ui</Filter>
-    </ClCompile>
     <ClCompile Include="src\metro\MetroFonts.cpp">
       <Filter>src\metro</Filter>
     </ClCompile>
@@ -126,6 +123,9 @@
     </ClCompile>
     <ClCompile Include="src\ui\tools\CreateArchiveDlgImpl.cpp">
       <Filter>src\ui\tools</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ui\SettingsDlgImpl.cpp">
+      <Filter>src\ui</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -249,9 +249,6 @@
     <ClInclude Include="src\mex_settings.h">
       <Filter>src</Filter>
     </ClInclude>
-    <ClInclude Include="src\ui\DlgSettings.h">
-      <Filter>src\ui</Filter>
-    </ClInclude>
     <ClInclude Include="src\metro\MetroFonts.h">
       <Filter>src\metro</Filter>
     </ClInclude>
@@ -266,6 +263,9 @@
     </ClInclude>
     <ClInclude Include="src\ui\tools\CreateArchiveDlgImpl.h">
       <Filter>src\ui\tools</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ui\SettingsDlgImpl.h">
+      <Filter>src\ui</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -286,9 +286,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="src\ui\LocalizationPanel.resx">
       <Filter>src\ui</Filter>
-    </EmbeddedResource>
-    <EmbeddedResource Include="src\ui\tools\DlgCreateArchive.resx">
-      <Filter>src\ui\tools</Filter>
     </EmbeddedResource>
     <EmbeddedResource Include="src\ui\DlgSettings.resx">
       <Filter>src\ui</Filter>

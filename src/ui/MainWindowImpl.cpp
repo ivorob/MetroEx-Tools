@@ -16,7 +16,7 @@
 
 #include "TexturesDatabaseViewer.h"
 #include "NodeSorter.h"
-#include "DlgSettings.h"
+#include "SettingsDlgImpl.h"
 
 #include "ui/tools/DlgConvertTextures.h"
 #include "ui/tools/CreateArchiveDlgImpl.h"
@@ -522,7 +522,7 @@ void MainWindowImpl::OnArchiveToolClick() {
 
 // settings
 void MainWindowImpl::OnSettingsClick() {
-    DlgSettings dlg;
+    SettingsDlgImpl dlg;
     dlg.Icon = this->Icon;
     dlg.ShowDialog(this);
 }
@@ -995,7 +995,7 @@ bool MainWindowImpl::EnsureExtractionOptions() {
     MEXSettings& s = MEXSettings::Get();
 
     if (s.extraction.askEveryTime) {
-        DlgSettings dlg;
+        SettingsDlgImpl dlg;
         dlg.Icon = this->Icon;
         auto dlgResult = dlg.ShowDialog(this);
         if (dlgResult == System::Windows::Forms::DialogResult::Cancel) {

@@ -240,9 +240,11 @@
             this.Controls.Add(this.btnChooseTarget);
             this.Controls.Add(this.txtTargetPath);
             this.Controls.Add(this.label2);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "CreateArchiveDlg";
+            this.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Hide;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "CreateArchiveDlg";
             this.groupBox1.ResumeLayout(false);

@@ -155,11 +155,11 @@
     <ClCompile Include="src\mex_settings.cpp" />
     <ClCompile Include="src\ui\ChooseFolderDlg.cpp" />
     <ClCompile Include="src\ui\DlgModelInfo.cpp" />
-    <ClCompile Include="src\ui\DlgSettings.cpp" />
     <ClCompile Include="src\ui\ImagePanel.cpp" />
     <ClCompile Include="src\ui\LocalizationPanel.cpp" />
     <ClCompile Include="src\ui\MainWindowImpl.cpp" />
     <ClCompile Include="src\ui\RenderPanel.cpp" />
+    <ClCompile Include="src\ui\SettingsDlgImpl.cpp" />
     <ClCompile Include="src\ui\SoundPanel.cpp" />
     <ClCompile Include="src\ui\TexturePropertiesViewer.cpp" />
     <ClCompile Include="src\ui\TexturesDatabaseViewer.cpp" />
@@ -203,9 +203,6 @@
     <ClInclude Include="src\ui\DlgModelInfo.h">
       <FileType>CppForm</FileType>
     </ClInclude>
-    <ClInclude Include="src\ui\DlgSettings.h">
-      <FileType>CppForm</FileType>
-    </ClInclude>
     <ClInclude Include="src\ui\ImagePanel.h">
       <FileType>CppControl</FileType>
     </ClInclude>
@@ -215,6 +212,7 @@
     <ClInclude Include="src\ui\MainWindowImpl.h" />
     <ClInclude Include="src\ui\NodeSorter.h" />
     <ClInclude Include="src\ui\RenderPanel.h" />
+    <ClInclude Include="src\ui\SettingsDlgImpl.h" />
     <ClInclude Include="src\ui\SoundPanel.h">
       <FileType>CppControl</FileType>
     </ClInclude>
@@ -258,11 +256,6 @@
       <DependentUpon>src\ui\LocalizationPanel.h</DependentUpon>
       <LogicalName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">MetroEX.LocalizationPanel.resources</LogicalName>
       <LogicalName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">MetroEX.LocalizationPanel.resources</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="src\ui\DlgSettings.resx">
-      <DependentUpon>src\ui\DlgSettings.h</DependentUpon>
-      <LogicalName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">MetroEX.DlgSettings.resources</LogicalName>
-      <LogicalName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">MetroEX.DlgSettings.resources</LogicalName>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

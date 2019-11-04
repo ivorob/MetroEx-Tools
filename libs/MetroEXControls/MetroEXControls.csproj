@@ -86,6 +86,12 @@
     <Compile Include="src\windows\MainWindow.Designer.cs">
       <DependentUpon>MainWindow.cs</DependentUpon>
     </Compile>
+    <Compile Include="src\windows\SettingsDlg.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="src\windows\SettingsDlg.Designer.cs">
+      <DependentUpon>SettingsDlg.cs</DependentUpon>
+    </Compile>
     <Service Include="{94E38DFF-614B-4cbd-B67C-F211BB35CE8B}" />
   </ItemGroup>
   <ItemGroup>
@@ -110,6 +116,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="src\windows\MainWindow.resx">
       <DependentUpon>MainWindow.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="src\windows\SettingsDlg.resx">
+      <DependentUpon>SettingsDlg.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
