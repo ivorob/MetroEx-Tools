@@ -3,7 +3,7 @@
 //#NOTE_SK: let's use fancy Vista-style folder picker dialog instead of .NET built-in crap
 #include <shobjidl_core.h>
 
-fs::path  ChooseFolderDialog::ChooseFolder(const CharString& title, void* parentHwnd) {
+fs::path ChooseFolderDialog::ChooseFolder(const WideString& title, void* parentHwnd) {
     fs::path result;
 
     IFileDialog* pfd = nullptr;
@@ -14,6 +14,8 @@ fs::path  ChooseFolderDialog::ChooseFolder(const CharString& title, void* parent
         if (SUCCEEDED(hr)) {
             pfd->SetOptions(dwOptions | FOS_PICKFOLDERS);
         }
+
+        pfd->SetTitle(title.c_str());
 
         hr = pfd->Show(rcast<HWND>(parentHwnd));
         if (SUCCEEDED(hr)) {

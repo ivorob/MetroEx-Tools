@@ -18,7 +18,7 @@
 #include "NodeSorter.h"
 #include "SettingsDlgImpl.h"
 
-#include "ui/tools/DlgConvertTextures.h"
+#include "ui/tools/ConvertTexturesDlgImpl.h"
 #include "ui/tools/CreateArchiveDlgImpl.h"
 
 #include "UIHelpers.h"
@@ -258,7 +258,7 @@ void MainWindowImpl::OnFormLoad() {
 
 // toolbar
 void MainWindowImpl::OnOpenGameFolderClicked() {
-    fs::path folderPath = ChooseFolderDialog::ChooseFolder("Choose game directory...", this->Handle.ToPointer());
+    fs::path folderPath = ChooseFolderDialog::ChooseFolder(L"Choose game directory...", this->Handle.ToPointer());
     if (!folderPath.empty()) {
         System::Windows::Forms::Cursor::Current = System::Windows::Forms::Cursors::WaitCursor;
 
@@ -476,7 +476,7 @@ void MainWindowImpl::OnTexturesDatabaseClick() {
 }
 
 void MainWindowImpl::OnTexturesConverterClick() {
-    DlgConvertTextures dlg;
+    ConvertTexturesDlgImpl dlg;
     dlg.Icon = this->Icon;
     dlg.ShowDialog(this);
 }
@@ -642,7 +642,7 @@ void MainWindowImpl::OnExtractBinInnerFileClicked() {
 
 //  folder
 void MainWindowImpl::OnExtractFolderClicked(bool withConversion) {
-    fs::path folderPath = ChooseFolderDialog::ChooseFolder("Choose output directory...", this->Handle.ToPointer());
+    fs::path folderPath = ChooseFolderDialog::ChooseFolder(L"Choose output directory...", this->Handle.ToPointer());
     if (!folderPath.empty()) {
         mExtractionCtx->batch = true;
         mExtractionCtx->raw = !withConversion;
@@ -1223,7 +1223,7 @@ bool MainWindowImpl::ExtractSurfaceSet(const FileExtractionCtx& ctx, const Metro
 
     fs::path folderPath = outFolder;
     if (folderPath.empty()) {
-        folderPath = ChooseFolderDialog::ChooseFolder("Choose output directory...", this->Handle.ToPointer());
+        folderPath = ChooseFolderDialog::ChooseFolder(L"Choose output directory...", this->Handle.ToPointer());
     }
 
     if (!folderPath.empty()) {

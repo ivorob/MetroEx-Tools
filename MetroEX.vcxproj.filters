@@ -94,9 +94,6 @@
     <ClCompile Include="src\ui\TexturesDatabaseViewer.cpp">
       <Filter>src\ui</Filter>
     </ClCompile>
-    <ClCompile Include="src\ui\tools\DlgConvertTextures.cpp">
-      <Filter>src\ui\tools</Filter>
-    </ClCompile>
     <ClCompile Include="src\metro\MetroLocalization.cpp">
       <Filter>src\metro</Filter>
     </ClCompile>
@@ -126,6 +123,9 @@
     </ClCompile>
     <ClCompile Include="src\ui\SettingsDlgImpl.cpp">
       <Filter>src\ui</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ui\tools\ConvertTexturesDlgImpl.cpp">
+      <Filter>src\ui\tools</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -231,9 +231,6 @@
     <ClInclude Include="src\ui\TexturesDatabaseViewer.h">
       <Filter>src\ui</Filter>
     </ClInclude>
-    <ClInclude Include="src\ui\tools\DlgConvertTextures.h">
-      <Filter>src\ui\tools</Filter>
-    </ClInclude>
     <ClInclude Include="src\ui\UIHelpers.h">
       <Filter>src\ui</Filter>
     </ClInclude>
@@ -267,6 +264,9 @@
     <ClInclude Include="src\ui\SettingsDlgImpl.h">
       <Filter>src\ui</Filter>
     </ClInclude>
+    <ClInclude Include="src\ui\tools\ConvertTexturesDlgImpl.h">
+      <Filter>src\ui\tools</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="src\ui\ImagePanel.resx">
@@ -285,9 +285,6 @@
       <Filter>src\ui\tools</Filter>
     </EmbeddedResource>
     <EmbeddedResource Include="src\ui\LocalizationPanel.resx">
-      <Filter>src\ui</Filter>
-    </EmbeddedResource>
-    <EmbeddedResource Include="src\ui\DlgSettings.resx">
       <Filter>src\ui</Filter>
     </EmbeddedResource>
   </ItemGroup>

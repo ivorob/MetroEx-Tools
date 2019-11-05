@@ -3,5 +3,5 @@
 
 // Vista-style dialog
 struct ChooseFolderDialog {
-    static fs::path ChooseFolder(const CharString& title, void* parentHwnd = nullptr);
+    static fs::path ChooseFolder(const WideString& title, void* parentHwnd = nullptr);
 };

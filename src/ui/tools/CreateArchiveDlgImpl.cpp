@@ -29,7 +29,7 @@ void CreateArchiveDlgImpl::OnBlobFilenameChanged() {
 
 // buttons
 void CreateArchiveDlgImpl::OnChooseSrcFolderClick() {
-    fs::path folderPath = ChooseFolderDialog::ChooseFolder("Choose content foder...", this->Handle.ToPointer());
+    fs::path folderPath = ChooseFolderDialog::ChooseFolder(L"Choose content foder...", this->Handle.ToPointer());
     if (!folderPath.empty()) {
         std::error_code err;
         fs::directory_entry sourceFolder(folderPath, err);
