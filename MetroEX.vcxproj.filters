@@ -281,9 +281,6 @@
     <EmbeddedResource Include="src\ui\TexturesDatabaseViewer.resx">
       <Filter>src\ui</Filter>
     </EmbeddedResource>
-    <EmbeddedResource Include="src\ui\tools\DlgConvertTextures.resx">
-      <Filter>src\ui\tools</Filter>
-    </EmbeddedResource>
     <EmbeddedResource Include="src\ui\LocalizationPanel.resx">
       <Filter>src\ui</Filter>
     </EmbeddedResource>

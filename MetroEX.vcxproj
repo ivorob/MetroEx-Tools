@@ -333,6 +333,9 @@
     <ProjectReference Include="$(SolutionDir)libs\MetroEXControls\MetroEXControls.csproj">
       <Project>{c49e5f43-f91a-4e8e-817f-79709f284236}</Project>
     </ProjectReference>
+    <ProjectReference Include="libs\crunch\crnlib\crnlib.2008.vcxproj">
+      <Project>{cf2e70e8-7133-4d96-92c7-68bb406c0664}</Project>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <None Include="src\shaders\common.hlsli" />

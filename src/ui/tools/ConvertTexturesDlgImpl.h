@@ -33,6 +33,8 @@ namespace MetroEX {
         volatile bool               mStopRequested;
         System::Threading::Thread^  mConversionThread;
         bool                        mIncludeSubfolders;
+        bool                        mFormatExodus;
+        bool                        mCrunched;
     };
 
 } // namespace MetroEX

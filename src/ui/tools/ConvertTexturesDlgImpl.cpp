@@ -17,6 +17,8 @@ ConvertTexturesDlgImpl::ConvertTexturesDlgImpl()
     , mStopRequested(false)
     , mConversionThread(nullptr)
     , mIncludeSubfolders(true)
+    , mFormatExodus(false)
+    , mCrunched(false)
 {
 }
 ConvertTexturesDlgImpl::~ConvertTexturesDlgImpl() {
@@ -33,6 +35,9 @@ void ConvertTexturesDlgImpl::OnConvertClicked() {
     if (mConversionInProgress) {
         return;
     }
+
+    mFormatExodus = this->radioFormatExodus->Checked;
+    mCrunched = mFormatExodus ? false : this->chkCrunched->Checked;
 
     std::error_code err;
     fs::path path = StringToPath(this->txtPath->Text);
@@ -65,7 +70,8 @@ bool ConvertTexturesDlgImpl::ConvertOneFile(const fs::path& path) {
     MetroTexture texture;
     if (texture.LoadFromFile(path)) {
         fs::path resultPath = path.parent_path() / path.stem();
-        if (texture.SaveAsMetroTexture(resultPath)) {
+        const MetroTexture::PixelFormat format = mFormatExodus ? MetroTexture::PixelFormat::BC7 : MetroTexture::PixelFormat::BC3;
+        if (texture.SaveAsMetroTexture(resultPath, format, mCrunched)) {
             result = true;
         } else {
             this->Invoke(gcnew SafeCallDelegate1(this, &ConvertTexturesDlgImpl::LogAction), L"Failed to convert file!");
@@ -153,6 +159,7 @@ void ConvertTexturesDlgImpl::DisableUI() {
     this->btnChooseFolder->Enabled = false;
     this->btnConvert->Enabled = false;
     this->btnStop->Enabled = true;
+    this->groupBox1->Enabled = false;
 }
 
 void ConvertTexturesDlgImpl::EnableUI() {
@@ -162,6 +169,7 @@ void ConvertTexturesDlgImpl::EnableUI() {
     this->btnChooseFolder->Enabled = true;
     this->btnConvert->Enabled = true;
     this->btnStop->Enabled = false;
+    this->groupBox1->Enabled = true;
 }
 
 void ConvertTexturesDlgImpl::InitProgressBar(System::Object^ obj) {

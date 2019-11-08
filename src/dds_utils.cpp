@@ -173,7 +173,8 @@ void DDS_DecompressBC7(const void* inputBlocks, void* outPixels, const size_t wi
     }
 }
 
-void DDS_CompressBC3(const void* inputRGBA, void* outBlocks, const size_t width, const size_t height) {
+template <bool alpha>
+void DDS_CompressBC_Common(const void* inputRGBA, void* outBlocks, const size_t width, const size_t height) {
     const size_t sx = (width < 4) ? width : 4;
     const size_t sy = (height < 4) ? height : 4;
 
@@ -190,11 +191,18 @@ void DDS_CompressBC3(const void* inputRGBA, void* outBlocks, const size_t width,
                 src += (width * 4);
             }
 
-            stb_compress_dxt_block(dst, pixelsBlock, 1, STB_DXT_HIGHQUAL);
-
-            dst += 16;
+            stb_compress_dxt_block(dst, pixelsBlock, alpha ? 1 : 0, STB_DXT_HIGHQUAL);
+            dst += alpha ? 16 : 8;
         }
     }
+}
+
+void DDS_CompressBC1(const void* inputRGBA, void* outBlocks, const size_t width, const size_t height) {
+    DDS_CompressBC_Common<false>(inputRGBA, outBlocks, width, height);
+}
+
+void DDS_CompressBC3(const void* inputRGBA, void* outBlocks, const size_t width, const size_t height) {
+    DDS_CompressBC_Common<true>(inputRGBA, outBlocks, width, height);
 }
 
 void DDS_CompressBC7(const void* inputRGBA, void* outBlocks, const size_t width, const size_t height) {
@@ -226,7 +234,6 @@ void DDS_CompressBC7(const void* inputRGBA, void* outBlocks, const size_t width,
             }
 
             bc7enc16_compress_block(dst, pixelsBlock, &params);
-
             dst += 16;
         }
     }

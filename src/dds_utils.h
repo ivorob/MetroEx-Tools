@@ -10,6 +10,7 @@ void DDS_DecompressBC3(const void* inputBlocks, void* outPixels, const size_t wi
 //void DDS_DecompressBC6H(const void* inputBlocks, void* outPixels, const size_t width, const size_t height);
 void DDS_DecompressBC7(const void* inputBlocks, void* outPixels, const size_t width, const size_t height);
 
+void DDS_CompressBC1(const void* inputRGBA, void* outBlocks, const size_t width, const size_t height);
 void DDS_CompressBC3(const void* inputRGBA, void* outBlocks, const size_t width, const size_t height);
 void DDS_CompressBC7(const void* inputRGBA, void* outBlocks, const size_t width, const size_t height);
 

@@ -51,5 +51,9 @@ namespace MetroEXControls {
         private void ConvertTexturesDlg_FormClosing(object sender, FormClosingEventArgs e) {
             this.OnStopClicked();
         }
+
+        private void FormatChanged(object sender, EventArgs e) {
+            this.chkCrunched.Enabled = this.radioFormatRedux.Checked;
+        }
     }
 }

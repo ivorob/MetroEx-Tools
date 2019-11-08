@@ -35,11 +35,16 @@
             this.btnChooseFolder = new System.Windows.Forms.Button();
             this.txtPath = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
+            this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.radioFormatRedux = new System.Windows.Forms.RadioButton();
+            this.radioFormatExodus = new System.Windows.Forms.RadioButton();
+            this.chkCrunched = new System.Windows.Forms.CheckBox();
+            this.groupBox1.SuspendLayout();
             this.SuspendLayout();
             // 
             // txtLog
             // 
-            this.txtLog.Location = new System.Drawing.Point(13, 159);
+            this.txtLog.Location = new System.Drawing.Point(13, 264);
             this.txtLog.Multiline = true;
             this.txtLog.Name = "txtLog";
             this.txtLog.ReadOnly = true;
@@ -50,7 +55,7 @@
             // btnStop
             // 
             this.btnStop.Enabled = false;
-            this.btnStop.Location = new System.Drawing.Point(366, 129);
+            this.btnStop.Location = new System.Drawing.Point(366, 233);
             this.btnStop.Name = "btnStop";
             this.btnStop.Size = new System.Drawing.Size(122, 23);
             this.btnStop.TabIndex = 18;
@@ -61,7 +66,7 @@
             // btnConvert
             // 
             this.btnConvert.Enabled = false;
-            this.btnConvert.Location = new System.Drawing.Point(528, 129);
+            this.btnConvert.Location = new System.Drawing.Point(528, 233);
             this.btnConvert.Name = "btnConvert";
             this.btnConvert.Size = new System.Drawing.Size(122, 23);
             this.btnConvert.TabIndex = 17;
@@ -83,7 +88,7 @@
             // 
             // prbProgress
             // 
-            this.prbProgress.Location = new System.Drawing.Point(13, 99);
+            this.prbProgress.Location = new System.Drawing.Point(13, 203);
             this.prbProgress.Name = "prbProgress";
             this.prbProgress.Size = new System.Drawing.Size(637, 23);
             this.prbProgress.TabIndex = 15;
@@ -91,7 +96,7 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(10, 83);
+            this.label2.Location = new System.Drawing.Point(10, 187);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(51, 13);
             this.label2.TabIndex = 14;
@@ -134,11 +139,59 @@
             this.label1.TabIndex = 10;
             this.label1.Text = "Path:";
             // 
+            // groupBox1
+            // 
+            this.groupBox1.Controls.Add(this.chkCrunched);
+            this.groupBox1.Controls.Add(this.radioFormatExodus);
+            this.groupBox1.Controls.Add(this.radioFormatRedux);
+            this.groupBox1.Location = new System.Drawing.Point(232, 84);
+            this.groupBox1.Name = "groupBox1";
+            this.groupBox1.Size = new System.Drawing.Size(200, 98);
+            this.groupBox1.TabIndex = 20;
+            this.groupBox1.TabStop = false;
+            this.groupBox1.Text = "Settings:";
+            // 
+            // radioFormatRedux
+            // 
+            this.radioFormatRedux.AutoSize = true;
+            this.radioFormatRedux.Location = new System.Drawing.Point(7, 20);
+            this.radioFormatRedux.Name = "radioFormatRedux";
+            this.radioFormatRedux.Size = new System.Drawing.Size(86, 17);
+            this.radioFormatRedux.TabIndex = 0;
+            this.radioFormatRedux.Text = "Metro Redux";
+            this.radioFormatRedux.UseVisualStyleBackColor = true;
+            this.radioFormatRedux.CheckedChanged += new System.EventHandler(this.FormatChanged);
+            // 
+            // radioFormatExodus
+            // 
+            this.radioFormatExodus.AutoSize = true;
+            this.radioFormatExodus.Checked = true;
+            this.radioFormatExodus.Location = new System.Drawing.Point(7, 73);
+            this.radioFormatExodus.Name = "radioFormatExodus";
+            this.radioFormatExodus.Size = new System.Drawing.Size(90, 17);
+            this.radioFormatExodus.TabIndex = 1;
+            this.radioFormatExodus.TabStop = true;
+            this.radioFormatExodus.Text = "Metro Exodus";
+            this.radioFormatExodus.UseVisualStyleBackColor = true;
+            this.radioFormatExodus.CheckedChanged += new System.EventHandler(this.FormatChanged);
+            // 
+            // chkCrunched
+            // 
+            this.chkCrunched.AutoSize = true;
+            this.chkCrunched.Enabled = false;
+            this.chkCrunched.Location = new System.Drawing.Point(7, 43);
+            this.chkCrunched.Name = "chkCrunched";
+            this.chkCrunched.Size = new System.Drawing.Size(72, 17);
+            this.chkCrunched.TabIndex = 2;
+            this.chkCrunched.Text = "Crunched";
+            this.chkCrunched.UseVisualStyleBackColor = true;
+            // 
             // ConvertTexturesDlg
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(661, 297);
+            this.ClientSize = new System.Drawing.Size(661, 397);
+            this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.txtLog);
             this.Controls.Add(this.btnStop);
             this.Controls.Add(this.btnConvert);
@@ -156,6 +209,8 @@
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "Textures converter";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.ConvertTexturesDlg_FormClosing);
+            this.groupBox1.ResumeLayout(false);
+            this.groupBox1.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -173,5 +228,9 @@
         protected System.Windows.Forms.Button btnChooseFolder;
         protected System.Windows.Forms.TextBox txtPath;
         protected System.Windows.Forms.Label label1;
+        protected System.Windows.Forms.GroupBox groupBox1;
+        protected System.Windows.Forms.CheckBox chkCrunched;
+        protected System.Windows.Forms.RadioButton radioFormatExodus;
+        protected System.Windows.Forms.RadioButton radioFormatRedux;
     }
 }
