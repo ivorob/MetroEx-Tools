@@ -179,7 +179,7 @@ inline mat4 MatFromEuler(const vec3& euler) {
     return glm::eulerAngleZYX(euler.z, euler.y, euler.x);
 }
 inline const float* MatToPtr(const mat4& m) {
-    return reinterpret_cast<const float*>(&m);
+    return rcast<const float*>(&m);
 }
 
 static const mat4 MatZero = mat4(0.0f);

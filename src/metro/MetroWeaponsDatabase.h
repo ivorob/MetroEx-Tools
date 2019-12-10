@@ -3,14 +3,14 @@
 #include "mymath.h"
 #include "MetroTypes.h"
 
-class MetroReflectionReader;
+class MetroReflectionStream;
 
 struct MetroWeaponHandle {
     HashString  name;
     CharString  upgrades;
     StringArray upgradesArray;
 
-    void Serialize(MetroReflectionReader& s);
+    void Serialize(MetroReflectionStream& s);
 };
 
 struct MetroShootingParticlesData {
@@ -27,7 +27,7 @@ struct MetroShootingParticlesData {
     CharString  overheat_particles;
     CharString  overheat_smoke_particles;
 
-    void Serialize(MetroReflectionReader& s);
+    void Serialize(MetroReflectionStream& s);
 };
 
 struct MetroShootingLightData {
@@ -56,11 +56,11 @@ struct MetroShootingLightData {
     float       light_time;
     float       light_luminosity;
 
-    void Serialize(MetroReflectionReader& s);
+    void Serialize(MetroReflectionStream& s);
 };
 
 struct MetroCameraTrackAttack {
-    void Serialize(MetroReflectionReader& s) {
+    void Serialize(MetroReflectionStream& s) {
         assert(false);
     }
 };
@@ -123,7 +123,7 @@ struct MetroWeaponModifier {
     CharString  lock_shoot_track;           // choose
     CharString  lock_aim_shoot_track;       // choose
 
-    void Serialize(MetroReflectionReader& s);
+    void Serialize(MetroReflectionStream& s);
 };
 
 struct MetroShootingWeaponData {
@@ -336,7 +336,7 @@ struct MetroShootingWeaponData {
     bool        has_axis_disp;
 
 
-    void Serialize(MetroReflectionReader& s);
+    void Serialize(MetroReflectionStream& s);
 };
 
 struct MetroWeaponAttachmentDesc {
@@ -368,7 +368,7 @@ struct MetroWeaponAttachmentDesc {
     MetroShootingLightData      light_data;
     MetroShootingWeaponData     shooting_weapon_data;
 
-    void Serialize(MetroReflectionReader& s);
+    void Serialize(MetroReflectionStream& s);
 };
 
 class MetroWeaponsDatabase {

@@ -56,26 +56,26 @@ struct TextureInfoRedux {
     uint8_t     format;
     uint32_t    avg_color;
 
-    void Serialize(MetroReflectionReader& s) {
-        METRO_READ_MEMBER(s, bump_name);
-        METRO_READ_MEMBER(s, det_name);
-        METRO_READ_MEMBER(s, aux0_name);
-        METRO_READ_MEMBER(s, aux1_name);
-        METRO_READ_MEMBER(s, type);
-        METRO_READ_MEMBER(s, width);
-        METRO_READ_MEMBER(s, height);
-        METRO_READ_MEMBER(s, bump_height);
-        METRO_READ_MEMBER(s, displ_type);
-        METRO_READ_MEMBER(s, displ_height);
-        METRO_READ_MEMBER(s, animated);
-        METRO_READ_MEMBER(s, mipmapped);
-        METRO_READ_MEMBER(s, streamable);
-        METRO_READ_MEMBER(s, priority);
-        METRO_READ_MEMBER(s, det_u_scale);
-        METRO_READ_MEMBER(s, det_v_scale);
-        METRO_READ_MEMBER(s, det_intesity);
-        METRO_READ_MEMBER(s, format);
-        METRO_READ_MEMBER(s, avg_color);
+    void Serialize(MetroReflectionStream& s) {
+        METRO_SERIALIZE_MEMBER(s, bump_name);
+        METRO_SERIALIZE_MEMBER(s, det_name);
+        METRO_SERIALIZE_MEMBER(s, aux0_name);
+        METRO_SERIALIZE_MEMBER(s, aux1_name);
+        METRO_SERIALIZE_MEMBER(s, type);
+        METRO_SERIALIZE_MEMBER(s, width);
+        METRO_SERIALIZE_MEMBER(s, height);
+        METRO_SERIALIZE_MEMBER(s, bump_height);
+        METRO_SERIALIZE_MEMBER(s, displ_type);
+        METRO_SERIALIZE_MEMBER(s, displ_height);
+        METRO_SERIALIZE_MEMBER(s, animated);
+        METRO_SERIALIZE_MEMBER(s, mipmapped);
+        METRO_SERIALIZE_MEMBER(s, streamable);
+        METRO_SERIALIZE_MEMBER(s, priority);
+        METRO_SERIALIZE_MEMBER(s, det_u_scale);
+        METRO_SERIALIZE_MEMBER(s, det_v_scale);
+        METRO_SERIALIZE_MEMBER(s, det_intesity);
+        METRO_SERIALIZE_MEMBER(s, format);
+        METRO_SERIALIZE_MEMBER(s, avg_color);
     }
 };
 
@@ -117,10 +117,10 @@ bool MetroTexture::LoadFromData(MemStream& stream, const MyHandle file) {
     const bool isBin = StrEndsWith(fileName, ".bin");
     if (isBin) { //#NOTE_SK: Redux versions
         MetroBinArchive bin(kEmptyString, stream, MetroBinArchive::kHeaderNotExist);
-        MetroReflectionReader reader = bin.ReflectionReader();
-        if (reader.Good()) {
+        StrongPtr<MetroReflectionStream> reader = bin.ReflectionReader();
+        if (reader) {
             TextureInfoRedux texInfo;
-            reader >> texInfo;
+            (*reader) >> texInfo;
 
             // save the format so we don't have to guess it
             mFormat = scast<MetroTexture::PixelFormat>(texInfo.format);

@@ -65,22 +65,22 @@ MetroBinArchive::MetroBinArchive(const CharString& name, const MemStream& stream
     mFileStream.SetCursor(0);
 }
 
-MetroReflectionReader MetroBinArchive::ReflectionReader() const {
-    MetroReflectionReader result;
+StrongPtr<MetroReflectionStream> MetroBinArchive::ReflectionReader() const {
+    StrongPtr<MetroReflectionStream> result;
 
     if (this->HasChunks()) {
         const ChunkData& chunk = this->GetFirstChunk();
 
-        result = MetroReflectionReader(mFileStream.Substream(chunk.offset, chunk.size), mBinFlags);
+        result.reset(new MetroReflectionBinaryReadStream(mFileStream.Substream(chunk.offset, chunk.size), mBinFlags));
     } else {
-        result = MetroReflectionReader(mFileStream.Substream(1, mFileStream.Length() - 1), mBinFlags);
+        result.reset(new MetroReflectionBinaryReadStream(mFileStream.Substream(1, mFileStream.Length() - 1), mBinFlags));
     }
 
     if (!mSTable.data.empty()) {
-        result.SetSTable(&mSTable);
+        result->SetSTable(&mSTable);
     }
 
-    return std::move(result);
+    return result;
 }
 
 void MetroBinArchive::ReadStringsTable() {

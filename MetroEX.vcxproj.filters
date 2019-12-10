@@ -130,6 +130,9 @@
     <ClCompile Include="src\metro\MetroTypedStrings.cpp">
       <Filter>src\metro</Filter>
     </ClCompile>
+    <ClCompile Include="src\metro\MetroReflection.cpp">
+      <Filter>src\metro</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\ui\RenderPanel.h">
@@ -349,6 +352,9 @@
   <ItemGroup>
     <None Include="src\shaders\common.hlsli">
       <Filter>src\shaders</Filter>
+    </None>
+    <None Include="src\metro\MetroReflectionBinary.inl">
+      <Filter>src\metro</Filter>
     </None>
   </ItemGroup>
 </Project>

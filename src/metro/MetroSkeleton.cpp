@@ -10,30 +10,30 @@ enum SkeletonChunks : size_t {
 struct ReduxBoneBodyPartHelper {
     uint16_t bp;
 
-    void Serialize(MetroReflectionReader& reader) {
-        METRO_READ_MEMBER(reader, bp);
+    void Serialize(MetroReflectionStream& reader) {
+        METRO_SERIALIZE_MEMBER(reader, bp);
     }
 };
 
 
-void ParentMapped::Serialize(MetroReflectionReader& reader) {
-    METRO_READ_MEMBER(reader, parent_bone);
-    METRO_READ_MEMBER(reader, self_bone);
-    METRO_READ_MEMBER(reader, q);
-    METRO_READ_MEMBER(reader, t);
-    METRO_READ_MEMBER(reader, s);
+void ParentMapped::Serialize(MetroReflectionStream& reader) {
+    METRO_SERIALIZE_MEMBER(reader, parent_bone);
+    METRO_SERIALIZE_MEMBER(reader, self_bone);
+    METRO_SERIALIZE_MEMBER(reader, q);
+    METRO_SERIALIZE_MEMBER(reader, t);
+    METRO_SERIALIZE_MEMBER(reader, s);
 }
 
-void MetroBone::Serialize(MetroReflectionReader& reader) {
-    METRO_READ_MEMBER(reader, name);
-    METRO_READ_MEMBER(reader, parent);
-    METRO_READ_MEMBER(reader, q);
-    METRO_READ_MEMBER(reader, t);
+void MetroBone::Serialize(MetroReflectionStream& reader) {
+    METRO_SERIALIZE_MEMBER(reader, name);
+    METRO_SERIALIZE_MEMBER(reader, parent);
+    METRO_SERIALIZE_MEMBER(reader, q);
+    METRO_SERIALIZE_MEMBER(reader, t);
 
     const size_t skeletonVersion = reader.GetUserData();
     if (skeletonVersion > 18) {
-        METRO_READ_MEMBER(reader, bp);
-        METRO_READ_MEMBER(reader, bpf);
+        METRO_SERIALIZE_MEMBER(reader, bp);
+        METRO_SERIALIZE_MEMBER(reader, bpf);
     } else {
         //#NOTE_SK: using a hack to read old (Redux) bones
         ReduxBoneBodyPartHelper helper;
@@ -55,9 +55,9 @@ bool MetroSkeleton::LoadFromData(MemStream& stream) {
     bool result = false;
 
     MetroBinArchive bin(kEmptyString, stream, MetroBinArchive::kHeaderNotExist);
-    MetroReflectionReader reader = bin.ReflectionReader();
-    if (reader.Good()) {
-        this->DeserializeSelf(reader);
+    StrongPtr<MetroReflectionStream> reader = bin.ReflectionReader();
+    if (reader) {
+        this->DeserializeSelf(*reader);
         result = !this->bones.empty();
     }
 
@@ -115,33 +115,34 @@ const CharString& MetroSkeleton::GetMotionsStr() const {
 }
 
 
-void MetroSkeleton::DeserializeSelf(MetroReflectionReader& reader) {
-    MetroReflectionReader skeletonReader = reader.OpenSection("skeleton");
-    if (skeletonReader.Good()) {
-        METRO_READ_MEMBER(skeletonReader, ver);
-        METRO_READ_MEMBER(skeletonReader, crc);
+void MetroSkeleton::DeserializeSelf(MetroReflectionStream& reader) {
+    MetroReflectionStream* skeletonReader = reader.OpenSection("skeleton");
+    if (skeletonReader) {
+        METRO_SERIALIZE_MEMBER(*skeletonReader, ver);
+        METRO_SERIALIZE_MEMBER(*skeletonReader, crc);
 
-        skeletonReader.SetUserData(this->ver);
+        skeletonReader->SetUserData(this->ver);
 
         if (this->ver < 15) {
-            METRO_READ_MEMBER(skeletonReader, facefx);
+            METRO_SERIALIZE_MEMBER(*skeletonReader, facefx);
         } else {
-            METRO_READ_MEMBER(skeletonReader, pfnn); // if version > 16
+            METRO_SERIALIZE_MEMBER(*skeletonReader, pfnn); // if version > 16
         }
         if (this->ver > 20) {
-            METRO_READ_MEMBER(skeletonReader, has_as); // if version > 20
+            METRO_SERIALIZE_MEMBER(*skeletonReader, has_as); // if version > 20
         }
-        METRO_READ_MEMBER(skeletonReader, motions);
+        METRO_SERIALIZE_MEMBER(*skeletonReader, motions);
         if (this->ver > 12) {
-            METRO_READ_MEMBER(skeletonReader, source_info); // if version > 12
+            METRO_SERIALIZE_MEMBER(*skeletonReader, source_info); // if version > 12
             if (this->ver > 13) {
-                METRO_READ_MEMBER(skeletonReader, parent_skeleton); // if version > 13
-                METRO_READ_STRUCT_ARRAY_MEMBER(skeletonReader, parent_bone_maps); // if version > 13
+                METRO_SERIALIZE_MEMBER(*skeletonReader, parent_skeleton); // if version > 13
+                METRO_SERIALIZE_STRUCT_ARRAY_MEMBER(*skeletonReader, parent_bone_maps); // if version > 13
             }
         }
-        METRO_READ_STRUCT_ARRAY_MEMBER(skeletonReader, bones);
+        METRO_SERIALIZE_STRUCT_ARRAY_MEMBER(*skeletonReader, bones);
+
+        reader.CloseSection(skeletonReader);
     }
-    reader.CloseSection(skeletonReader);
 
     //#NOTE_SK: fix-up bones transforms by swizzling them back
     for (auto& b : bones) {

@@ -3,7 +3,7 @@
 #include "mymath.h"
 #include "MetroTypes.h"
 
-class MetroReflectionReader;
+class MetroReflectionStream;
 
 struct MetroTextureInfo {
     enum class TextureType : uint8_t {
@@ -73,17 +73,17 @@ struct MetroTextureInfo {
     CharString          aux6_name;      // choose
     CharString          aux7_name;      // choose
 
-    void Serialize(MetroReflectionReader& s);
+    void Serialize(MetroReflectionStream& s);
 };
 
 struct MetroTextureAliasInfo {
     CharString  src;
     CharString  dst;
 
-    void Serialize(MetroReflectionReader& s);
+    void Serialize(MetroReflectionStream& s);
 };
 
-class MetroReflectionReader;
+
 
 class MetroTexturesDatabase {
     IMPL_SINGLETON(MetroTexturesDatabase)

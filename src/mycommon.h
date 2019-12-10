@@ -23,6 +23,9 @@ using WideString = std::wstring;
 using StringArray = MyArray<CharString>;
 using BytesArray = MyArray<uint8_t>;
 
+template <typename T>
+using StrongPtr = std::unique_ptr<T>;
+
 using MyHandle = size_t;
 
 using flags8 = uint8_t;

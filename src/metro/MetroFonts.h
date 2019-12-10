@@ -1,7 +1,7 @@
 #pragma once
 #include "MetroTypes.h"
 
-class MetroReflectionReader;
+class MetroReflectionStream;
 
 class MetroFontDescriptor {
 public:
@@ -14,10 +14,10 @@ public:
         uint16_t yoffset;
         uint16_t xadvance;
 
-        void Serialize(MetroReflectionReader& s);
+        void Serialize(MetroReflectionStream& s);
     };
 
-    void Serialize(MetroReflectionReader& s);
+    void Serialize(MetroReflectionStream& s);
 
 private:
     CharString          lang;

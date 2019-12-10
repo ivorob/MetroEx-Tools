@@ -1,7 +1,7 @@
 #pragma once
 #include "MetroTypes.h"
 
-class MetroReflectionReader;
+class MetroReflectionStream;
 
 struct ParentMapped {   // 48 bytes
     CharString  parent_bone;
@@ -10,7 +10,7 @@ struct ParentMapped {   // 48 bytes
     vec3        t;
     vec3        s;
 
-    void Serialize(MetroReflectionReader& s);
+    void Serialize(MetroReflectionStream& s);
 };
 
 struct MetroBone {      // 38 bytes
@@ -23,7 +23,7 @@ struct MetroBone {      // 38 bytes
     uint8_t     bp;
     uint8_t     bpf;
 
-    void Serialize(MetroReflectionReader& s);
+    void Serialize(MetroReflectionStream& s);
 };
 
 class MetroSkeleton {
@@ -44,7 +44,7 @@ public:
     const CharString&       GetMotionsStr() const;
 
 private:
-    void                    DeserializeSelf(MetroReflectionReader& reader);
+    void                    DeserializeSelf(MetroReflectionStream& reader);
 
 private:
     uint32_t                ver;

@@ -146,6 +146,7 @@
     <ClCompile Include="src\metro\MetroMaterialsDatabase.cpp" />
     <ClCompile Include="src\metro\MetroModel.cpp" />
     <ClCompile Include="src\metro\MetroMotion.cpp" />
+    <ClCompile Include="src\metro\MetroReflection.cpp" />
     <ClCompile Include="src\metro\MetroSkeleton.cpp" />
     <ClCompile Include="src\metro\MetroSound.cpp" />
     <ClCompile Include="src\metro\MetroTexture.cpp" />
@@ -340,6 +341,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <None Include="src\metro\MetroReflectionBinary.inl" />
     <None Include="src\shaders\common.hlsli" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

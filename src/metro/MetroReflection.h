@@ -80,64 +80,32 @@ METRO_REGISTER_TYPE_ARRAY_ALIAS(uint32_t, u32)
 METRO_REGISTER_TYPE_ARRAY_ALIAS(float, fp32)
 
 
-class MetroReflectionReader {
+// Base class for all reflection streams
+class MetroReflectionStream {
 public:
-    MetroReflectionReader()
-        : mStream()
-        , mSTable(nullptr)
-        , mFlags(MetroReflectionFlags::None)
-        , mUserData(kInvalidValue) {
+    enum Mode : size_t {
+        IN,     // reading streams
+        OUT     // writing streams
+    };
+
+public:
+    MetroReflectionStream();
+    virtual ~MetroReflectionStream();
+
+    // Mode query
+    inline Mode GetMode() const {
+        return mMode;
     }
 
-    MetroReflectionReader(const MemStream& s, const uint8_t flags = MetroReflectionFlags::None)
-        : mStream(s)
-        , mSTable(nullptr)
-        , mFlags(flags)
-        , mUserData(kInvalidValue) {
+    inline bool IsIn() const {
+        return mMode == Mode::IN;
     }
 
-    MetroReflectionReader(const MetroReflectionReader& other)
-        : mStream(other.mStream)
-        , mSTable(other.mSTable)
-        , mFlags(other.mFlags)
-        , mSectionName(other.mSectionName)
-        , mUserData(other.mUserData) {
+    inline bool IsOut() const {
+        return mMode == Mode::OUT;
     }
 
-    MetroReflectionReader(MetroReflectionReader&& other)
-        : mStream(std::move(other.mStream))
-        , mSTable(other.mSTable)
-        , mFlags(other.mFlags)
-        , mSectionName(std::move(other.mSectionName))
-        , mUserData(other.mUserData) {
-    }
-
-    inline MetroReflectionReader& operator =(const MetroReflectionReader& other) {
-        mStream = other.mStream;
-        mSTable = other.mSTable;
-        mFlags = other.mFlags;
-        mSectionName = other.mSectionName;
-        mUserData = other.mUserData;
-        return *this;
-    }
-
-    inline MetroReflectionReader& operator =(MetroReflectionReader&& other) {
-        mStream = std::move(other.mStream);
-        mSTable = other.mSTable;
-        mFlags = other.mFlags;
-        mSectionName = std::move(other.mSectionName);
-        mUserData = other.mUserData;
-        return *this;
-    }
-
-    inline MemStream& GetStream() {
-        return mStream;
-    }
-
-    inline bool Good() const {
-        return mStream.Good();
-    }
-
+    // Flags query
     inline bool HasDebugInfo() const {
         return TestBit(mFlags, MetroReflectionFlags::HasDebugInfo);
     }
@@ -150,11 +118,10 @@ public:
         return TestBit(mFlags, MetroReflectionFlags::NoSections);
     }
 
-    void SetSTable(const StringsTable* stable) {
-        mSTable = stable;
-    }
+    // State query
+    virtual bool Good() const { return true; }
 
-    void SetSectionName(const CharString& sectionName) {
+    inline void SetSectionName(const CharString& sectionName) {
         mSectionName = sectionName;
     }
 
@@ -162,7 +129,7 @@ public:
         return mSectionName;
     }
 
-    void SetUserData(const size_t userData) {
+    inline void SetUserData(const size_t userData) {
         mUserData = userData;
     }
 
@@ -170,221 +137,169 @@ public:
         return mUserData;
     }
 
-    bool ReadEditorTag(const CharString& propName) {
-        //static CharString sChooseStr("choose");
-
-        if (this->HasDebugInfo()) {
-            CharString name = mStream.ReadStringZ();
-            assert(name == propName);
-            if (name != propName) {
-                return false;
-            }
-
-            CharString chooseStr = mStream.ReadStringZ();
-            //#TODO_SK: different choose attributes could be
-            //assert(chooseStr == sChooseStr);
-            //if (chooseStr != sChooseStr) {
-            //    return false;
-            //}
-        }
-        return true;
+    void SetSTable(const StringsTable* stable) {
+        mSTable = stable;
     }
 
-    bool VerifyTypeInfo(const CharString& propName, const CharString& typeAlias) {
-        if (this->HasDebugInfo()) {
-            CharString name = mStream.ReadStringZ();
-            assert(name == propName);
-            if (name != propName) {
-                return false;
-            }
+    // Binary streams will need this
+    virtual size_t GetCursor() const { return 0; }
+    virtual size_t GetRemains() const { return 0; }
+    virtual void SkipBytes(const size_t numBytes) { }
 
-            CharString type = mStream.ReadStringZ();
-            assert(type == typeAlias);
-            if (type != typeAlias) {
-                return false;
-            }
-        }
-        return true;
-    }
+    // Serialization
+    virtual void SerializeRawBytes(void* ptr, const size_t length) = 0;
+    virtual void SerializeBool(bool& v);
+    virtual void SerializeI8(int8_t& v);
+    virtual void SerializeU8(uint8_t& v);
+    virtual void SerializeI16(int16_t& v);
+    virtual void SerializeU16(uint16_t& v);
+    virtual void SerializeI32(int32_t& v);
+    virtual void SerializeU32(uint32_t& v);
+    virtual void SerializeI64(int64_t& v);
+    virtual void SerializeU64(uint64_t& v);
+    virtual void SerializeF32(float& v);
+    virtual void SerializeF64(double& v);
+    virtual void SerializeString(CharString& v);
+    // Advanced
+    virtual void SerializeFloats(float* fv, const size_t numFloats);
 
-    MetroReflectionReader OpenSection(const CharString& sectionName, const bool nameUnknown = false) {
-        if (this->HasNoSections()) {
-            return *this;
-        } else {
-            const uint32_t crc = sectionName.empty() ? 0u : Hash_CalculateCRC32(sectionName);
-
-            const uint32_t sectionNameCrc = *rcast<const uint32_t*>(mStream.GetDataAtCursor());
-            if (nameUnknown || sectionNameCrc == crc) {
-                mStream.SkipBytes(sizeof(uint32_t));
-
-                uint32_t sectionSize;
-                uint8_t flags;
-                (*this) >> sectionSize;
-                (*this) >> flags;
-
-                const size_t dataSize = sectionSize - 1;
-                MetroReflectionReader result(mStream.Substream(dataSize), flags);
-                result.SetSTable(mSTable);
-                result.SetUserData(mUserData);
-
-                if (result.HasDebugInfo()) {
-                    CharString name;
-                    result >> name;
-                    if (!nameUnknown) {
-                        assert(sectionName == name);
-                    }
-                }
-
-                return std::move(result);
-            } else {
-                return MetroReflectionReader();
-            }
-        }
-    }
-
-    void CloseSection(const MetroReflectionReader& section) {
-        if (section.Good()) {
-            if (this->HasNoSections()) {
-                //#NOTE_SK: since it's our shadow copy, we just sync our cursors
-                mStream.SetCursor(section.mStream.GetCursor());
-            } else {
-                mStream.SkipBytes(section.mStream.Length());
-            }
-        }
-    }
-
-    template <typename T>
-    void ReadStruct(const CharString& memberName, T& v) {
-        MetroReflectionReader s = this->OpenSection(memberName);
-        if (s.Good()) {
-            s >> v;
-        }
-        this->CloseSection(s);
-    }
-
-    template <typename T>
-    void ReadStructArray(const CharString& memberName, MyArray<T>& v) {
-        this->VerifyTypeInfo(memberName, "array");
-
-        MetroReflectionReader s = this->OpenSection(memberName);
-        if (s.Good()) {
-            s.VerifyTypeInfo("count", MetroTypeGetAlias<uint32_t>());
-
-            uint32_t arraySize;
-            s >> arraySize;
-            if (arraySize > 0) {
-                v.resize(arraySize);
-                for (T& e : v) {
-                    MetroReflectionReader subS = s.OpenSection(kEmptyString, true);
-                    if (subS.Good()) {
-                        subS >> e;
-                    }
-                    s.CloseSection(subS);
-                }
-            }
-        }
-        this->CloseSection(s);
-    }
-
+    // Generic serialization of complex types
     template <typename T>
     inline void operator >>(T& v) {
         v.Serialize(*this);
     }
 
-#define IMPLEMENT_SIMPLE_TYPE_READ(type)    \
-    void operator >>(type& v) {             \
-        v = mStream.ReadTyped<type>();      \
-    }
-
-    IMPLEMENT_SIMPLE_TYPE_READ(bool)
-    IMPLEMENT_SIMPLE_TYPE_READ(int8_t)
-    IMPLEMENT_SIMPLE_TYPE_READ(uint8_t)
-    IMPLEMENT_SIMPLE_TYPE_READ(int16_t)
-    IMPLEMENT_SIMPLE_TYPE_READ(uint16_t)
-    IMPLEMENT_SIMPLE_TYPE_READ(int32_t)
-    IMPLEMENT_SIMPLE_TYPE_READ(uint32_t)
-    IMPLEMENT_SIMPLE_TYPE_READ(float)
-
-#undef IMPLEMENT_SIMPLE_TYPE_READ
-
-    inline void operator >>(CharString& v) {
-        if (this->HasStringsTable()) {
-            uint32_t ref;
-            (*this) >> ref;
-            if (ref != kInvalidValue32 && mSTable) {
-                v = mSTable->GetString(ref);
-            }
-        } else {
-            v = mStream.ReadStringZ();
-        }
-    }
-
-    inline void operator >>(Bool8& v) {
-        (*this) >> v.val8;
-    }
-
-    inline void operator >>(vec2& v) {
-        (*this) >> v.x;
-        (*this) >> v.y;
-    }
-
-    inline void operator >>(vec3& v) {
-        (*this) >> v.x;
-        (*this) >> v.y;
-        (*this) >> v.z;
-    }
-
-    inline void operator >>(vec4& v) {
-        (*this) >> v.x;
-        (*this) >> v.y;
-        (*this) >> v.z;
-        (*this) >> v.w;
-    }
-
-    inline void operator >>(quat& v) {
-        (*this) >> v.x;
-        (*this) >> v.y;
-        (*this) >> v.z;
-        (*this) >> v.w;
-    }
-
-    inline void operator >>(color4f& v) {
-        (*this) >> v.r;
-        (*this) >> v.g;
-        (*this) >> v.b;
-        (*this) >> v.a;
-    }
-
-    inline void operator >>(posemat& v) {
-        mStream.ReadStruct(v);
-    }
-
-    inline void operator >>(posematrix& v) {
-        mStream.ReadStruct(v);
-    }
-
-    inline void operator >>(anglef& v) {
-        (*this) >> v.x;
-    }
-
+    // Metro data serialization details
+    bool SerializeEditorTag(const CharString& propName);
+    bool SerializeTypeInfo(const CharString& propName, const CharString& typeAlias);
+    virtual MetroReflectionStream* OpenSection(const CharString& sectionName, const bool nameUnknown = false) = 0;
+    virtual void CloseSection(MetroReflectionStream* section) = 0;
 
     template <typename TElement, typename TSize>
-    void ReadArray(MyArray<TElement>& v) {
-        TSize numElements = 0;
+    void SerializeArray(MyArray<TElement>& v) {
+        TSize numElements = scast<TSize>(v.size());
         (*this) >> numElements;
-        v.resize(numElements);
+
+        if (this->IsIn()) {
+            v.resize(numElements);
+        }
+
         for (TElement& e : v) {
             (*this) >> e;
         }
     }
 
-private:
-    MemStream           mStream;
+    template <typename T>
+    void SerializeStruct(const CharString& memberName, T& v) {
+        MetroReflectionStream* s = this->OpenSection(memberName);
+        if (s) {
+            (*s) >> v;
+            this->CloseSection(s);
+        }
+    }
+
+    template <typename T>
+    void SerializeStructArray(const CharString& memberName, MyArray<T>& v) {
+        this->SerializeTypeInfo(memberName, "array");
+
+        MetroReflectionStream* s = this->OpenSection(memberName);
+        if (s) {
+            s->SerializeTypeInfo("count", MetroTypeGetAlias<uint32_t>());
+
+            uint32_t arraySize = scast<uint32_t>(v.size());
+            (*s) >> arraySize;
+            if (arraySize > 0) {
+                if (s->IsIn()) {
+                    v.resize(arraySize);
+                }
+
+                for (T& e : v) {
+                    MetroReflectionStream* subS = s->OpenSection(kEmptyString, true);
+                    if (subS) {
+                        (*subS) >> e;
+                        s->CloseSection(subS);
+                    }
+                }
+            }
+
+            this->CloseSection(s);
+        }
+    }
+
+protected:
+    virtual void ReadStringZ(CharString& s) = 0;
+    virtual void WriteStringZ(CharString& s) = 0;
+
+protected:
+    Mode                mMode;
+    size_t              mUserData;
+    CharString          mSectionName;
     const StringsTable* mSTable;
     uint8_t             mFlags;
-    CharString          mSectionName;
-    size_t              mUserData;
 };
+
+// Base types serialization support
+#define IMPLEMENT_BASE_TYPE_SERIALIZE(type, suffix)             \
+inline void operator >>(MetroReflectionStream& s, type& v) {    \
+    s.Serialize##suffix (v);                                    \
+}
+
+IMPLEMENT_BASE_TYPE_SERIALIZE(bool, Bool)
+IMPLEMENT_BASE_TYPE_SERIALIZE(int8_t, I8)
+IMPLEMENT_BASE_TYPE_SERIALIZE(uint8_t, U8)
+IMPLEMENT_BASE_TYPE_SERIALIZE(int16_t, I16)
+IMPLEMENT_BASE_TYPE_SERIALIZE(uint16_t, U16)
+IMPLEMENT_BASE_TYPE_SERIALIZE(int32_t, I32)
+IMPLEMENT_BASE_TYPE_SERIALIZE(uint32_t, U32)
+IMPLEMENT_BASE_TYPE_SERIALIZE(int64_t, I64)
+IMPLEMENT_BASE_TYPE_SERIALIZE(uint64_t, U64)
+IMPLEMENT_BASE_TYPE_SERIALIZE(float, F32)
+IMPLEMENT_BASE_TYPE_SERIALIZE(double, F64)
+IMPLEMENT_BASE_TYPE_SERIALIZE(CharString, String)
+
+#undef IMPLEMENT_BASE_TYPE_SERIALIZE
+
+// Additional Metro types serialization
+inline void operator >>(MetroReflectionStream& s, Bool8& v) {
+    s >> v.val8;
+}
+
+inline void operator >>(MetroReflectionStream& s, vec2& v) {
+    s.SerializeFloats(&v.x, 2);
+}
+
+inline void operator >>(MetroReflectionStream& s, vec3& v) {
+    s.SerializeFloats(&v.x, 3);
+}
+
+inline void operator >>(MetroReflectionStream& s, vec4& v) {
+    s.SerializeFloats(&v.x, 4);
+}
+
+inline void operator >>(MetroReflectionStream& s, quat& v) {
+    s.SerializeFloats(&v.x, 4);
+}
+
+inline void operator >>(MetroReflectionStream& s, color4f& v) {
+    s.SerializeFloats(&v.r, 4);
+}
+
+inline void operator >>(MetroReflectionStream& s, posemat& v) {
+    s.SerializeFloats(rcast<float*>(&v), sizeof(v) / sizeof(float));
+}
+
+inline void operator >>(MetroReflectionStream& s, posematrix& v) {
+    s.SerializeFloats(rcast<float*>(&v), sizeof(v) / sizeof(float));
+}
+
+inline void operator >>(MetroReflectionStream& s, anglef& v) {
+    s >> v.x;
+}
+
+// Binary serialization
+#include "MetroReflectionBinary.inl"
+
+
 
 
 template <typename T>
@@ -393,33 +308,33 @@ struct ArrayElementTypeGetter {
 };
 
 
-#define METRO_READ_MEMBER_NO_VERIFY(s, memberName)  s >> memberName;
+#define METRO_SERIALIZE_MEMBER_NO_VERIFY(s, memberName)  s >> memberName;
 
-#define METRO_READ_MEMBER(s, memberName)                                                \
-    s.VerifyTypeInfo(STRINGIFY(memberName), MetroTypeGetAlias<decltype(memberName)>()); \
-    s >> memberName;
+#define METRO_SERIALIZE_MEMBER(s, memberName)                                                   \
+    (s).SerializeTypeInfo(STRINGIFY(memberName), MetroTypeGetAlias<decltype(memberName)>());    \
+    (s) >> memberName;
 
-#define METRO_READ_STRUCT_MEMBER(s, memberName) s.ReadStruct(STRINGIFY(memberName), memberName)
+#define METRO_SERIALIZE_STRUCT_MEMBER(s, memberName) (s).SerializeStruct(STRINGIFY(memberName), memberName)
 
-#define METRO_READ_ARRAY_MEMBER(s, memberName)                                                                                  \
-    s.VerifyTypeInfo(STRINGIFY(memberName), MetroTypeArrayGetAlias<ArrayElementTypeGetter<decltype(memberName)>::elem_type>()); \
-    s.ReadArray<ArrayElementTypeGetter<decltype(memberName)>::elem_type, uint32_t>(memberName); //s >> memberName;
+#define METRO_SERIALIZE_ARRAY_MEMBER(s, memberName)                                                                                     \
+    (s).SerializeTypeInfo(STRINGIFY(memberName), MetroTypeArrayGetAlias<ArrayElementTypeGetter<decltype(memberName)>::elem_type>());    \
+    (s).SerializeArray<ArrayElementTypeGetter<decltype(memberName)>::elem_type, uint32_t>(memberName);
 
-#define METRO_READ_ARRAY_16_MEMBER(s, memberName)                                                                               \
-    s.VerifyTypeInfo(STRINGIFY(memberName), MetroTypeArrayGetAlias<ArrayElementTypeGetter<decltype(memberName)>::elem_type>()); \
-    s.ReadArray<ArrayElementTypeGetter<decltype(memberName)>::elem_type, uint16_t>(memberName);
+#define METRO_SERIALIZE_ARRAY_16_MEMBER(s, memberName)                                                                                  \
+    (s).SerializeTypeInfo(STRINGIFY(memberName), MetroTypeArrayGetAlias<ArrayElementTypeGetter<decltype(memberName)>::elem_type>());    \
+    (s).SerializeArray<ArrayElementTypeGetter<decltype(memberName)>::elem_type, uint16_t>(memberName);
 
-#define METRO_READ_STRUCT_ARRAY_MEMBER(s, memberName) s.ReadStructArray(STRINGIFY(memberName), memberName)
+#define METRO_SERIALIZE_STRUCT_ARRAY_MEMBER(s, memberName) (s).SerializeStructArray(STRINGIFY(memberName), memberName)
 
-#define METRO_READ_MEMBER_CHOOSE(s, memberName)                                         \
-    s.ReadEditorTag(STRINGIFY(memberName));                                             \
-    s.VerifyTypeInfo(STRINGIFY(memberName), MetroTypeGetAlias<decltype(memberName)>()); \
-    s >> memberName;
+#define METRO_SERIALIZE_MEMBER_CHOOSE(s, memberName)                                            \
+    (s).SerializeEditorTag(STRINGIFY(memberName));                                              \
+    (s).SerializeTypeInfo(STRINGIFY(memberName), MetroTypeGetAlias<decltype(memberName)>());    \
+    (s) >> memberName;
 
-#define METRO_READ_MEMBER_ANIMSTR   METRO_READ_MEMBER_CHOOSE
+#define METRO_SERIALIZE_MEMBER_ANIMSTR   METRO_SERIALIZE_MEMBER_CHOOSE
 
-#define METRO_READ_MEMBER_STRARRAY_CHOOSE(s, memberName)                        \
-    s.ReadEditorTag(STRINGIFY(memberName));                                     \
-    s.VerifyTypeInfo(STRINGIFY(memberName), MetroTypeGetAlias<CharString>());   \
-    s >> memberName;
+#define METRO_SERIALIZE_MEMBER_STRARRAY_CHOOSE(s, memberName)                       \
+    (s).SerializeEditorTag(STRINGIFY(memberName));                                  \
+    (s).SerializeTypeInfo(STRINGIFY(memberName), MetroTypeGetAlias<CharString>());  \
+    (s) >> memberName;
 

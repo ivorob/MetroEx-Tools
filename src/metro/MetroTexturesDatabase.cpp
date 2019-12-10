@@ -9,58 +9,58 @@
 static const CharString kTexturesFolder = R"(content\textures\)";
 
 
-void MetroTextureInfo::Serialize(MetroReflectionReader& s) {
-    METRO_READ_MEMBER(s, type);
-    METRO_READ_MEMBER(s, texture_type);
-    METRO_READ_MEMBER(s, source_name);
-    METRO_READ_MEMBER(s, surf_xform);
-    METRO_READ_MEMBER(s, format);
-    METRO_READ_MEMBER(s, width);
-    METRO_READ_MEMBER(s, height);
-    METRO_READ_MEMBER(s, animated);
-    METRO_READ_MEMBER(s, draft);
-    METRO_READ_MEMBER(s, override_avg_color);
-    METRO_READ_MEMBER(s, avg_color);
-    METRO_READ_MEMBER_CHOOSE(s, shader_name);
-    METRO_READ_MEMBER_CHOOSE(s, gamemtl_name);
-    METRO_READ_MEMBER(s, priority);
-    METRO_READ_MEMBER(s, streamable);
-    METRO_READ_MEMBER(s, bump_height);
-    METRO_READ_MEMBER(s, displ_type);
-    METRO_READ_MEMBER(s, displ_height);
-    METRO_READ_MEMBER(s, parallax_height_mul);
-    METRO_READ_MEMBER(s, mipmapped);
-    METRO_READ_MEMBER(s, reflectivity);
-    METRO_READ_MEMBER(s, treat_as_metal);
-    METRO_READ_MEMBER_CHOOSE(s, det_name);
-    METRO_READ_MEMBER(s, det_scale_u);
-    METRO_READ_MEMBER(s, det_scale_v);
-    METRO_READ_MEMBER(s, det_intensity);
-    METRO_READ_MEMBER(s, aux_params);
-    METRO_READ_MEMBER(s, aux_params_1);
+void MetroTextureInfo::Serialize(MetroReflectionStream& s) {
+    METRO_SERIALIZE_MEMBER(s, type);
+    METRO_SERIALIZE_MEMBER(s, texture_type);
+    METRO_SERIALIZE_MEMBER(s, source_name);
+    METRO_SERIALIZE_MEMBER(s, surf_xform);
+    METRO_SERIALIZE_MEMBER(s, format);
+    METRO_SERIALIZE_MEMBER(s, width);
+    METRO_SERIALIZE_MEMBER(s, height);
+    METRO_SERIALIZE_MEMBER(s, animated);
+    METRO_SERIALIZE_MEMBER(s, draft);
+    METRO_SERIALIZE_MEMBER(s, override_avg_color);
+    METRO_SERIALIZE_MEMBER(s, avg_color);
+    METRO_SERIALIZE_MEMBER_CHOOSE(s, shader_name);
+    METRO_SERIALIZE_MEMBER_CHOOSE(s, gamemtl_name);
+    METRO_SERIALIZE_MEMBER(s, priority);
+    METRO_SERIALIZE_MEMBER(s, streamable);
+    METRO_SERIALIZE_MEMBER(s, bump_height);
+    METRO_SERIALIZE_MEMBER(s, displ_type);
+    METRO_SERIALIZE_MEMBER(s, displ_height);
+    METRO_SERIALIZE_MEMBER(s, parallax_height_mul);
+    METRO_SERIALIZE_MEMBER(s, mipmapped);
+    METRO_SERIALIZE_MEMBER(s, reflectivity);
+    METRO_SERIALIZE_MEMBER(s, treat_as_metal);
+    METRO_SERIALIZE_MEMBER_CHOOSE(s, det_name);
+    METRO_SERIALIZE_MEMBER(s, det_scale_u);
+    METRO_SERIALIZE_MEMBER(s, det_scale_v);
+    METRO_SERIALIZE_MEMBER(s, det_intensity);
+    METRO_SERIALIZE_MEMBER(s, aux_params);
+    METRO_SERIALIZE_MEMBER(s, aux_params_1);
 
     // !!! Optional fields !!!
     if (this->texture_type == scast<uint8_t>(TextureType::Cubemap_hdr)) {
-        METRO_READ_ARRAY_MEMBER(s, sph_coefs);
+        METRO_SERIALIZE_ARRAY_MEMBER(s, sph_coefs);
     } else if (this->texture_type == scast<uint8_t>(TextureType::Unknown_has_lum)) {
-        METRO_READ_ARRAY_MEMBER(s, lum);
+        METRO_SERIALIZE_ARRAY_MEMBER(s, lum);
     }
     ///////////////////////////
 
-    METRO_READ_MEMBER_CHOOSE(s, bump_name);
-    METRO_READ_MEMBER_CHOOSE(s, aux0_name);
-    METRO_READ_MEMBER_CHOOSE(s, aux1_name);
-    METRO_READ_MEMBER_CHOOSE(s, aux2_name);
-    METRO_READ_MEMBER_CHOOSE(s, aux3_name);
-    METRO_READ_MEMBER_CHOOSE(s, aux4_name);
-    METRO_READ_MEMBER_CHOOSE(s, aux5_name);
-    METRO_READ_MEMBER_CHOOSE(s, aux6_name);
-    METRO_READ_MEMBER_CHOOSE(s, aux7_name);
+    METRO_SERIALIZE_MEMBER_CHOOSE(s, bump_name);
+    METRO_SERIALIZE_MEMBER_CHOOSE(s, aux0_name);
+    METRO_SERIALIZE_MEMBER_CHOOSE(s, aux1_name);
+    METRO_SERIALIZE_MEMBER_CHOOSE(s, aux2_name);
+    METRO_SERIALIZE_MEMBER_CHOOSE(s, aux3_name);
+    METRO_SERIALIZE_MEMBER_CHOOSE(s, aux4_name);
+    METRO_SERIALIZE_MEMBER_CHOOSE(s, aux5_name);
+    METRO_SERIALIZE_MEMBER_CHOOSE(s, aux6_name);
+    METRO_SERIALIZE_MEMBER_CHOOSE(s, aux7_name);
 }
 
-void MetroTextureAliasInfo::Serialize(MetroReflectionReader & s) {
-    METRO_READ_MEMBER(s, src);
-    METRO_READ_MEMBER(s, dst);
+void MetroTextureAliasInfo::Serialize(MetroReflectionStream& s) {
+    METRO_SERIALIZE_MEMBER(s, src);
+    METRO_SERIALIZE_MEMBER(s, dst);
 }
 
 MetroTexturesDatabase::MetroTexturesDatabase() {
@@ -89,7 +89,7 @@ bool MetroTexturesDatabase::LoadFromData(MemStream& stream) {
         CharString name = subStream.ReadStringZ();
         const uint8_t flags = subStream.ReadTyped<uint8_t>();
 
-        MetroReflectionReader reader(subStream, flags);
+        MetroReflectionBinaryReadStream reader(subStream, flags);
 
         MetroTextureInfo* texInfo = &mPool[i];
         texInfo->name = name;
@@ -106,10 +106,10 @@ bool MetroTexturesDatabase::LoadFromData(MemStream& stream) {
 
 bool MetroTexturesDatabase::LoadAliasesFromData(MemStream& stream) {
     MetroBinArchive bin("texture_aliases.bin", stream, MetroBinArchive::kHeaderDoAutoSearch);
-    MetroReflectionReader reader = bin.ReflectionReader();
+    StrongPtr<MetroReflectionStream> reader = bin.ReflectionReader();
 
     MyArray<MetroTextureAliasInfo> texture_aliases;
-    METRO_READ_STRUCT_ARRAY_MEMBER(reader, texture_aliases);
+    METRO_SERIALIZE_STRUCT_ARRAY_MEMBER(*reader, texture_aliases);
 
     if (!texture_aliases.empty()) {
         mAliases.reserve(texture_aliases.size());

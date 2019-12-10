@@ -4,7 +4,7 @@
 #include "mycommon.h"
 #include "MetroTypes.h"
 
-class MetroReflectionReader;
+class MetroReflectionStream;
 
 class MetroBinArchive
 {
@@ -81,7 +81,7 @@ public:
     }
 
 
-    MetroReflectionReader   ReflectionReader() const;
+    StrongPtr<MetroReflectionStream> ReflectionReader() const;
 
 private:
     void                    ReadStringsTable();

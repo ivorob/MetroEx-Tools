@@ -2,7 +2,7 @@
 #include "mycommon.h"
 #include "mymath.h"
 
-class MetroReflectionReader;
+class MetroReflectionStream;
 
 struct MetroMaterialsCommonOptions {
     //0
@@ -22,7 +22,7 @@ struct MetroMaterialsCommonOptions {
     uint16_t    tex_frame_width_3;
     uint16_t    tex_frame_height_3;
 
-    void Serialize(MetroReflectionReader& reader);
+    void Serialize(MetroReflectionStream& reader);
 };
 
 struct MetroVehicleMaterial {
@@ -30,14 +30,14 @@ struct MetroVehicleMaterial {
         uint8_t     type;
         CharString  name;
 
-        void Serialize(MetroReflectionReader& reader);
+        void Serialize(MetroReflectionStream& reader);
     };
 
     MyArray<SurfaceDesc>    tire_types;
     MyArray<SurfaceDesc>    surface_types;
     MyArray<float>          coefs;
 
-    void Serialize(MetroReflectionReader& reader);
+    void Serialize(MetroReflectionStream& reader);
 };
 
 struct MetroMaterial {
@@ -50,7 +50,7 @@ struct MetroMaterial {
     uint32_t    dbg_color;
     uint8_t     veh_surf_type;
 
-    void Serialize(MetroReflectionReader& reader);
+    void Serialize(MetroReflectionStream& reader);
 };
 
 class MetroMaterialsDatabase {
