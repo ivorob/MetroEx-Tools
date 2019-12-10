@@ -25,6 +25,8 @@ using BytesArray = MyArray<uint8_t>;
 
 using MyHandle = size_t;
 
+using flags8 = uint8_t;
+
 static const uint32_t   kInvalidValue32 = ~0u;
 static const size_t     kInvalidValue = ~0;
 static const MyHandle   kInvalidHandle = ~0;
@@ -59,6 +61,36 @@ struct StringsTable {
     MyArray<const char*> strings;
 };
 
+struct TypedString {
+    enum {
+        TS_DEFAULT_STRING   = 0,
+        TS_OBJECT_CLSID     = 1,
+        TS_SCRIPT_CLSID     = 2,
+        TS_LOCATOR_ID       = 3,
+        TS_SDATA_KEY        = 4,
+        TS_TEXTURE_SET      = 5,
+    };
+
+    TypedString() : type(TS_DEFAULT_STRING), crc32(0u) {}
+    TypedString(const TypedString& other) : type(other.type), crc32(other.crc32), str(other.str) {}
+    TypedString(const CharString& other, const uint32_t _type) { *this = other; this->type = _type; }
+
+    inline void operator =(const TypedString& other) { type = other.type; crc32 = other.crc32; str = other.str; }
+    inline void operator =(const CharString& other) { type = TS_DEFAULT_STRING; crc32 = Hash_CalculateCRC32(other); str = other; }
+
+    inline bool operator ==(const TypedString& other) const { return crc32 == other.crc32; }
+    inline bool operator !=(const TypedString& other) const { return crc32 != other.crc32; }
+
+    inline bool operator <(const TypedString& other) const { return crc32 < other.crc32; }
+    inline bool operator >(const TypedString& other) const { return crc32 > other.crc32; }
+
+    inline bool Valid() const { return crc32 != 0u; }
+
+    uint32_t    type;
+    uint32_t    crc32;
+    CharString  str;
+};
+static const TypedString kEmptyTypedString;
 
 struct HashString {
     HashString() : hash(0u) {}
@@ -79,6 +111,7 @@ struct HashString {
     uint32_t    hash;
     CharString  str;
 };
+static const HashString kEmptyHashString;
 
 namespace std {
     template <> struct hash<HashString> {
@@ -345,6 +378,23 @@ struct Bitset256 {
         const uint32_t mask = 1 << (idx & 0x1F);
         return (dwords[i] & mask) == mask;
     }
+} PACKED_STRUCT_END;
+
+PACKED_STRUCT_BEGIN
+struct Bool8 {
+    union {
+        uint8_t val8;
+        struct {
+            bool    b0 : 1;
+            bool    b1 : 1;
+            bool    b2 : 1;
+            bool    b3 : 1;
+            bool    b4 : 1;
+            bool    b5 : 1;
+            bool    b6 : 1;
+            bool    b7 : 1;
+        };
+    };
 } PACKED_STRUCT_END;
 
 

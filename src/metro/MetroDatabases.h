@@ -1,15 +1,21 @@
 #pragma once
 #include "metro/MetroFileSystem.h"
+#include "metro/MetroTypedStrings.h"
 #include "metro/MetroTexturesDatabase.h"
 #include "metro/MetroConfigDatabase.h"
 #include "metro/MetroMaterialsDatabase.h"
 #include "metro/MetroFonts.h"
 #include "metro/MetroWeaponsDatabase.h"
 
-static void LoadDatabasesFromFile(MetroConfigsDatabase*& cfgDb) {
+static void LoadDatabasesFromFile(const fs::path& gameFolder, MetroConfigsDatabase*& cfgDb) {
     size_t fileIdx = 0;
 
     cfgDb = nullptr;
+
+    LogPrint(LogLevel::Info, "Loading typed_strings.bin from " + gameFolder.u8string());
+    if (!MetroTypedStrings::Get().Initialize(gameFolder)) {
+        LogPrint(LogLevel::Error, "Failed to load typed_strings.bin !");
+    }
 
     const MetroFileSystem& mfs = MetroFileSystem::Get();
 

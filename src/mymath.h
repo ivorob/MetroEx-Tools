@@ -26,8 +26,11 @@ using quat = glm::highp_quat;
 
 using ivec4 = glm::highp_ivec4;
 
+struct anglef : glm::highp_vec1 {};
+
 struct color4f : vec4 {};
 struct posemat : mat3x4 {};
+struct posematrix : mat3x4 {};
 
 struct AABBox {
     vec3 minimum, maximum;

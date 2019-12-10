@@ -264,7 +264,7 @@ void MainWindowImpl::OnOpenGameFolderClicked() {
 
         if (MetroFileSystem::Get().InitFromGameFolder(folderPath)) {
             MetroConfigsDatabase* cfgDb;
-            LoadDatabasesFromFile(cfgDb);
+            LoadDatabasesFromFile(folderPath, cfgDb);
             mConfigsDatabase = cfgDb;
 
             this->UpdateFilesList();
@@ -284,9 +284,11 @@ void MainWindowImpl::OnOpenSingleVFXClicked() {
     if (ofd.ShowDialog(this) == System::Windows::Forms::DialogResult::OK) {
         System::Windows::Forms::Cursor::Current = System::Windows::Forms::Cursors::WaitCursor;
 
-        if (MetroFileSystem::Get().InitFromSingleVFX(StringToPath(ofd.FileName))) {
+        fs::path vfxPath = StringToPath(ofd.FileName);
+        fs::path vfxFolder = vfxPath.parent_path();
+        if (MetroFileSystem::Get().InitFromSingleVFX(vfxPath)) {
             MetroConfigsDatabase* cfgDb;
-            LoadDatabasesFromFile(cfgDb);
+            LoadDatabasesFromFile(vfxFolder, cfgDb);
             mConfigsDatabase = cfgDb;
 
             this->UpdateFilesList();

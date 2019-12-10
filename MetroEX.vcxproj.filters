@@ -127,6 +127,9 @@
     <ClCompile Include="src\ui\tools\ConvertTexturesDlgImpl.cpp">
       <Filter>src\ui\tools</Filter>
     </ClCompile>
+    <ClCompile Include="src\metro\MetroTypedStrings.cpp">
+      <Filter>src\metro</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\ui\RenderPanel.h">
@@ -266,6 +269,9 @@
     </ClInclude>
     <ClInclude Include="src\ui\tools\ConvertTexturesDlgImpl.h">
       <Filter>src\ui\tools</Filter>
+    </ClInclude>
+    <ClInclude Include="src\metro\MetroTypedStrings.h">
+      <Filter>src\metro</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

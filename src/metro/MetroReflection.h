@@ -66,9 +66,12 @@ METRO_REGISTER_TYPE_ALIAS(vec3, vec3f)
 METRO_REGISTER_TYPE_ALIAS(vec4, vec4f)
 METRO_REGISTER_TYPE_ALIAS(quat, vec4f)
 METRO_REGISTER_TYPE_ALIAS(CharString, stringz)
+METRO_REGISTER_TYPE_ALIAS(Bool8, bool8)
 
 METRO_REGISTER_INHERITED_TYPE_ALIAS(color4f, vec4f, color)
 METRO_REGISTER_INHERITED_TYPE_ALIAS(posemat, matrix_43T, pose)
+METRO_REGISTER_INHERITED_TYPE_ALIAS(posematrix, matrix, pose)   // why in the fuck ???
+METRO_REGISTER_INHERITED_TYPE_ALIAS(anglef, fp32, angle);
 
 METRO_REGISTER_TYPE_ARRAY_ALIAS(bool, bool)
 METRO_REGISTER_TYPE_ARRAY_ALIAS(uint8_t, u8)
@@ -316,6 +319,10 @@ public:
         }
     }
 
+    inline void operator >>(Bool8& v) {
+        (*this) >> v.val8;
+    }
+
     inline void operator >>(vec2& v) {
         (*this) >> v.x;
         (*this) >> v.y;
@@ -350,6 +357,14 @@ public:
 
     inline void operator >>(posemat& v) {
         mStream.ReadStruct(v);
+    }
+
+    inline void operator >>(posematrix& v) {
+        mStream.ReadStruct(v);
+    }
+
+    inline void operator >>(anglef& v) {
+        (*this) >> v.x;
     }
 
 
@@ -401,13 +416,10 @@ struct ArrayElementTypeGetter {
     s.VerifyTypeInfo(STRINGIFY(memberName), MetroTypeGetAlias<decltype(memberName)>()); \
     s >> memberName;
 
+#define METRO_READ_MEMBER_ANIMSTR   METRO_READ_MEMBER_CHOOSE
+
 #define METRO_READ_MEMBER_STRARRAY_CHOOSE(s, memberName)                        \
     s.ReadEditorTag(STRINGIFY(memberName));                                     \
     s.VerifyTypeInfo(STRINGIFY(memberName), MetroTypeGetAlias<CharString>());   \
-    { CharString tmpStr; do {                                                   \
-        s >> tmpStr;                                                            \
-        if (!tmpStr.empty()) {                                                  \
-            memberName.push_back(tmpStr);                                       \
-        }                                                                       \
-    } while (!tmpStr.empty()); }
+    s >> memberName;
 

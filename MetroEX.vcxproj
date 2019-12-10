@@ -150,6 +150,7 @@
     <ClCompile Include="src\metro\MetroSound.cpp" />
     <ClCompile Include="src\metro\MetroTexture.cpp" />
     <ClCompile Include="src\metro\MetroTexturesDatabase.cpp" />
+    <ClCompile Include="src\metro\MetroTypedStrings.cpp" />
     <ClCompile Include="src\metro\MetroWeaponsDatabase.cpp" />
     <ClCompile Include="src\metro\VFXReader.cpp" />
     <ClCompile Include="src\mex_settings.cpp" />
@@ -193,6 +194,7 @@
     <ClInclude Include="src\metro\MetroSound.h" />
     <ClInclude Include="src\metro\MetroTexture.h" />
     <ClInclude Include="src\metro\MetroTexturesDatabase.h" />
+    <ClInclude Include="src\metro\MetroTypedStrings.h" />
     <ClInclude Include="src\metro\MetroTypes.h" />
     <ClInclude Include="src\metro\MetroWeaponsDatabase.h" />
     <ClInclude Include="src\metro\VFXReader.h" />
