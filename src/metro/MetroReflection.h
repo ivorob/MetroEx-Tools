@@ -190,12 +190,14 @@ public:
     }
 
     template <typename T>
-    void SerializeStruct(const CharString& memberName, T& v) {
+    bool SerializeStruct(const CharString& memberName, T& v) {
         MetroReflectionStream* s = this->OpenSection(memberName);
         if (s) {
             (*s) >> v;
             this->CloseSection(s);
         }
+
+        return s != nullptr;
     }
 
     template <typename T>

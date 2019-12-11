@@ -32,37 +32,52 @@ void MetroShootingParticlesData::Serialize(MetroReflectionStream& s) {
     METRO_SERIALIZE_MEMBER_CHOOSE(s, overheat_smoke_particles);
 }
 
-void MetroShootingLightData::Serialize(MetroReflectionStream& s) {
-    MetroReflectionStream* data = s.OpenSection("shooting_light");
-    if (data) {
-        METRO_SERIALIZE_MEMBER(*data, type);
-        METRO_SERIALIZE_MEMBER(*data, color);
-        METRO_SERIALIZE_MEMBER(*data, brightness);
-        METRO_SERIALIZE_MEMBER(*data, range_far);
-        METRO_SERIALIZE_MEMBER(*data, lod_scale);
-        METRO_SERIALIZE_MEMBER(*data, data1);
-        METRO_SERIALIZE_MEMBER(*data, data2);
-        METRO_SERIALIZE_MEMBER(*data, ibl_gen_radius);
-        METRO_SERIALIZE_MEMBER(*data, range_near);
-        METRO_SERIALIZE_MEMBER(*data, source_size);
-        METRO_SERIALIZE_MEMBER(*data, cone);
-        METRO_SERIALIZE_MEMBER(*data, quality);
-        METRO_SERIALIZE_MEMBER(*data, position);
-        METRO_SERIALIZE_MEMBER(*data, direction);
-        METRO_SERIALIZE_MEMBER(*data, right);
-        METRO_SERIALIZE_MEMBER_CHOOSE(*data, color_ca);
-        METRO_SERIALIZE_MEMBER_CHOOSE(*data, texture);
-        METRO_SERIALIZE_MEMBER_CHOOSE(*data, faces);
-        METRO_SERIALIZE_MEMBER(*data, light_flags1);
-        METRO_SERIALIZE_MEMBER(*data, light_flags2);
+void MetroShootingLightData::OptionalPayload::Serialize(MetroReflectionStream& s) {
+    METRO_SERIALIZE_MEMBER(s, type);
+    METRO_SERIALIZE_MEMBER(s, color);
+    METRO_SERIALIZE_MEMBER(s, brightness);
+    METRO_SERIALIZE_MEMBER(s, range_far);
+    METRO_SERIALIZE_MEMBER(s, lod_scale);
+    METRO_SERIALIZE_MEMBER(s, data1);
+    METRO_SERIALIZE_MEMBER(s, data2);
+    METRO_SERIALIZE_MEMBER(s, ibl_gen_radius);
+    METRO_SERIALIZE_MEMBER(s, range_near);
+    METRO_SERIALIZE_MEMBER(s, source_size);
+    METRO_SERIALIZE_MEMBER(s, cone);
+    METRO_SERIALIZE_MEMBER(s, quality);
+    METRO_SERIALIZE_MEMBER(s, position);
+    METRO_SERIALIZE_MEMBER(s, direction);
+    METRO_SERIALIZE_MEMBER(s, right);
+    METRO_SERIALIZE_MEMBER_CHOOSE(s, color_ca);
+    METRO_SERIALIZE_MEMBER_CHOOSE(s, texture);
+    METRO_SERIALIZE_MEMBER_CHOOSE(s, faces);
+    METRO_SERIALIZE_MEMBER(s, light_flags1);
+    METRO_SERIALIZE_MEMBER(s, light_flags2);
+}
 
-        s.CloseSection(data);
-    }
+void MetroShootingLightData::Serialize(MetroReflectionStream& s) {
+    // optional
+    METRO_SERIALIZE_STRUCT_MEMBER(s, shooting_light);
 
     METRO_SERIALIZE_MEMBER(s, light_var_color);
     METRO_SERIALIZE_MEMBER(s, light_var_range);
     METRO_SERIALIZE_MEMBER(s, light_time);
     METRO_SERIALIZE_MEMBER(s, light_luminosity);
+}
+
+void MetroWeaponModifier::DoubletapParticles::Serialize(MetroReflectionStream& s) {
+    METRO_SERIALIZE_MEMBER_CHOOSE(s, flame_particles_hud);
+    METRO_SERIALIZE_MEMBER_CHOOSE(s, flame_particles);
+    METRO_SERIALIZE_MEMBER_CHOOSE(s, smoke_particles_hud);
+    METRO_SERIALIZE_MEMBER_CHOOSE(s, smoke_particles);
+    METRO_SERIALIZE_MEMBER_CHOOSE(s, smoke_particles_long_hud);
+    METRO_SERIALIZE_MEMBER_CHOOSE(s, smoke_particles_long);
+    METRO_SERIALIZE_MEMBER_CHOOSE(s, smoke_particles_end_hud);
+    METRO_SERIALIZE_MEMBER_CHOOSE(s, smoke_particles_end);
+    METRO_SERIALIZE_MEMBER_CHOOSE(s, shot_particles);
+    METRO_SERIALIZE_MEMBER_CHOOSE(s, shell_particles);
+    METRO_SERIALIZE_MEMBER_CHOOSE(s, overheat_particles);
+    METRO_SERIALIZE_MEMBER_CHOOSE(s, overheat_smoke_particles);
 }
 
 void MetroWeaponModifier::Serialize(MetroReflectionStream& s) {
@@ -96,25 +111,8 @@ void MetroWeaponModifier::Serialize(MetroReflectionStream& s) {
     METRO_SERIALIZE_MEMBER(s, heating_speed);
     METRO_SERIALIZE_MEMBER_CHOOSE(s, steam_particles);
 
-    // doubletap_particles section
-    MetroReflectionStream* doubletap_particles_section = s.OpenSection("doubletap_particles");
-    if (doubletap_particles_section) {
-        METRO_SERIALIZE_MEMBER_CHOOSE(*doubletap_particles_section, flame_particles_hud);
-        METRO_SERIALIZE_MEMBER_CHOOSE(*doubletap_particles_section, flame_particles);
-        METRO_SERIALIZE_MEMBER_CHOOSE(*doubletap_particles_section, smoke_particles_hud);
-        METRO_SERIALIZE_MEMBER_CHOOSE(*doubletap_particles_section, smoke_particles);
-        METRO_SERIALIZE_MEMBER_CHOOSE(*doubletap_particles_section, smoke_particles_long_hud);
-        METRO_SERIALIZE_MEMBER_CHOOSE(*doubletap_particles_section, smoke_particles_long);
-        METRO_SERIALIZE_MEMBER_CHOOSE(*doubletap_particles_section, smoke_particles_end_hud);
-        METRO_SERIALIZE_MEMBER_CHOOSE(*doubletap_particles_section, smoke_particles_end);
-        METRO_SERIALIZE_MEMBER_CHOOSE(*doubletap_particles_section, shot_particles);
-        METRO_SERIALIZE_MEMBER_CHOOSE(*doubletap_particles_section, shell_particles);
-        METRO_SERIALIZE_MEMBER_CHOOSE(*doubletap_particles_section, overheat_particles);
-        METRO_SERIALIZE_MEMBER_CHOOSE(*doubletap_particles_section, overheat_smoke_particles);
-
-        s.CloseSection(doubletap_particles_section);
-    }
-    //
+    // !optional
+    METRO_SERIALIZE_STRUCT_MEMBER(s, doubletap_particles);
 
     METRO_SERIALIZE_MEMBER(s, need_doubletap_particles);
     METRO_SERIALIZE_MEMBER(s, hud);
@@ -129,6 +127,42 @@ void MetroWeaponModifier::Serialize(MetroReflectionStream& s) {
     METRO_SERIALIZE_MEMBER_ANIMSTR(s, lock_aim_shoot);
     METRO_SERIALIZE_MEMBER_CHOOSE(s, lock_shoot_track);
     METRO_SERIALIZE_MEMBER_CHOOSE(s, lock_aim_shoot_track);
+}
+
+void MetroShootingWeaponData::DirtModifiers::Serialize(MetroReflectionStream& s) {
+    METRO_SERIALIZE_MEMBER(s, mod_dispersion_base);
+    METRO_SERIALIZE_MEMBER(s, mod_dispersion_dec);
+    METRO_SERIALIZE_MEMBER(s, mod_blt_power);
+    METRO_SERIALIZE_MEMBER(s, mod_blt_impulse);
+    METRO_SERIALIZE_MEMBER(s, mod_blt_fire_distance_min);
+    METRO_SERIALIZE_MEMBER(s, mod_blt_fire_distance_max);
+    METRO_SERIALIZE_MEMBER(s, mod_blt_speed);
+    METRO_SERIALIZE_MEMBER(s, mod_rpm);
+    METRO_SERIALIZE_MEMBER(s, mod_recoil_decrease_time);
+    METRO_SERIALIZE_MEMBER(s, mod_recoil_shake_speed_coef);
+    METRO_SERIALIZE_MEMBER(s, mod_recoil_shake_coef);
+    METRO_SERIALIZE_MEMBER(s, mod_recoil_horiz_random);
+    METRO_SERIALIZE_MEMBER(s, mod_recoil_horiz_coef);
+    METRO_SERIALIZE_MEMBER(s, mod_recoil_horiz_coef_pad);
+    METRO_SERIALIZE_MEMBER(s, mod_recoil_increase);
+    METRO_SERIALIZE_MEMBER(s, mod_recoil_increase_pad);
+    METRO_SERIALIZE_MEMBER(s, mod_recoil_vert_coef);
+    METRO_SERIALIZE_MEMBER(s, mod_recoil_vert_coef_pad);
+    METRO_SERIALIZE_MEMBER(s, mod_wpn_aim_shot_weight);
+    METRO_SERIALIZE_MEMBER(s, mod_wpn_shot_weight);
+    METRO_SERIALIZE_MEMBER(s, mod_shot_heat_increase);
+    METRO_SERIALIZE_MEMBER(s, mod_heat_decrease_speed);
+    METRO_SERIALIZE_MEMBER(s, mod_ui_recoil);
+    METRO_SERIALIZE_MEMBER(s, mod_ui_damage);
+    METRO_SERIALIZE_MEMBER(s, mod_ui_accuracy);
+    METRO_SERIALIZE_MEMBER(s, mod_ui_rpm);
+}
+
+void MetroShootingWeaponData::AxisDisplacement::Serialize(MetroReflectionStream& s) {
+    METRO_SERIALIZE_MEMBER(s, scale_horizontal);
+    METRO_SERIALIZE_MEMBER(s, scale_vertical);
+    METRO_SERIALIZE_MEMBER(s, deviation_horizontal);
+    METRO_SERIALIZE_MEMBER(s, deviation_vertical);
 }
 
 void MetroShootingWeaponData::Serialize(MetroReflectionStream& s) {
@@ -213,56 +247,24 @@ void MetroShootingWeaponData::Serialize(MetroReflectionStream& s) {
     METRO_SERIALIZE_MEMBER(s, sway_stabilize_speed_coef);
     METRO_SERIALIZE_MEMBER_CHOOSE(s, sway_point_loc_name);
 
-    // dirt modifiers
-    MetroReflectionStream* dirt_modifiers_section = s.OpenSection("dirt_modifiers");
-    if (dirt_modifiers_section) {
-        METRO_SERIALIZE_MEMBER(*dirt_modifiers_section, mod_dispersion_base);
-        METRO_SERIALIZE_MEMBER(*dirt_modifiers_section, mod_dispersion_dec);
-        METRO_SERIALIZE_MEMBER(*dirt_modifiers_section, mod_blt_power);
-        METRO_SERIALIZE_MEMBER(*dirt_modifiers_section, mod_blt_impulse);
-        METRO_SERIALIZE_MEMBER(*dirt_modifiers_section, mod_blt_fire_distance_min);
-        METRO_SERIALIZE_MEMBER(*dirt_modifiers_section, mod_blt_fire_distance_max);
-        METRO_SERIALIZE_MEMBER(*dirt_modifiers_section, mod_blt_speed);
-        METRO_SERIALIZE_MEMBER(*dirt_modifiers_section, mod_rpm);
-        METRO_SERIALIZE_MEMBER(*dirt_modifiers_section, mod_recoil_decrease_time);
-        METRO_SERIALIZE_MEMBER(*dirt_modifiers_section, mod_recoil_shake_speed_coef);
-        METRO_SERIALIZE_MEMBER(*dirt_modifiers_section, mod_recoil_shake_coef);
-        METRO_SERIALIZE_MEMBER(*dirt_modifiers_section, mod_recoil_horiz_random);
-        METRO_SERIALIZE_MEMBER(*dirt_modifiers_section, mod_recoil_horiz_coef);
-        METRO_SERIALIZE_MEMBER(*dirt_modifiers_section, mod_recoil_horiz_coef_pad);
-        METRO_SERIALIZE_MEMBER(*dirt_modifiers_section, mod_recoil_increase);
-        METRO_SERIALIZE_MEMBER(*dirt_modifiers_section, mod_recoil_increase_pad);
-        METRO_SERIALIZE_MEMBER(*dirt_modifiers_section, mod_recoil_vert_coef);
-        METRO_SERIALIZE_MEMBER(*dirt_modifiers_section, mod_recoil_vert_coef_pad);
-        METRO_SERIALIZE_MEMBER(*dirt_modifiers_section, mod_wpn_aim_shot_weight);
-        METRO_SERIALIZE_MEMBER(*dirt_modifiers_section, mod_wpn_shot_weight);
-        METRO_SERIALIZE_MEMBER(*dirt_modifiers_section, mod_shot_heat_increase);
-        METRO_SERIALIZE_MEMBER(*dirt_modifiers_section, mod_heat_decrease_speed);
-        METRO_SERIALIZE_MEMBER(*dirt_modifiers_section, mod_ui_recoil);
-        METRO_SERIALIZE_MEMBER(*dirt_modifiers_section, mod_ui_damage);
-        METRO_SERIALIZE_MEMBER(*dirt_modifiers_section, mod_ui_accuracy);
-        METRO_SERIALIZE_MEMBER(*dirt_modifiers_section, mod_ui_rpm);
-
-        s.CloseSection(dirt_modifiers_section);
+    // !optional
+    if (s.IsIn()) {
+        has_dirt_modifiers = METRO_SERIALIZE_STRUCT_MEMBER(s, dirt_modifiers);
+    } else if (has_dirt_modifiers) {
+        METRO_SERIALIZE_STRUCT_MEMBER(s, dirt_modifiers);
     }
-    //
 
     METRO_SERIALIZE_MEMBER(s, shot_weight);
     METRO_SERIALIZE_MEMBER(s, shot_weight_surv);
     METRO_SERIALIZE_MEMBER(s, aim_shot_weight);
     METRO_SERIALIZE_MEMBER(s, aim_shot_weight_surv);
 
-    // axis dispplacement
-    MetroReflectionStream* axis_disp_section = s.OpenSection("axis_disp");
-    if (axis_disp_section) {
-        METRO_SERIALIZE_MEMBER(*axis_disp_section, scale_horizontal);
-        METRO_SERIALIZE_MEMBER(*axis_disp_section, scale_vertical);
-        METRO_SERIALIZE_MEMBER(*axis_disp_section, deviation_horizontal);
-        METRO_SERIALIZE_MEMBER(*axis_disp_section, deviation_vertical);
-
-        s.CloseSection(axis_disp_section);
+    // !optional
+    if (s.IsIn()) {
+        has_axis_disp = METRO_SERIALIZE_STRUCT_MEMBER(s, axis_disp);
+    } else if (has_axis_disp) {
+        METRO_SERIALIZE_STRUCT_MEMBER(s, axis_disp);
     }
-    //
 
     METRO_SERIALIZE_MEMBER(s, track_shot_weight);
     METRO_SERIALIZE_MEMBER(s, aim_track_shot_weight);
@@ -351,7 +353,9 @@ void MetroWeaponAttachmentDesc::Serialize(MetroReflectionStream& s) {
     METRO_SERIALIZE_MEMBER(s, type);
     METRO_SERIALIZE_MEMBER(s, upgrade_id);
     METRO_SERIALIZE_MEMBER(s, base_handle);
+
     // data section
+    //#NOTE_SK: probably worth making it a structure and use METRO_SERIALIZE_STRUCT_MEMBER ???
     MetroReflectionStream* data = s.OpenSection("data");
     if (data) {
         METRO_SERIALIZE_MEMBER_CHOOSE(*data, shared_weapon_params);
@@ -446,8 +450,6 @@ void MetroWeaponsDatabase::ReadWeaponAttaches(MemStream& stream) {
 
     const size_t numEntries = stream.ReadTyped<uint32_t>();
 
-//    std::ofstream testFile("123\\test.txt");
-
     mWeaponAttachments.resize(numEntries);
     for (size_t i = 0; i < numEntries; ++i) {
         const size_t idx = stream.ReadTyped<uint32_t>();
@@ -464,47 +466,6 @@ void MetroWeaponsDatabase::ReadWeaponAttaches(MemStream& stream) {
         reader.SetUserData(i);
         reader >> attachment;
 
-        //testFile << std::setfill('0') << std::setw(8) << i << std::endl;
-        //testFile << "name = " << attachment.name.str << std::endl;
-        //testFile << "type = " << (int)attachment.type << std::endl;
-        //testFile << "upgrade_id = " << attachment.upgrade_id << std::endl;
-        //testFile << "upgrade name = " << mts.GetString(attachment.upgrade_id).str << std::endl;
-        //testFile << "base_handle = " << attachment.base_handle << std::endl;
-        //testFile << "shared_weapon_params = " << attachment.shared_weapon_params << std::endl;
-        //testFile << "priority = " << attachment.priority << std::endl;
-        //testFile << "ui_tag_lib = " << attachment.ui_tag_lib << std::endl;
-        //testFile << "tags:" << std::endl;
-        //for (auto t : attachment.tags) {
-        //    testFile << t << std::endl;
-        //}
-        //testFile << "excl_tags:" << std::endl;
-        //for (auto t : attachment.excl_tags) {
-        //    testFile << t << std::endl;
-        //}
-        //testFile << "dep_tags:" << std::endl;
-        //for (auto t : attachment.dep_tags) {
-        //    testFile << t << std::endl;
-        //}
-        //testFile << "autoinst_tags:" << std::endl;
-        //for (auto t : attachment.autoinst_tags) {
-        //    testFile << t << std::endl;
-        //}
-        //testFile << "is_installed = " << attachment.is_installed << std::endl;
-        //testFile << "editor_name = " << attachment.editor_name << std::endl;
-        //testFile << "attach_hud_loc = " << attachment.attach_hud_loc << std::endl;
-        //testFile << "attach_offset = " << attachment.attach_offset[0][0] << attachment.attach_offset[0][1] << attachment.attach_offset[0][2] << attachment.attach_offset[0][3]
-        //                               << attachment.attach_offset[1][0] << attachment.attach_offset[1][1] << attachment.attach_offset[1][2] << attachment.attach_offset[1][3]
-        //                               << attachment.attach_offset[2][0] << attachment.attach_offset[2][1] << attachment.attach_offset[2][2] << attachment.attach_offset[2][3] << std::endl;
-        //testFile << "attach_to_root = " << attachment.attach_to_root << std::endl;
-        //testFile << "visual = " << attachment.visual << std::endl;
-        //testFile << "anim_track_prefix = " << attachment.anim_track_prefix << std::endl;
-        //testFile << "anim_track_suffix = " << attachment.anim_track_suffix << std::endl;
-
-        //testFile << "============================================================" << std::endl;
-
         stream.SkipBytes(size);
     }
-
-    //testFile.flush();
-    //testFile.close();
 }
