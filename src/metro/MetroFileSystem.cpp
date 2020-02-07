@@ -23,8 +23,16 @@ static const CharString sVFXList[] = {
     "patch_01_shared.vfx",
     "patch_01.vfx",
     "patch_02.vfx",
-    "patch_03.vfx"
+    "patch_03.vfx",
+    "patch_04.vfx",
 };
+
+
+
+CharString MetroFileSystem::Paths::MotionsFolder = R"(content\motions\)";
+CharString MetroFileSystem::Paths::MeshesFolder = R"(content\meshes\)";
+CharString MetroFileSystem::Paths::LocalizationsFolder = R"(content\localization\)";
+CharString MetroFileSystem::Paths::TexturesFolder = R"(content\textures\)";
 
 
 MetroFileSystem::MetroFileSystem()
@@ -139,8 +147,12 @@ size_t MetroFileSystem::GetCompressedSize(const MyHandle entry) const {
 
     if (entry < mEntries.size()) {
         const MetroFSEntry& fsEntry = mEntries[entry];
-        const VFXReader* vfx = mLoadedVFX[fsEntry.vfxIdx];
-        const MetroFile& mf = vfx->GetFile(fsEntry.fileIdx);
+
+        const size_t vfxIdx = fsEntry.dupIdx == kInvalidValue ? fsEntry.vfxIdx : mDupEntries[fsEntry.dupIdx].vfxIdx;
+        const size_t fileIdx = fsEntry.dupIdx == kInvalidValue ? fsEntry.fileIdx : mDupEntries[fsEntry.dupIdx].fileIdx;
+
+        const VFXReader* vfx = mLoadedVFX[vfxIdx];
+        const MetroFile& mf = vfx->GetFile(fileIdx);
         result = mf.sizeCompressed;
     }
 
@@ -152,8 +164,12 @@ size_t MetroFileSystem::GetUncompressedSize(const MyHandle entry) const {
 
     if (entry < mEntries.size()) {
         const MetroFSEntry& fsEntry = mEntries[entry];
-        const VFXReader* vfx = mLoadedVFX[fsEntry.vfxIdx];
-        const MetroFile& mf = vfx->GetFile(fsEntry.fileIdx);
+
+        const size_t vfxIdx = fsEntry.dupIdx == kInvalidValue ? fsEntry.vfxIdx : mDupEntries[fsEntry.dupIdx].vfxIdx;
+        const size_t fileIdx = fsEntry.dupIdx == kInvalidValue ? fsEntry.fileIdx : mDupEntries[fsEntry.dupIdx].fileIdx;
+
+        const VFXReader* vfx = mLoadedVFX[vfxIdx];
+        const MetroFile& mf = vfx->GetFile(fileIdx);
         result = mf.sizeUncompressed;
     }
 
@@ -326,8 +342,12 @@ MemStream MetroFileSystem::OpenFileStream(const MyHandle entry, const size_t sub
 
     if (entry < mEntries.size()) {
         const MetroFSEntry& file = mEntries[entry];
-        const VFXReader* vfx = mLoadedVFX[file.vfxIdx];
-        result = vfx->ExtractFile(file.fileIdx, subOffset, subLength);
+
+        const size_t vfxIdx = file.dupIdx == kInvalidValue ? file.vfxIdx : mDupEntries[file.dupIdx].vfxIdx;
+        const size_t fileIdx = file.dupIdx == kInvalidValue ? file.fileIdx : mDupEntries[file.dupIdx].fileIdx;
+
+        const VFXReader* vfx = mLoadedVFX[vfxIdx];
+        result = vfx->ExtractFile(fileIdx, subOffset, subLength);
     }
 
     return std::move(result);
@@ -417,9 +437,8 @@ MyHandle MetroFileSystem::AddEntryFolder(const MyHandle parentEntry, const HashS
 MyHandle MetroFileSystem::AddEntryFile(const MyHandle parentEntry, const MetroFile& file) {
     MyHandle result = this->FindChild(parentEntry, file.name);
 
+    const size_t newIdx = mEntries.size();
     if (result == kInvalidHandle) {
-        const size_t newIdx = mEntries.size();
-
         MetroFSEntry newEntry = {
             file.name,
             newIdx,
@@ -427,10 +446,31 @@ MyHandle MetroFileSystem::AddEntryFile(const MyHandle parentEntry, const MetroFi
             kInvalidValue,
             kInvalidValue,
             mCurrentVfxIdx,
-            file.idx
+            file.idx,
+            kInvalidValue
         };
 
         result = this->AddEntryCommon(parentEntry, newEntry);
+    } else {
+        //#NOTE_SK: ok, we're adding a dup file. Let's re-point the current one to the new one
+        //          and bookkeep the old one
+        const size_t newDupIdx = mDupEntries.size();
+        MetroFSEntry dupEntry = {
+            kEmptyHashString,
+            newDupIdx,
+            parentEntry,
+            kInvalidValue,
+            kInvalidValue,
+            mCurrentVfxIdx,
+            file.idx,
+            kInvalidValue
+        };
+
+        MetroFSEntry& currentEntry = mEntries[result];
+        dupEntry.dupIdx = currentEntry.dupIdx;
+        currentEntry.dupIdx = newDupIdx;
+
+        mDupEntries.push_back(dupEntry);
     }
 
     return result;
@@ -439,7 +479,6 @@ MyHandle MetroFileSystem::AddEntryFile(const MyHandle parentEntry, const MetroFi
 MyHandle MetroFileSystem::AddEntryCommon(const MyHandle parentEntry, const MetroFSEntry& entry) {
     mEntries.push_back(entry);
 
-    // sorry :(
     MetroFSEntry& parent = mEntries[parentEntry];
     if (parent.firstChild == kInvalidValue) {
         parent.firstChild = entry.idx;

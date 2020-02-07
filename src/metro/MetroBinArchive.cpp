@@ -1,7 +1,7 @@
 #include "MetroBinArchive.h"
-#include "MetroReflection.h"
+#include "reflection/MetroReflection.h"
 
-MetroBinArchive::MetroBinArchive(const CharString& name, const MemStream& stream, const size_t headerSize) {
+MetroBinArchive::MetroBinArchive(const CharString& name, const MemStream& stream, const size_t headerSize) : mOutputStream(nullptr) {
     // Get raw memory stream
     mFileName = name;
     mFileStream = stream;
@@ -65,6 +65,23 @@ MetroBinArchive::MetroBinArchive(const CharString& name, const MemStream& stream
     mFileStream.SetCursor(0);
 }
 
+//#NOTE_SK: this constructor creates a new Metro bin container from scratch
+//          using MemWriteStream as the output stream
+MetroBinArchive::MetroBinArchive(MemWriteStream& outStream) {
+    mBinFlags = MetroReflectionFlags::DefaultOutFlags;
+    outStream.Write(mBinFlags);
+
+    if (TestBit(mBinFlags, MetroReflectionFlags::StringsTable)) {
+        outStream.Write<uint32_t>(1);   // data chunk
+        mOutputDataChunkSizeOffset = outStream.GetWrittenBytesCount();
+        outStream.Write<uint32_t>(0);   // chunk size stub
+    } else {
+        mOutputDataChunkSizeOffset = kInvalidValue;
+    }
+
+    mOutputStream = &outStream;
+}
+
 StrongPtr<MetroReflectionStream> MetroBinArchive::ReflectionReader() const {
     StrongPtr<MetroReflectionStream> result;
 
@@ -77,11 +94,26 @@ StrongPtr<MetroReflectionStream> MetroBinArchive::ReflectionReader() const {
     }
 
     if (!mSTable.data.empty()) {
-        result->SetSTable(&mSTable);
+        result->SetSTable(const_cast<StringsTable*>(&mSTable)); // :(
     }
 
     return result;
 }
+
+void MetroBinArchive::Finalize() {
+    if (TestBit(mBinFlags, MetroReflectionFlags::StringsTable)) {
+        if (mOutputDataChunkSizeOffset != kInvalidValue) {
+            // go back to the data chunk size offset and fill it
+            const size_t chunkSize = mOutputStream->GetWrittenBytesCount() - mOutputDataChunkSizeOffset - sizeof(uint32_t);
+            uint8_t* data = rcast<uint8_t*>(mOutputStream->Data());
+            *rcast<uint32_t*>(data + mOutputDataChunkSizeOffset) = scast<uint32_t>(chunkSize);
+        }
+
+        this->WriteStringsTable();
+    }
+}
+
+
 
 void MetroBinArchive::ReadStringsTable() {
     const ChunkData& stableChunk = this->GetLastChunk();
@@ -98,5 +130,27 @@ void MetroBinArchive::ReadStringsTable() {
     for (size_t i = 0; i < numStrings; ++i) {
         mSTable.strings[i] = s;
         while (*s++);
+    }
+}
+
+void MetroBinArchive::WriteStringsTable() {
+    if (mOutputStream) {
+        mOutputStream->Write<uint32_t>(2);  // chunk id
+        const size_t chunkSizeOffset = mOutputStream->GetWrittenBytesCount();
+        mOutputStream->Write<uint32_t>(0);  // chunk size will be written later
+        mOutputStream->Write(scast<uint32_t>(mSTable.stringsAdded.size())); // strings count
+
+        for (const HashString& hs : mSTable.stringsAdded) {
+            if (hs.str.empty()) {
+                mOutputStream->WriteDupByte(0, 1);  // empty string, just terminating zero written
+            } else {
+                mOutputStream->Write(hs.str.data(), hs.str.length() + 1);
+            }
+        }
+
+        // go back to the chunk size offset and fill it
+        const size_t chunkSize = mOutputStream->GetWrittenBytesCount() - chunkSizeOffset - sizeof(uint32_t);
+        uint8_t* data = rcast<uint8_t*>(mOutputStream->Data());
+        *rcast<uint32_t*>(data + chunkSizeOffset) = scast<uint32_t>(chunkSize);
     }
 }

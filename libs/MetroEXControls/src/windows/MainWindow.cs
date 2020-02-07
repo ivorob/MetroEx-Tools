@@ -22,6 +22,7 @@ namespace MetroEXControls {
         protected abstract void OnTexturesConverterClick();
         protected abstract void OnLocalizationConversionClick();
         protected abstract void OnArchiveToolClick();
+        protected abstract void OnFontsEditorClick();
         // settings
         protected abstract void OnSettingsClick();
         // extraction
@@ -44,6 +45,8 @@ namespace MetroEXControls {
         //  bin
         protected abstract void OnExtractBinRootFileClicked();
         protected abstract void OnExtractBinInnerFileClicked();
+        protected abstract void OnExtractConfigBinClicked();
+        protected abstract void OnExtractModifiedConfigBinClicked();
         //  folder
         protected abstract void OnExtractFolderClicked(bool withConversion);
         #endregion
@@ -185,12 +188,24 @@ namespace MetroEXControls {
             this.OnExtractBinInnerFileClicked();
         }
 
+        private void extractToolStripMenuItem_Click(object sender, EventArgs e) {
+            this.OnExtractConfigBinClicked();
+        }
+
+        private void saveModifiedToolStripMenuItem_Click(object sender, EventArgs e) {
+            this.OnExtractModifiedConfigBinClicked();
+        }
+
         private void extractFolderToolStripMenuItem_Click(object sender, EventArgs e) {
             this.OnExtractFolderClicked(false);
         }
 
         private void extractFolderWithConversionToolStripMenuItem_Click(object sender, EventArgs e) {
             this.OnExtractFolderClicked(true);
+        }
+
+        private void fontsEditorToolStripMenuItem_Click(object sender, EventArgs e) {
+            this.OnFontsEditorClick();
         }
     }
 }

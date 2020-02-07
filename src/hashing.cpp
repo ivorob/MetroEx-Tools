@@ -79,7 +79,7 @@ uint32_t Hash_CalculateCRC32(const uint8_t* data, const size_t dataLength) {
 }
 
 uint32_t Hash_CalculateCRC32(const CharString& str) {
-    return Hash_CalculateCRC32(rcast<const uint8_t*>(str.data()), str.length());
+    return str.empty() ? 0 : Hash_CalculateCRC32(rcast<const uint8_t*>(str.data()), str.length());
 }
 
 uint32_t Hash_CalculateXX(const uint8_t* data, const size_t dataLength) {
@@ -87,5 +87,5 @@ uint32_t Hash_CalculateXX(const uint8_t* data, const size_t dataLength) {
 }
 
 uint32_t Hash_CalculateXX(const CharString& str) {
-    return XXH32(str.data(), str.length(), 0);
+    return str.empty() ? 0 : XXH32(str.data(), str.length(), 0);
 }

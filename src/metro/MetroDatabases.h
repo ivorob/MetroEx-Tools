@@ -7,10 +7,10 @@
 #include "metro/MetroFonts.h"
 #include "metro/MetroWeaponsDatabase.h"
 
-static void LoadDatabasesFromFile(const fs::path& gameFolder, MetroConfigsDatabase*& cfgDb) {
+static void LoadDatabasesFromFile(const fs::path& gameFolder) {
     size_t fileIdx = 0;
 
-    cfgDb = nullptr;
+    MetroConfigsDatabase::Get().Reset();
 
     LogPrint(LogLevel::Info, "Loading typed_strings.bin from " + gameFolder.u8string());
     if (!MetroTypedStrings::Get().Initialize(gameFolder)) {
@@ -41,24 +41,22 @@ static void LoadDatabasesFromFile(const fs::path& gameFolder, MetroConfigsDataba
     if (MetroFile::InvalidFileIdx != fileIdx) {
         MemStream stream = mfs.OpenFileStream(fileIdx);
         if (stream) {
-            cfgDb = new MetroConfigsDatabase();
-            cfgDb->LoadFromData(stream);
+            MetroConfigsDatabase::Get().LoadFromData(stream);
         }
     }
 
     // load fonts
-    if (cfgDb) {
+    if (MetroConfigsDatabase::Get().GetNumFiles() > 0) {
         for (size_t i = scast<size_t>(MetroLanguage::First); i <= scast<size_t>(MetroLanguage::Last); ++i) {
-            CharString binName = R"(content\scripts\fonts_)";
-            binName += MetroLanguagesStr[i] + ".bin";
-            MemStream stream = cfgDb->GetFileStream(binName);
+            CharString binName = MetroFontsDatabase::MakeFontDBPath(scast<MetroLanguage>(i));
+            MemStream stream = MetroConfigsDatabase::Get().GetFileStream(binName);
             if (stream) {
                 MetroFontsDatabase::Get(scast<MetroLanguage>(i)).LoadFromData(stream);
             }
         }
     }
 
-    MetroWeaponsDatabase::Get().Initialize();
+    //MetroWeaponsDatabase::Get().Initialize();
 
     // load materials database
     //if (cfgDb) {

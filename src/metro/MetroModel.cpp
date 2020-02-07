@@ -307,16 +307,13 @@ static FbxNode* CreateFBXSkeleton(FbxScene* scene, const MetroSkeleton* skeleton
     return rootNode;
 }
 
-// The curve code doesn't differentiate between angles and other data, so an interpolation from 179 to -179
-// will cause the bone to rotate all the way around through 0 degrees.  So here we make a second pass over the
-// rotation tracks to convert the angles into a more interpolation-friendly format.
+//#NOTE_SK: just because fucking FBX doesn't allow us to use quaternions for rotations
+//          we'll get angles "clicking" issues
+//          this is the only way I found to fight this issue
 static void CorrectAnimTrackInterpolation(MyArray<FbxNode*>& boneNodes, FbxAnimLayer* animLayer) {
     for (FbxNode* bone : boneNodes) {
         FbxAnimCurveNode* rotCurveNode = bone->LclRotation.GetCurveNode(animLayer);
         if (rotCurveNode) {
-            //#NOTE_SK: just because fucking FBX doesn't allow us to use quaternions for rotations
-            //          we'll get angles "clicking" issues
-            //          this is the only way I found to fight this issue
             FbxAnimCurveFilterUnroll unrollFilter;
             unrollFilter.SetForceAutoTangents(true);
             unrollFilter.Apply(*rotCurveNode);
@@ -1029,7 +1026,7 @@ void MetroModel::ReadSubChunks(MemStream& stream) {
 
             case MC_SkeletonLink: {
                 CharString skeletonRef = stream.ReadStringZ();
-                mSkeletonPath = "content\\meshes\\" + skeletonRef + ".skeleton.bin";
+                mSkeletonPath = MetroFileSystem::Paths::MeshesFolder + skeletonRef + ".skeleton.bin";
                 const MyHandle file = MetroFileSystem::Get().FindFile(mSkeletonPath);
                 if (kInvalidHandle != file) {
                     MemStream stream = MetroFileSystem::Get().OpenFileStream(file);
@@ -1050,9 +1047,11 @@ void MetroModel::ReadSubChunks(MemStream& stream) {
             } break;
 
             case MC_Comment: {
-                if (chunkSize > 16) {
-                    stream.SkipBytes(16); // wtf ???
-                    mComment = stream.ReadStringZ();
+                if (chunkSize > 15) {
+                    stream.SkipBytes(15); // wtf ???
+                    CharString c0 = stream.ReadStringZ();
+                    CharString c1 = stream.ReadStringZ();
+                    mComment = c0.empty() ? c1 : (c0 + "\n\n" + c1);
                 }
             } break;
         }
@@ -1072,7 +1071,7 @@ void MetroModel::LoadLinkedMeshes(const StringArray& links) {
             const MyHandle folder = mfs.GetParentFolder(mThisFileIdx);
             file = mfs.FindFile(lnk.substr(2) + ".mesh", folder);
         } else {
-            CharString meshFilePath = R"(content\meshes\)" + lnk + ".mesh";
+            CharString meshFilePath = MetroFileSystem::Paths::MeshesFolder + lnk + ".mesh";
             file = mfs.FindFile(meshFilePath);
         }
         if (kInvalidHandle != file) {
@@ -1103,7 +1102,7 @@ void MetroModel::LoadMotions() {
     StringArray motionFolders = StrSplit(motionsStr, ',');
     StringArray motionPaths;
     for (const CharString& f : motionFolders) {
-        CharString fullFolderPath = "content\\motions\\" + f + "\\";
+        CharString fullFolderPath = MetroFileSystem::Paths::MotionsFolder + f + "\\";
 
         const auto& files = mfs.FindFilesInFolder(fullFolderPath, ".m2");
 

@@ -19,6 +19,7 @@ public:
     };
 
     MetroBinArchive(const CharString& name, const MemStream& stream, const size_t headerSize);
+    MetroBinArchive(MemWriteStream& outStream);
 
     inline bool HasChunks() const {
         return !mChunks.empty();
@@ -80,17 +81,29 @@ public:
         return mChunks.back();
     }
 
+    StringsTable* GetSTable() {
+        return &mSTable;
+    }
 
+
+    //reading
     StrongPtr<MetroReflectionStream> ReflectionReader() const;
+
+    // writing
+    void Finalize();
 
 private:
     void                    ReadStringsTable();
+    void                    WriteStringsTable();
 
 private:
     CharString              mFileName;
     MemStream               mFileStream;    // <!> cursor of mFileStream must be always at 0
     size_t                  mHeaderSize;    // size of any data before .bin flags
     uint8_t                 mBinFlags;      // MetroBinFlags
+
+    size_t                  mOutputDataChunkSizeOffset;
+    MemWriteStream*         mOutputStream;
 
     MyArray<ChunkData>      mChunks;
     StringsTable            mSTable;

@@ -47,6 +47,7 @@
             this.localizationConversionToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator5 = new System.Windows.Forms.ToolStripSeparator();
             this.archiveToolToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.fontsEditorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.toolBtnSettings = new System.Windows.Forms.ToolStripButton();
             this.toolStripSeparator6 = new System.Windows.Forms.ToolStripSeparator();
@@ -84,6 +85,10 @@
             this.extractFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.extractFolderToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.ctxMenuExportFolder = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.ctxMenuExportConfigBin = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.extractConfigBinToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator10 = new System.Windows.Forms.ToolStripSeparator();
+            this.saveModifiedConfigBinToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.ctxMenuExportLocalization.SuspendLayout();
             this.ctxMenuExportBin.SuspendLayout();
             this.toolStrip1.SuspendLayout();
@@ -98,6 +103,7 @@
             this.ctxMenuExportSound.SuspendLayout();
             this.ctxMenuExportRaw.SuspendLayout();
             this.ctxMenuExportFolder.SuspendLayout();
+            this.ctxMenuExportConfigBin.SuspendLayout();
             this.SuspendLayout();
             // 
             // ctxMenuExportLocalization
@@ -234,7 +240,8 @@
             this.texturesConverterToolStripMenuItem,
             this.localizationConversionToolStripMenuItem,
             this.toolStripSeparator5,
-            this.archiveToolToolStripMenuItem});
+            this.archiveToolToolStripMenuItem,
+            this.fontsEditorToolStripMenuItem});
             this.toolStripSplitButton1.Image = ((System.Drawing.Image)(resources.GetObject("toolStripSplitButton1.Image")));
             this.toolStripSplitButton1.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.toolStripSplitButton1.Name = "toolStripSplitButton1";
@@ -266,6 +273,13 @@
             this.archiveToolToolStripMenuItem.Size = new System.Drawing.Size(207, 22);
             this.archiveToolToolStripMenuItem.Text = "Archive tool...";
             this.archiveToolToolStripMenuItem.Click += new System.EventHandler(this.archiveToolToolStripMenuItem_Click);
+            // 
+            // fontsEditorToolStripMenuItem
+            // 
+            this.fontsEditorToolStripMenuItem.Name = "fontsEditorToolStripMenuItem";
+            this.fontsEditorToolStripMenuItem.Size = new System.Drawing.Size(207, 22);
+            this.fontsEditorToolStripMenuItem.Text = "Fonts editor...";
+            this.fontsEditorToolStripMenuItem.Click += new System.EventHandler(this.fontsEditorToolStripMenuItem_Click);
             // 
             // toolStripSeparator2
             // 
@@ -309,14 +323,14 @@
             // extractBinRootToolStripMenuItem
             // 
             this.extractBinRootToolStripMenuItem.Name = "extractBinRootToolStripMenuItem";
-            this.extractBinRootToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.extractBinRootToolStripMenuItem.Size = new System.Drawing.Size(163, 22);
             this.extractBinRootToolStripMenuItem.Text = "Extract root file...";
             this.extractBinRootToolStripMenuItem.Click += new System.EventHandler(this.extractBinRootToolStripMenuItem_Click);
             // 
             // extractBinChunkToolStripMenuItem
             // 
             this.extractBinChunkToolStripMenuItem.Name = "extractBinChunkToolStripMenuItem";
-            this.extractBinChunkToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.extractBinChunkToolStripMenuItem.Size = new System.Drawing.Size(163, 22);
             this.extractBinChunkToolStripMenuItem.Text = "Extract this file...";
             this.extractBinChunkToolStripMenuItem.Click += new System.EventHandler(this.extractBinChunkToolStripMenuItem_Click);
             // 
@@ -538,14 +552,14 @@
             // saveAsOBJToolStripMenuItem
             // 
             this.saveAsOBJToolStripMenuItem.Name = "saveAsOBJToolStripMenuItem";
-            this.saveAsOBJToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.saveAsOBJToolStripMenuItem.Size = new System.Drawing.Size(144, 22);
             this.saveAsOBJToolStripMenuItem.Text = "Save as OBJ...";
             this.saveAsOBJToolStripMenuItem.Click += new System.EventHandler(this.saveAsOBJToolStripMenuItem_Click);
             // 
             // saveAsFBXToolStripMenuItem
             // 
             this.saveAsFBXToolStripMenuItem.Name = "saveAsFBXToolStripMenuItem";
-            this.saveAsFBXToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.saveAsFBXToolStripMenuItem.Size = new System.Drawing.Size(144, 22);
             this.saveAsFBXToolStripMenuItem.Text = "Save as FBX...";
             this.saveAsFBXToolStripMenuItem.Click += new System.EventHandler(this.saveAsFBXToolStripMenuItem_Click);
             // 
@@ -560,14 +574,14 @@
             // saveAsOGGToolStripMenuItem
             // 
             this.saveAsOGGToolStripMenuItem.Name = "saveAsOGGToolStripMenuItem";
-            this.saveAsOGGToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.saveAsOGGToolStripMenuItem.Size = new System.Drawing.Size(149, 22);
             this.saveAsOGGToolStripMenuItem.Text = "Save as OGG...";
             this.saveAsOGGToolStripMenuItem.Click += new System.EventHandler(this.saveAsOGGToolStripMenuItem_Click);
             // 
             // saveAsWAVToolStripMenuItem
             // 
             this.saveAsWAVToolStripMenuItem.Name = "saveAsWAVToolStripMenuItem";
-            this.saveAsWAVToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.saveAsWAVToolStripMenuItem.Size = new System.Drawing.Size(149, 22);
             this.saveAsWAVToolStripMenuItem.Text = "Save as WAV...";
             this.saveAsWAVToolStripMenuItem.Click += new System.EventHandler(this.saveAsWAVToolStripMenuItem_Click);
             // 
@@ -581,7 +595,7 @@
             // extractFileToolStripMenuItem
             // 
             this.extractFileToolStripMenuItem.Name = "extractFileToolStripMenuItem";
-            this.extractFileToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.extractFileToolStripMenuItem.Size = new System.Drawing.Size(138, 22);
             this.extractFileToolStripMenuItem.Text = "Extract file...";
             this.extractFileToolStripMenuItem.Click += new System.EventHandler(this.extractFileToolStripMenuItem_Click);
             // 
@@ -598,7 +612,36 @@
             this.extractFolderToolStripMenuItem,
             this.extractFolderWithConversionToolStripMenuItem});
             this.ctxMenuExportFolder.Name = "ctxMenuExportFolder";
-            this.ctxMenuExportFolder.Size = new System.Drawing.Size(241, 70);
+            this.ctxMenuExportFolder.Size = new System.Drawing.Size(241, 48);
+            // 
+            // ctxMenuExportConfigBin
+            // 
+            this.ctxMenuExportConfigBin.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.extractConfigBinToolStripMenuItem,
+            this.toolStripSeparator10,
+            this.saveModifiedConfigBinToolStripMenuItem});
+            this.ctxMenuExportConfigBin.Name = "ctxMenuExportConfigBin";
+            this.ctxMenuExportConfigBin.Size = new System.Drawing.Size(181, 76);
+            // 
+            // extractConfigBinToolStripMenuItem
+            // 
+            this.extractConfigBinToolStripMenuItem.Name = "extractConfigBinToolStripMenuItem";
+            this.extractConfigBinToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.extractConfigBinToolStripMenuItem.Text = "Extract...";
+            this.extractConfigBinToolStripMenuItem.Click += new System.EventHandler(this.extractToolStripMenuItem_Click);
+            // 
+            // toolStripSeparator10
+            // 
+            this.toolStripSeparator10.Name = "toolStripSeparator10";
+            this.toolStripSeparator10.Size = new System.Drawing.Size(177, 6);
+            // 
+            // saveModifiedConfigBinToolStripMenuItem
+            // 
+            this.saveModifiedConfigBinToolStripMenuItem.Enabled = false;
+            this.saveModifiedConfigBinToolStripMenuItem.Name = "saveModifiedConfigBinToolStripMenuItem";
+            this.saveModifiedConfigBinToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.saveModifiedConfigBinToolStripMenuItem.Text = "Save modified...";
+            this.saveModifiedConfigBinToolStripMenuItem.Click += new System.EventHandler(this.saveModifiedToolStripMenuItem_Click);
             // 
             // MainWindow
             // 
@@ -628,6 +671,7 @@
             this.ctxMenuExportSound.ResumeLayout(false);
             this.ctxMenuExportRaw.ResumeLayout(false);
             this.ctxMenuExportFolder.ResumeLayout(false);
+            this.ctxMenuExportConfigBin.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -691,5 +735,10 @@
         protected System.Windows.Forms.ContextMenuStrip ctxMenuExportSound;
         protected System.Windows.Forms.ContextMenuStrip ctxMenuExportRaw;
         protected System.Windows.Forms.ContextMenuStrip ctxMenuExportFolder;
+        protected System.Windows.Forms.ToolStripMenuItem fontsEditorToolStripMenuItem;
+        protected System.Windows.Forms.ContextMenuStrip ctxMenuExportConfigBin;
+        protected System.Windows.Forms.ToolStripMenuItem extractConfigBinToolStripMenuItem;
+        protected System.Windows.Forms.ToolStripSeparator toolStripSeparator10;
+        protected System.Windows.Forms.ToolStripMenuItem saveModifiedConfigBinToolStripMenuItem;
     }
 }

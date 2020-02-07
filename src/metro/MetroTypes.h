@@ -290,6 +290,24 @@ static const CharString MetroLanguagesStr[scast<size_t>(MetroLanguage::Count)] =
     "us"
 };
 
+static const CharString MetroLanguagesFullName[scast<size_t>(MetroLanguage::Count)] = {
+    "Chinese",
+    "Czech",
+    "German",
+    "Spanish",
+    "French",
+    "Italian",
+    "Japanese",
+    "Korean",
+    "Mexican",
+    "Polish",
+    "Portuguese",
+    "Russian",
+    "Taiwanese",
+    "Ukrainian",
+    "English"
+};
+
 struct MetroSurfaceDescription {
     CharString  albedoPath;
     CharString  bumpPath;

@@ -2,7 +2,7 @@
 #include "MetroFileSystem.h"
 #include "MetroCompression.h"
 #include "MetroBinArchive.h"
-#include "MetroReflection.h"
+#include "reflection/MetroReflection.h"
 
 #include "dds_utils.h"
 
@@ -104,6 +104,20 @@ MetroTexture::MetroTexture()
 MetroTexture::~MetroTexture() {
 }
 
+bool MetroTexture::LoadFromPath(const CharString& path) {
+    bool result = false;
+
+    MetroFileSystem& mfs = MetroFileSystem::Get();
+    MyHandle file = mfs.FindFile(path);
+    if (file != kInvalidHandle) {
+        MemStream stream = mfs.OpenFileStream(file);
+        if (stream.Good()) {
+            result = this->LoadFromData(stream, file);
+        }
+    }
+
+    return result;
+}
 
 bool MetroTexture::LoadFromData(MemStream& stream, const MyHandle file) {
     bool result = false;

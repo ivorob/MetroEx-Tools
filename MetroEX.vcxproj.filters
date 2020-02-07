@@ -4,9 +4,6 @@
     <ClCompile Include="src\ui\RenderPanel.cpp">
       <Filter>src\ui</Filter>
     </ClCompile>
-    <ClCompile Include="src\ui\ImagePanel.cpp">
-      <Filter>src\ui</Filter>
-    </ClCompile>
     <ClCompile Include="src\Application.cpp">
       <Filter>src</Filter>
     </ClCompile>
@@ -130,15 +127,48 @@
     <ClCompile Include="src\metro\MetroTypedStrings.cpp">
       <Filter>src\metro</Filter>
     </ClCompile>
-    <ClCompile Include="src\metro\MetroReflection.cpp">
-      <Filter>src\metro</Filter>
+    <ClCompile Include="libs\jansson\src\load.c">
+      <Filter>libs\jansson</Filter>
+    </ClCompile>
+    <ClCompile Include="libs\jansson\src\utf.c">
+      <Filter>libs\jansson</Filter>
+    </ClCompile>
+    <ClCompile Include="libs\jansson\src\value.c">
+      <Filter>libs\jansson</Filter>
+    </ClCompile>
+    <ClCompile Include="libs\jansson\src\hashtable.c">
+      <Filter>libs\jansson</Filter>
+    </ClCompile>
+    <ClCompile Include="libs\jansson\src\strbuffer.c">
+      <Filter>libs\jansson</Filter>
+    </ClCompile>
+    <ClCompile Include="libs\jansson\src\memory.c">
+      <Filter>libs\jansson</Filter>
+    </ClCompile>
+    <ClCompile Include="libs\jansson\src\hashtable_seed.c">
+      <Filter>libs\jansson</Filter>
+    </ClCompile>
+    <ClCompile Include="libs\jansson\src\strconv.c">
+      <Filter>libs\jansson</Filter>
+    </ClCompile>
+    <ClCompile Include="libs\jansson\src\error.c">
+      <Filter>libs\jansson</Filter>
+    </ClCompile>
+    <ClCompile Include="libs\jansson\src\dump.c">
+      <Filter>libs\jansson</Filter>
+    </ClCompile>
+    <ClCompile Include="src\metro\reflection\MetroReflection.cpp">
+      <Filter>src\metro\reflection</Filter>
+    </ClCompile>
+    <ClCompile Include="src\metro\reflection\MetroReflectionJson.cpp">
+      <Filter>src\metro\reflection</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ui\tools\FontsEditorImpl.cpp">
+      <Filter>src\ui\tools</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\ui\RenderPanel.h">
-      <Filter>src\ui</Filter>
-    </ClInclude>
-    <ClInclude Include="src\ui\ImagePanel.h">
       <Filter>src\ui</Filter>
     </ClInclude>
     <ClInclude Include="src\mycommon.h">
@@ -169,9 +199,6 @@
       <Filter>src\metro</Filter>
     </ClInclude>
     <ClInclude Include="src\metro\MetroModel.h">
-      <Filter>src\metro</Filter>
-    </ClInclude>
-    <ClInclude Include="src\metro\MetroReflection.h">
       <Filter>src\metro</Filter>
     </ClInclude>
     <ClInclude Include="src\metro\MetroSkeleton.h">
@@ -276,6 +303,15 @@
     <ClInclude Include="src\metro\MetroTypedStrings.h">
       <Filter>src\metro</Filter>
     </ClInclude>
+    <ClInclude Include="libs\jansson\src\jansson.h">
+      <Filter>libs\jansson</Filter>
+    </ClInclude>
+    <ClInclude Include="src\metro\reflection\MetroReflection.h">
+      <Filter>src\metro\reflection</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ui\tools\FontsEditorImpl.h">
+      <Filter>src\ui\tools</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="src\ui\ImagePanel.resx">
@@ -325,6 +361,12 @@
     <Filter Include="libs\pugixml">
       <UniqueIdentifier>{fab92e35-1e7a-4049-8945-f2b8fedc8c1c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="libs\jansson">
+      <UniqueIdentifier>{841d6240-f90d-405b-9ee3-cfb1573b8b9f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\metro\reflection">
+      <UniqueIdentifier>{f3610cd3-66c4-4963-9be6-140a961c1127}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="res.rc" />
@@ -353,8 +395,11 @@
     <None Include="src\shaders\common.hlsli">
       <Filter>src\shaders</Filter>
     </None>
-    <None Include="src\metro\MetroReflectionBinary.inl">
-      <Filter>src\metro</Filter>
+    <None Include="src\metro\reflection\MetroReflectionBinary.inl">
+      <Filter>src\metro\reflection</Filter>
+    </None>
+    <None Include="src\metro\reflection\MetroReflectionJson.inl">
+      <Filter>src\metro\reflection</Filter>
     </None>
   </ItemGroup>
 </Project>

@@ -8,40 +8,15 @@ namespace MetroEXControls {
         public delegate void OnListSelectionChanged(int selection);
 
         #region Delegates
-        public OnButtonClicked OnPlayButtonClicked {
-            get;
-            set;
-        }
-
-        public OnButtonClicked OnInfoButtonClicked {
-            get;
-            set;
-        }
-
-        public OnButtonClicked OnMotionExportButtonClicked {
-            get;
-            set;
-        }
-
-        public OnListSelectionChanged OnMotionsListSelectionChanged {
-            get;
-            set;
-        }
-
-        public OnListSelectionChanged OnLodsListSelectionChanged {
-            get;
-            set;
-        }
+        public OnButtonClicked OnPlayButtonClicked { get; set; } = null;
+        public OnButtonClicked OnInfoButtonClicked { get; set; } = null;
+        public OnButtonClicked OnMotionExportButtonClicked { get; set; } = null;
+        public OnListSelectionChanged OnMotionsListSelectionChanged { get; set; } = null;
+        public OnListSelectionChanged OnLodsListSelectionChanged { get; set; } = null;
         #endregion
 
         public ModelInfoPanel() {
             InitializeComponent();
-
-            this.OnPlayButtonClicked = null;
-            this.OnInfoButtonClicked = null;
-            this.OnMotionExportButtonClicked = null;
-            this.OnMotionsListSelectionChanged = null;
-            this.OnLodsListSelectionChanged = null;
 
             this.btnModelExportMotion.Enabled = false;
             this.lstLods.Enabled = false;

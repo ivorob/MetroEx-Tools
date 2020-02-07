@@ -1,4 +1,5 @@
 #include "MetroLocalization.h"
+#include "MetroFileSystem.h"
 
 #include "pugixml.hpp"
 
@@ -69,6 +70,21 @@ enum LocalizationChunk : size_t {
 MetroLocalization::MetroLocalization() {
 }
 MetroLocalization::~MetroLocalization() {
+}
+
+bool MetroLocalization::LoadFromPath(const CharString& path) {
+    bool result = false;
+
+    MetroFileSystem& mfs = MetroFileSystem::Get();
+    MyHandle file = mfs.FindFile(path);
+    if (file != kInvalidHandle) {
+        MemStream stream = mfs.OpenFileStream(file);
+        if (stream.Good()) {
+            result = this->LoadFromData(stream);
+        }
+    }
+
+    return result;
 }
 
 bool MetroLocalization::LoadFromData(MemStream stream) {
@@ -155,10 +171,6 @@ bool MetroLocalization::LoadFromExcel2003(const fs::path& path) {
 
                             if (data) {
                                 lp.key = data.text().get();
-                            }
-
-                            if (lp.key == "m3_12_val_diary_36_name") {
-                                lp.key = lp.key;
                             }
 
                             cell = cell.next_sibling();
@@ -310,6 +322,14 @@ const CharString& MetroLocalization::GetKey(const size_t idx) const {
 
 const WideString& MetroLocalization::GetValue(const size_t idx) const {
     return mStrings[idx].value;
+}
+
+size_t MetroLocalization::GetCharsCount() const {
+    return mCharsTable.size();
+}
+
+wchar_t MetroLocalization::GetChar(const size_t idx) const {
+    return mCharsTable[idx];
 }
 
 void MetroLocalization::DecodeString(const CharString& encodedStr, WideString& resultStr) {

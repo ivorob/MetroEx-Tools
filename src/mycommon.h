@@ -3,6 +3,7 @@
 #include <string>
 #include <vector>
 #include <unordered_map>
+#include <deque>
 #include <filesystem>
 #include <memory>
 #include <numeric>
@@ -18,6 +19,8 @@ template <typename T>
 using MyArray = std::vector<T>;
 template <typename K, typename T>
 using MyDict = std::unordered_map<K, T>;
+template <typename T>
+using MyDeque = std::deque<T>;
 using CharString = std::string;
 using WideString = std::wstring;
 using StringArray = MyArray<CharString>;
@@ -54,15 +57,6 @@ uint32_t Hash_CalculateCRC32(const CharString& str);
 uint32_t Hash_CalculateXX(const uint8_t* data, const size_t dataLength);
 uint32_t Hash_CalculateXX(const CharString& str);
 
-
-struct StringsTable {
-    const char* GetString(const size_t idx) const {
-        return this->strings[idx];
-    }
-
-    MyArray<char>        data;
-    MyArray<const char*> strings;
-};
 
 struct TypedString {
     enum {
@@ -151,6 +145,35 @@ inline StringArray StrSplit(const CharString& s, const char delimiter) {
 }
 
 
+struct StringsTable {
+    const char* GetString(const size_t idx) const {
+        return this->strings[idx];
+    }
+
+    uint32_t AddString(const HashString& str) {
+        uint32_t result = kInvalidValue32;
+        for (size_t i = 0, end = stringsAdded.size(); i < end; ++i) {
+            const HashString& hs = this->stringsAdded[i];
+            if (hs == str) {
+                result = scast<uint32_t>(i);
+                break;
+            }
+        }
+
+        if (result == kInvalidValue32) {
+            result = scast<uint32_t>(stringsAdded.size());
+            stringsAdded.push_back(str);
+        }
+
+        return result;
+    }
+
+    MyArray<char>        data;
+    MyArray<const char*> strings;       // holds strings when reading
+    MyArray<HashString>  stringsAdded;  // holds strings when writing
+};
+
+
 class MemStream {
     using OwnedPtrType = std::shared_ptr<uint8_t>;
 
@@ -225,6 +248,10 @@ public:
 
     inline size_t Remains() const {
         return this->length - this->cursor;
+    }
+
+    inline const uint8_t* Data() const {
+        return this->data;
     }
 
     void ReadToBuffer(void* buffer, const size_t bytesToRead) {
@@ -317,13 +344,27 @@ private:
 
 class MemWriteStream {
 public:
-    MemWriteStream() { buffer.reserve(4096); }
+    MemWriteStream(const size_t startupSize = 4096) { mBuffer.reserve(startupSize); }
     ~MemWriteStream() {}
 
+    void Swap(MemWriteStream& other) {
+        mBuffer.swap(other.mBuffer);
+    }
+
+    void SwapBuffer(BytesArray& buffer) {
+        mBuffer.swap(buffer);
+    }
+
     void Write(const void* data, const size_t length) {
-        const size_t cursor = this->buffer.size();
-        this->buffer.resize(this->buffer.size() + length);
-        memcpy(this->buffer.data() + cursor, data, length);
+        const size_t cursor = this->GetWrittenBytesCount();
+        mBuffer.resize(mBuffer.size() + length);
+        memcpy(mBuffer.data() + cursor, data, length);
+    }
+
+    void WriteDupByte(const uint8_t value, const size_t numBytes) {
+        const size_t cursor = this->GetWrittenBytesCount();
+        mBuffer.resize(mBuffer.size() + numBytes);
+        memset(mBuffer.data() + cursor, scast<int>(value), numBytes);
     }
 
     template <typename T>
@@ -331,7 +372,16 @@ public:
         this->Write(&v, sizeof(v));
     }
 
-    BytesArray  buffer;
+    size_t GetWrittenBytesCount() const {
+        return mBuffer.size();
+    }
+
+    void* Data() {
+        return mBuffer.data();
+    }
+
+private:
+    BytesArray  mBuffer;
 };
 
 

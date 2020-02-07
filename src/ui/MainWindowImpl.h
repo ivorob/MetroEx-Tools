@@ -6,12 +6,9 @@
 #include <shlobj_core.h>
 
 #include "RenderPanel.h"
-#include "ImagePanel.h"
 #include "SoundPanel.h"
 #include "LocalizationPanel.h"
 #include "DlgModelInfo.h"
-
-class MetroConfigsDatabase;
 
 namespace MetroEX {
     enum class FileType : size_t {
@@ -95,6 +92,7 @@ namespace MetroEX {
         virtual void OnTexturesConverterClick() override;
         virtual void OnLocalizationConversionClick() override;
         virtual void OnArchiveToolClick() override;
+        virtual void OnFontsEditorClick() override;
         // settings
         virtual void OnSettingsClick() override;
         // extraction
@@ -117,6 +115,8 @@ namespace MetroEX {
         //  bin
         virtual void OnExtractBinRootFileClicked() override;
         virtual void OnExtractBinInnerFileClicked() override;
+        virtual void OnExtractConfigBinClicked() override;
+        virtual void OnExtractModifiedConfigBinClicked() override;
         //  folder
         virtual void OnExtractFolderClicked(bool withConversion) override;
 
@@ -156,7 +156,7 @@ namespace MetroEX {
         void OnDlgModelInfo_Closed(System::Object^ sender, System::EventArgs^ e);
 
     private:
-        MetroEX::ImagePanel^                mImagePanel;
+        MetroEXControls::ImagePanel^        mImagePanel;
         MetroEX::RenderPanel^               mRenderPanel;
         MetroEX::SoundPanel^                mSoundPanel;
         MetroEX::LocalizationPanel^         mLocalizationPanel;
@@ -172,8 +172,6 @@ namespace MetroEX {
         IProgressDialog*                    mExtractionProgressDlg;
 
         TreeNode^                           mOriginalRootNode;
-
-        MetroConfigsDatabase*               mConfigsDatabase;
     };
 
 }

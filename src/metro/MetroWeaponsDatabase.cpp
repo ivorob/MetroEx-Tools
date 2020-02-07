@@ -1,10 +1,10 @@
 #include "MetroWeaponsDatabase.h"
-#include "MetroReflection.h"
 #include "MetroTypes.h"
 #include "MetroBinArrayArchive.h"
 #include "MetroBinArchive.h"
 #include "MetroFileSystem.h"
 #include "MetroTypedStrings.h"
+#include "reflection/MetroReflection.h"
 
 
 #include <fstream>
@@ -355,7 +355,7 @@ void MetroWeaponAttachmentDesc::Serialize(MetroReflectionStream& s) {
     METRO_SERIALIZE_MEMBER(s, base_handle);
 
     // data section
-    //#NOTE_SK: probably worth making it a structure and use METRO_SERIALIZE_STRUCT_MEMBER ???
+    //#NOTE_SK: probably worth making it a structure and use METRO_SERIALIZE_STRUCT_MEMBER(s, data) ???
     MetroReflectionStream* data = s.OpenSection("data");
     if (data) {
         METRO_SERIALIZE_MEMBER_CHOOSE(*data, shared_weapon_params);

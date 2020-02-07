@@ -74,7 +74,7 @@ size_t MetroCompression::CompressStream(const void* data, const size_t dataLengt
         result += blockSize;
     }
 
-    outStream.buffer.swap(compressed);
+    outStream.SwapBuffer(compressed);
 
     return result;
 }

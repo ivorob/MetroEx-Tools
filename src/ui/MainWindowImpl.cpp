@@ -20,6 +20,7 @@
 
 #include "ui/tools/ConvertTexturesDlgImpl.h"
 #include "ui/tools/CreateArchiveDlgImpl.h"
+#include "ui/tools/FontsEditorImpl.h"
 
 #include "UIHelpers.h"
 
@@ -195,7 +196,7 @@ void MainWindowImpl::OnFormLoad() {
 //        this->ctxMenuExportSound->Size.Height += this->extractFileToolStripMenuItem->Size.Height;
 //#endif
 
-    mImagePanel = gcnew ImagePanel();
+    mImagePanel = gcnew MetroEXControls::ImagePanel();
     this->pnlViewers->Controls->Add(mImagePanel);
     mImagePanel->Dock = System::Windows::Forms::DockStyle::Fill;
     mImagePanel->Location = System::Drawing::Point(0, 0);
@@ -263,10 +264,7 @@ void MainWindowImpl::OnOpenGameFolderClicked() {
         System::Windows::Forms::Cursor::Current = System::Windows::Forms::Cursors::WaitCursor;
 
         if (MetroFileSystem::Get().InitFromGameFolder(folderPath)) {
-            MetroConfigsDatabase* cfgDb;
-            LoadDatabasesFromFile(folderPath, cfgDb);
-            mConfigsDatabase = cfgDb;
-
+            LoadDatabasesFromFile(folderPath);
             this->UpdateFilesList();
         }
 
@@ -287,10 +285,7 @@ void MainWindowImpl::OnOpenSingleVFXClicked() {
         fs::path vfxPath = StringToPath(ofd.FileName);
         fs::path vfxFolder = vfxPath.parent_path();
         if (MetroFileSystem::Get().InitFromSingleVFX(vfxPath)) {
-            MetroConfigsDatabase* cfgDb;
-            LoadDatabasesFromFile(vfxFolder, cfgDb);
-            mConfigsDatabase = cfgDb;
-
+            LoadDatabasesFromFile(vfxFolder);
             this->UpdateFilesList();
         }
 
@@ -302,7 +297,7 @@ void MainWindowImpl::OnOpenSingleVFXClicked() {
 void MainWindowImpl::OnImgEnableAlphaClick() {
     if (mImagePanel) {
         this->toolBtnImgEnableAlpha->Checked = !this->toolBtnImgEnableAlpha->Checked;
-        mImagePanel->EnableTransparency(toolBtnImgEnableAlpha->Checked);
+        mImagePanel->TransparencyEnabled = toolBtnImgEnableAlpha->Checked;
     }
 }
 
@@ -370,14 +365,16 @@ void MainWindowImpl::OnFilesTreeNodeMouseClick(System::Windows::Forms::TreeNodeM
 
                 case FileType::Bin: {
                     if (isSubFile) {
-                        const MetroConfigsDatabase::ConfigInfo& ci = mConfigsDatabase->GetFileByIdx(fileData->subFileIdx);
+                        const MetroConfigsDatabase::ConfigInfo& ci = MetroConfigsDatabase::Get().GetFileByIdx(fileData->subFileIdx);
 
                         mExtractionCtx->customOffset = ci.offset;
                         mExtractionCtx->customLength = ci.length;
                         mExtractionCtx->customFileName = NetToCharStr(e->Node->Text);
                         this->ctxMenuExportBin->Show(this->filterableTreeView->TreeView, e->X, e->Y);
                     } else {
-                        this->ctxMenuExportRaw->Show(this->filterableTreeView->TreeView, e->X, e->Y);
+                        //this->ctxMenuExportRaw->Show(this->filterableTreeView->TreeView, e->X, e->Y);
+                        this->saveModifiedConfigBinToolStripMenuItem->Enabled = MetroConfigsDatabase::Get().IsDirty();
+                        this->ctxMenuExportConfigBin->Show(this->filterableTreeView->TreeView, e->X, e->Y);
                     }
                 } break;
 
@@ -442,7 +439,7 @@ void MainWindowImpl::OnFilesTreeAfterSelect(System::Windows::Forms::TreeNode^ no
         const MetroFileSystem& mfs = MetroFileSystem::Get();
         if (!mfs.Empty()) {
             if (isSubFile) {
-                const MetroConfigsDatabase::ConfigInfo& ci = mConfigsDatabase->GetFileByIdx(fileData->subFileIdx);
+                const MetroConfigsDatabase::ConfigInfo& ci = MetroConfigsDatabase::Get().GetFileByIdx(fileData->subFileIdx);
 
                 this->statusLabel1->Text = L"config.bin";
                 this->statusLabel2->Text = fileData->subFileIdx.ToString();
@@ -518,6 +515,12 @@ void MainWindowImpl::OnLocalizationConversionClick() {
 
 void MainWindowImpl::OnArchiveToolClick() {
     CreateArchiveDlgImpl dlg;
+    dlg.Icon = this->Icon;
+    dlg.ShowDialog(this);
+}
+
+void MainWindowImpl::OnFontsEditorClick() {
+    FontsEditorImpl dlg;
     dlg.Icon = this->Icon;
     dlg.ShowDialog(this);
 }
@@ -642,6 +645,51 @@ void MainWindowImpl::OnExtractBinInnerFileClicked() {
     }
 }
 
+void MainWindowImpl::OnExtractConfigBinClicked() {
+    mExtractionCtx->customOffset = kInvalidValue;
+    mExtractionCtx->customLength = kInvalidValue;
+    mExtractionCtx->customFileName = "";
+
+    this->OnExtractRAWFileClicked();
+}
+
+void MainWindowImpl::OnExtractModifiedConfigBinClicked() {
+    const MemStream& stream = MetroConfigsDatabase::Get().GetDataStream();
+    if (stream.Good()) {
+        fs::path resultPath;
+
+        SaveFileDialog sfd;
+        sfd.Title = L"Save Configs database...";
+        sfd.Filter = L"Bin file (*.bin)|*.bin";
+        sfd.FileName = "config.bin";
+        sfd.RestoreDirectory = true;
+        sfd.OverwritePrompt = true;
+
+        if (sfd.ShowDialog(this) == System::Windows::Forms::DialogResult::OK) {
+            resultPath = StringToPath(sfd.FileName);
+        }
+
+        if (!resultPath.empty()) {
+            bool result = false;
+
+            std::ofstream file(resultPath, std::ofstream::binary);
+            if (file.good()) {
+                file.write(rcast<const char*>(stream.Data()), stream.Length());
+                file.flush();
+                file.close(); 
+
+                result = true;
+            }
+
+            if (!result) {
+                MetroEX::ShowErrorMessageBox(this, "Failed to save Configs Database!");
+            } else {
+                MetroEX::ShowInfoMessageBox(this, "Configs Database was successfully saved!");
+            }
+        }
+    }
+}
+
 //  folder
 void MainWindowImpl::OnExtractFolderClicked(bool withConversion) {
     fs::path folderPath = ChooseFolderDialog::ChooseFolder(L"Choose output directory...", this->Handle.ToPointer());
@@ -742,8 +790,8 @@ void MainWindowImpl::AddBinaryArchive(MyHandle file, TreeNode^ rootItem) {
     fileNode->Tag = gcnew FileTagData(FileType::BinArchive, file, kInvalidValue);
     UpdateNodeIcon(fileNode);
 
-    for (size_t idx = 0, numFiles = mConfigsDatabase->GetNumFiles(); idx < numFiles; ++idx) {
-        const MetroConfigsDatabase::ConfigInfo& ci = mConfigsDatabase->GetFileByIdx(idx);
+    for (size_t idx = 0, numFiles = MetroConfigsDatabase::Get().GetNumFiles(); idx < numFiles; ++idx) {
+        const MetroConfigsDatabase::ConfigInfo& ci = MetroConfigsDatabase::Get().GetFileByIdx(idx);
 
         const bool isNameDecrypted = !ci.nameStr.empty();
 
@@ -814,6 +862,23 @@ void MainWindowImpl::DetectFileAndShow(MyHandle file) {
     }
 }
 
+Bitmap^ TextureToBitmap(const MetroTexture& texture) {
+    BytesArray pixels;
+    texture.GetBGRA(pixels);
+
+    const int w = scast<int>(texture.GetWidth());
+    const int h = scast<int>(texture.GetHeight());
+
+    Bitmap^ bmp = gcnew Bitmap(w, h, Imaging::PixelFormat::Format32bppArgb);
+
+    Drawing::Rectangle rc(0, 0, w, h);
+    Imaging::BitmapData^ bmpData = bmp->LockBits(rc, Imaging::ImageLockMode::WriteOnly, bmp->PixelFormat);
+    memcpy(bmpData->Scan0.ToPointer(), pixels.data(), pixels.size());
+    bmp->UnlockBits(bmpData);
+
+    return bmp;
+}
+
 void MainWindowImpl::ShowTexture(MyHandle file) {
     MemStream stream = MetroFileSystem::Get().OpenFileStream(file);
     if (stream) {
@@ -824,7 +889,7 @@ void MainWindowImpl::ShowTexture(MyHandle file) {
                 mRenderPanel->SetCubemap(&texture);
             } else {
                 this->SwitchViewPanel(PanelType::Texture);
-                mImagePanel->SetTexture(&texture);
+                mImagePanel->Image = TextureToBitmap(texture);
             }
 
             this->SwitchInfoPanel(PanelType::Texture);

@@ -6,7 +6,14 @@ class VFXReader;
 class MetroFileSystem {
     IMPL_SINGLETON(MetroFileSystem)
 
-private:
+public:
+    struct Paths {
+        static CharString MotionsFolder;
+        static CharString MeshesFolder;
+        static CharString LocalizationsFolder;
+        static CharString TexturesFolder;
+    };
+
     struct MetroFSEntry {
         HashString  name;
         size_t      idx;
@@ -15,12 +22,16 @@ private:
         size_t      nextSibling;
         size_t      vfxIdx;
         size_t      fileIdx;
+
+        // dups stuff
+        size_t      dupIdx;
     };
 
-public:
+protected:
     MetroFileSystem();
     ~MetroFileSystem();
 
+public:
     bool                    InitFromGameFolder(const fs::path& gameFolder);
     bool                    InitFromSingleVFX(const fs::path& vfxPath);
     void                    Shutdown();
@@ -61,5 +72,6 @@ private:
 private:
     MyArray<VFXReader*>     mLoadedVFX;
     MyArray<MetroFSEntry>   mEntries;
+    MyArray<MetroFSEntry>   mDupEntries;
     size_t                  mCurrentVfxIdx;
 };

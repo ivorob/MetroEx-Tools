@@ -6,6 +6,7 @@ public:
     MetroLocalization();
     ~MetroLocalization();
 
+    bool                LoadFromPath(const CharString& path);
     bool                LoadFromData(MemStream stream);
     bool                LoadFromExcel2003(const fs::path& path);
 
@@ -15,6 +16,9 @@ public:
     size_t              GetNumStrings() const;
     const CharString&   GetKey(const size_t idx) const;
     const WideString&   GetValue(const size_t idx) const;
+
+    size_t              GetCharsCount() const;
+    wchar_t             GetChar(const size_t idx) const;
 
 private:
     void                DecodeString(const CharString& encodedStr, WideString& resultStr);

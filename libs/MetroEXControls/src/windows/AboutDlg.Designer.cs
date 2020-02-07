@@ -34,7 +34,7 @@
             // 
             // btnOK
             // 
-            this.btnOK.Location = new System.Drawing.Point(488, 196);
+            this.btnOK.Location = new System.Drawing.Point(488, 188);
             this.btnOK.Name = "btnOK";
             this.btnOK.Size = new System.Drawing.Size(75, 23);
             this.btnOK.TabIndex = 0;
@@ -47,17 +47,18 @@
             this.pictureBox1.Image = ((System.Drawing.Image)(resources.GetObject("pictureBox1.Image")));
             this.pictureBox1.Location = new System.Drawing.Point(12, 12);
             this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(128, 128);
+            this.pictureBox1.Size = new System.Drawing.Size(170, 170);
+            this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.pictureBox1.TabIndex = 1;
             this.pictureBox1.TabStop = false;
             // 
             // rtfCredits
             // 
             this.rtfCredits.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.rtfCredits.Location = new System.Drawing.Point(146, 12);
+            this.rtfCredits.Location = new System.Drawing.Point(188, 12);
             this.rtfCredits.Name = "rtfCredits";
             this.rtfCredits.ReadOnly = true;
-            this.rtfCredits.Size = new System.Drawing.Size(417, 170);
+            this.rtfCredits.Size = new System.Drawing.Size(375, 170);
             this.rtfCredits.TabIndex = 2;
             this.rtfCredits.Text = "";
             // 
@@ -65,7 +66,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(575, 231);
+            this.ClientSize = new System.Drawing.Size(575, 216);
             this.Controls.Add(this.rtfCredits);
             this.Controls.Add(this.pictureBox1);
             this.Controls.Add(this.btnOK);

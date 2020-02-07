@@ -1,6 +1,6 @@
 #include "MetroMaterialsDatabase.h"
-#include "MetroReflection.h"
 #include "MetroBinArchive.h"
+#include "reflection/MetroReflection.h"
 
 void MetroMaterialsCommonOptions::Serialize(MetroReflectionStream& reader) {
     //0

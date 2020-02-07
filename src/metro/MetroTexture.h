@@ -35,6 +35,7 @@ public:
     MetroTexture();
     ~MetroTexture();
 
+    bool            LoadFromPath(const CharString& path);
     bool            LoadFromData(MemStream& stream, const MyHandle file);
     bool            LoadFromFile(const fs::path& fileName);
 

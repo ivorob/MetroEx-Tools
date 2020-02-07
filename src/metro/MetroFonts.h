@@ -19,6 +19,14 @@ public:
 
     void Serialize(MetroReflectionStream& s);
 
+    const CharString&   GetName() const;
+    const CharString&   GetTextureName() const;
+    const vec2&         GetInvScale() const;
+    float               GetLineHeight() const;
+    size_t              GetCharsCount() const;
+    const CharInfo&     GetCharinfo(const size_t idx) const;
+    CharInfo&           GetCharinfo(const size_t idx);
+
 private:
     CharString          lang;
     CharString          name;
@@ -38,10 +46,18 @@ public:
     void operator=(MetroFontsDatabase const&) = delete;
 
 public:
-    static MetroFontsDatabase& Get(MetroLanguage lng);
+    static MetroFontsDatabase&  Get(const MetroLanguage lng);
+    static CharString           MakeFontDBPath(const MetroLanguage lng);
 
 public:
-    bool LoadFromData(MemStream& stream);
+    bool                        LoadFromData(MemStream& stream);
+    void                        SaveToData(MemWriteStream& stream);
+    CharString                  SaveToJsonString();
+    void                        LoadFromJsonString(const CharString& jsonStr);
+
+    size_t                      GetFontsCount() const;
+    const MetroFontDescriptor&  GetFontDescriptor(const size_t idx) const;
+    MetroFontDescriptor&        GetFontDescriptor(const size_t idx);
 
 private:
     MyArray<MetroFontDescriptor>    descriptions;

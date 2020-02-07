@@ -58,8 +58,8 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>_DEBUG;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(SolutionDir)src;$(SolutionDir)libs\glm;$(SolutionDir)libs\stb;$(SolutionDir)libs\lz4;$(SolutionDir)libs\bc7enc16;$(SolutionDir)libs\xxhash;$(SolutionDir)libs\fbx\include;$(SolutionDir)libs\pugixml\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_DEBUG;_CRT_SECURE_NO_WARNINGS;HAVE_CONFIG_H;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(SolutionDir)src;$(SolutionDir)libs\glm;$(SolutionDir)libs\stb;$(SolutionDir)libs\lz4;$(SolutionDir)libs\bc7enc16;$(SolutionDir)libs\xxhash;$(SolutionDir)libs\fbx\include;$(SolutionDir)libs\pugixml\src;$(SolutionDir)libs\jansson\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <DisableSpecificWarnings>4793</DisableSpecificWarnings>
     </ClCompile>
@@ -77,8 +77,8 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
-      <PreprocessorDefinitions>NDEBUG;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(SolutionDir)src;$(SolutionDir)libs\glm;$(SolutionDir)libs\stb;$(SolutionDir)libs\lz4;$(SolutionDir)libs\bc7enc16;$(SolutionDir)libs\xxhash;$(SolutionDir)libs\fbx\include;$(SolutionDir)libs\pugixml\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>NDEBUG;_CRT_SECURE_NO_WARNINGS;HAVE_CONFIG_H;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(SolutionDir)src;$(SolutionDir)libs\glm;$(SolutionDir)libs\stb;$(SolutionDir)libs\lz4;$(SolutionDir)libs\bc7enc16;$(SolutionDir)libs\xxhash;$(SolutionDir)libs\fbx\include;$(SolutionDir)libs\pugixml\src;$(SolutionDir)libs\jansson\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <DebugInformationFormat>None</DebugInformationFormat>
       <IntrinsicFunctions>true</IntrinsicFunctions>
@@ -116,6 +116,46 @@
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">CompileAsCpp</CompileAs>
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">CompileAsCpp</CompileAs>
     </ClCompile>
+    <ClCompile Include="libs\jansson\src\dump.c">
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">CompileAsCpp</CompileAs>
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">CompileAsCpp</CompileAs>
+    </ClCompile>
+    <ClCompile Include="libs\jansson\src\error.c">
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">CompileAsCpp</CompileAs>
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">CompileAsCpp</CompileAs>
+    </ClCompile>
+    <ClCompile Include="libs\jansson\src\hashtable.c">
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">CompileAsCpp</CompileAs>
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">CompileAsCpp</CompileAs>
+    </ClCompile>
+    <ClCompile Include="libs\jansson\src\hashtable_seed.c">
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">CompileAsCpp</CompileAs>
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">CompileAsCpp</CompileAs>
+    </ClCompile>
+    <ClCompile Include="libs\jansson\src\load.c">
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">CompileAsCpp</CompileAs>
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">CompileAsCpp</CompileAs>
+    </ClCompile>
+    <ClCompile Include="libs\jansson\src\memory.c">
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">CompileAsCpp</CompileAs>
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">CompileAsCpp</CompileAs>
+    </ClCompile>
+    <ClCompile Include="libs\jansson\src\strbuffer.c">
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">CompileAsCpp</CompileAs>
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">CompileAsCpp</CompileAs>
+    </ClCompile>
+    <ClCompile Include="libs\jansson\src\strconv.c">
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">CompileAsCpp</CompileAs>
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">CompileAsCpp</CompileAs>
+    </ClCompile>
+    <ClCompile Include="libs\jansson\src\utf.c">
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">CompileAsCpp</CompileAs>
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">CompileAsCpp</CompileAs>
+    </ClCompile>
+    <ClCompile Include="libs\jansson\src\value.c">
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">CompileAsCpp</CompileAs>
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">CompileAsCpp</CompileAs>
+    </ClCompile>
     <ClCompile Include="libs\lz4\lz4.c">
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">CompileAsCpp</CompileAs>
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">CompileAsCpp</CompileAs>
@@ -146,18 +186,18 @@
     <ClCompile Include="src\metro\MetroMaterialsDatabase.cpp" />
     <ClCompile Include="src\metro\MetroModel.cpp" />
     <ClCompile Include="src\metro\MetroMotion.cpp" />
-    <ClCompile Include="src\metro\MetroReflection.cpp" />
     <ClCompile Include="src\metro\MetroSkeleton.cpp" />
     <ClCompile Include="src\metro\MetroSound.cpp" />
     <ClCompile Include="src\metro\MetroTexture.cpp" />
     <ClCompile Include="src\metro\MetroTexturesDatabase.cpp" />
     <ClCompile Include="src\metro\MetroTypedStrings.cpp" />
     <ClCompile Include="src\metro\MetroWeaponsDatabase.cpp" />
+    <ClCompile Include="src\metro\reflection\MetroReflection.cpp" />
+    <ClCompile Include="src\metro\reflection\MetroReflectionJson.cpp" />
     <ClCompile Include="src\metro\VFXReader.cpp" />
     <ClCompile Include="src\mex_settings.cpp" />
     <ClCompile Include="src\ui\ChooseFolderDlg.cpp" />
     <ClCompile Include="src\ui\DlgModelInfo.cpp" />
-    <ClCompile Include="src\ui\ImagePanel.cpp" />
     <ClCompile Include="src\ui\LocalizationPanel.cpp" />
     <ClCompile Include="src\ui\MainWindowImpl.cpp" />
     <ClCompile Include="src\ui\RenderPanel.cpp" />
@@ -167,10 +207,12 @@
     <ClCompile Include="src\ui\TexturesDatabaseViewer.cpp" />
     <ClCompile Include="src\ui\tools\ConvertTexturesDlgImpl.cpp" />
     <ClCompile Include="src\ui\tools\CreateArchiveDlgImpl.cpp" />
+    <ClCompile Include="src\ui\tools\FontsEditorImpl.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="libs\bc7enc16\bc7decomp.h" />
     <ClInclude Include="libs\bc7enc16\bc7enc16.h" />
+    <ClInclude Include="libs\jansson\src\jansson.h" />
     <ClInclude Include="libs\lz4\lz4.h" />
     <ClInclude Include="libs\lz4\lz4hc.h" />
     <ClInclude Include="libs\pugixml\src\pugixml.hpp" />
@@ -190,7 +232,6 @@
     <ClInclude Include="src\metro\MetroMaterialsDatabase.h" />
     <ClInclude Include="src\metro\MetroModel.h" />
     <ClInclude Include="src\metro\MetroMotion.h" />
-    <ClInclude Include="src\metro\MetroReflection.h" />
     <ClInclude Include="src\metro\MetroSkeleton.h" />
     <ClInclude Include="src\metro\MetroSound.h" />
     <ClInclude Include="src\metro\MetroTexture.h" />
@@ -198,6 +239,7 @@
     <ClInclude Include="src\metro\MetroTypedStrings.h" />
     <ClInclude Include="src\metro\MetroTypes.h" />
     <ClInclude Include="src\metro\MetroWeaponsDatabase.h" />
+    <ClInclude Include="src\metro\reflection\MetroReflection.h" />
     <ClInclude Include="src\metro\VFXReader.h" />
     <ClInclude Include="src\mex_settings.h" />
     <ClInclude Include="src\mycommon.h" />
@@ -205,9 +247,6 @@
     <ClInclude Include="src\ui\ChooseFolderDlg.h" />
     <ClInclude Include="src\ui\DlgModelInfo.h">
       <FileType>CppForm</FileType>
-    </ClInclude>
-    <ClInclude Include="src\ui\ImagePanel.h">
-      <FileType>CppControl</FileType>
     </ClInclude>
     <ClInclude Include="src\ui\LocalizationPanel.h">
       <FileType>CppControl</FileType>
@@ -225,14 +264,10 @@
     </ClInclude>
     <ClInclude Include="src\ui\tools\ConvertTexturesDlgImpl.h" />
     <ClInclude Include="src\ui\tools\CreateArchiveDlgImpl.h" />
+    <ClInclude Include="src\ui\tools\FontsEditorImpl.h" />
     <ClInclude Include="src\ui\UIHelpers.h" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="src\ui\ImagePanel.resx">
-      <DependentUpon>src\ui\ImagePanel.h</DependentUpon>
-      <LogicalName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">MetroEX.ImagePanel.resources</LogicalName>
-      <LogicalName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">MetroEX.ImagePanel.resources</LogicalName>
-    </EmbeddedResource>
     <EmbeddedResource Include="src\ui\SoundPanel.resx">
       <DependentUpon>src\ui\SoundPanel.h</DependentUpon>
       <LogicalName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">MetroEX.SoundPanel.resources</LogicalName>
@@ -341,7 +376,8 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <None Include="src\metro\MetroReflectionBinary.inl" />
+    <None Include="src\metro\reflection\MetroReflectionBinary.inl" />
+    <None Include="src\metro\reflection\MetroReflectionJson.inl" />
     <None Include="src\shaders\common.hlsli" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

@@ -61,6 +61,12 @@
     <Compile Include="src\ImageInfoPanel.Designer.cs">
       <DependentUpon>ImageInfoPanel.cs</DependentUpon>
     </Compile>
+    <Compile Include="src\ImagePanel.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="src\ImagePanel.Designer.cs">
+      <DependentUpon>ImagePanel.cs</DependentUpon>
+    </Compile>
     <Compile Include="src\ModelInfoPanel.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -85,6 +91,18 @@
     </Compile>
     <Compile Include="src\windows\CreateArchiveDlg.Designer.cs">
       <DependentUpon>CreateArchiveDlg.cs</DependentUpon>
+    </Compile>
+    <Compile Include="src\windows\FontPreviewWnd.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="src\windows\FontPreviewWnd.Designer.cs">
+      <DependentUpon>FontPreviewWnd.cs</DependentUpon>
+    </Compile>
+    <Compile Include="src\windows\FontsEditor.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="src\windows\FontsEditor.Designer.cs">
+      <DependentUpon>FontsEditor.cs</DependentUpon>
     </Compile>
     <Compile Include="src\windows\MainWindow.cs">
       <SubType>Form</SubType>
@@ -111,6 +129,9 @@
     <EmbeddedResource Include="src\ImageInfoPanel.resx">
       <DependentUpon>ImageInfoPanel.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="src\ImagePanel.resx">
+      <DependentUpon>ImagePanel.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="src\ModelInfoPanel.resx">
       <DependentUpon>ModelInfoPanel.cs</DependentUpon>
     </EmbeddedResource>
@@ -122,6 +143,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="src\windows\CreateArchiveDlg.resx">
       <DependentUpon>CreateArchiveDlg.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="src\windows\FontPreviewWnd.resx">
+      <DependentUpon>FontPreviewWnd.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="src\windows\FontsEditor.resx">
+      <DependentUpon>FontsEditor.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="src\windows\MainWindow.resx">
       <DependentUpon>MainWindow.cs</DependentUpon>

@@ -1,9 +1,9 @@
 #include "MetroTexturesDatabase.h"
-#include "MetroReflection.h"
 #include "MetroTypes.h"
 #include "MetroBinArrayArchive.h"
 #include "MetroBinArchive.h"
 #include "MetroFileSystem.h"
+#include "reflection/MetroReflection.h"
 
 
 static const CharString kTexturesFolder = R"(content\textures\)";
