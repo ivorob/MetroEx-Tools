@@ -246,7 +246,7 @@
             this.Name = "CreateArchiveDlg";
             this.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Hide;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
-            this.Text = "CreateArchiveDlg";
+            this.Text = "Archive creation/modification tool";
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
             this.groupBox2.ResumeLayout(false);

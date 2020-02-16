@@ -60,6 +60,8 @@ bool MetroFileSystem::InitFromGameFolder(const fs::path& gameFolder) {
         }
     }
 
+    result = !mEntries.empty();
+
     return result;
 }
 

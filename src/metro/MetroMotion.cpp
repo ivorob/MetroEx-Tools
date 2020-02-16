@@ -139,7 +139,7 @@ bool MetroMotion::LoadFromData(MemStream& stream) {
 
     result = this->LoadInternal();
 
-    mMotionsData.resize(0);
+    mMotionsData.clear();
 
     return result;
 }

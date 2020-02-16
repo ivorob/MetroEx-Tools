@@ -121,6 +121,7 @@ void FontsEditorImpl::OnFontSelected(int idx) {
             System::Drawing::Imaging::BitmapData^ bmpData = mFontBitmap->LockBits(rc, System::Drawing::Imaging::ImageLockMode::WriteOnly, mFontBitmap->PixelFormat);
             memcpy(bmpData->Scan0.ToPointer(), pixels.data(), pixels.size());
             mFontBitmap->UnlockBits(bmpData);
+            mFontBitmap->MakeTransparent(System::Drawing::Color::Black);
 
             this->imagePanel->Image = mFontBitmap;
         }

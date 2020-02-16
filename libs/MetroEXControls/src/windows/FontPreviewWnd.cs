@@ -30,10 +30,8 @@ namespace MetroEXControls {
         }
 
         private void pnlCanvas_Paint(object sender, PaintEventArgs e) {
+            e.Graphics.Clear(Color.Black);
             e.Graphics.CompositingMode = System.Drawing.Drawing2D.CompositingMode.SourceOver;
-
-            Rectangle rc = this.pnlCanvas.ClientRectangle;
-            e.Graphics.FillRectangle(Brushes.Black, rc);
 
             if (mImage == null || mCharsMap.Count == 0 || mCharsDB.Count == 0 || this.txtText.Text.Length == 0) {
                 return;
@@ -44,6 +42,7 @@ namespace MetroEXControls {
                 return;
             }
 
+            Rectangle rc = this.pnlCanvas.ClientRectangle;
             Rectangle textRC = new Rectangle((rc.Width - textSize.Width) / 2, (rc.Height - textSize.Height) / 2, textSize.Width, textSize.Height);
 
             int lh = (int)(mScale.Y * (float)mLineHeight);

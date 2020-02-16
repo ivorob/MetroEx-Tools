@@ -78,7 +78,7 @@ MetroModel::MetroModel()
     }
 }
 MetroModel::~MetroModel() {
-    std::for_each(mMeshes.begin(), mMeshes.end(), [](MetroMesh* mesh) { delete mesh; });
+    std::for_each(mMeshes.begin(), mMeshes.end(), [](MetroMesh* mesh) { MySafeDelete(mesh); });
     std::for_each(mMotions.begin(), mMotions.end(), [](MetroModel::MotionInfo& mi) { MySafeDelete(mi.motion); });
     MySafeDelete(mSkeleton);
     for (size_t i = 0; i < kMetroModelMaxLods; ++i) {
