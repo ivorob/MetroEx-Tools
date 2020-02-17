@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Windows.Forms;
+using System.Xml;
 
 namespace MetroEXControls {
     public partial class FilterableTreeView : UserControl {
@@ -25,6 +27,40 @@ namespace MetroEXControls {
             mTimer.Tick += new EventHandler(filterTimer_Tick);
         }
 
+        public bool SearchCheck()
+        {
+            bool result = false;
+            if (File.Exists(Directory.GetCurrentDirectory() + "/settings.mex"))
+            {
+                try
+                {
+                    XmlDocument xmlDoc = new XmlDocument();
+                    xmlDoc.Load(Directory.GetCurrentDirectory() + "/settings.mex");
+                    XmlNodeList parentNode = xmlDoc.GetElementsByTagName("Extraction");
+                    foreach (XmlNode childrenNode in parentNode)
+                    {
+                        if (childrenNode.SelectSingleNode("askSearch").InnerText == "false")
+                        {
+                            result = false; //settings.mex now in askSearch xml config false, then return false
+                        }
+                        else
+                        {
+                            result = true; //settings.mex now in askSearch xml config true, then return true
+                        }
+                    }
+                }
+                catch
+                {
+                    result = false; //node not found in xml or error return false
+                }
+            }
+            else
+            {
+                result = false; //settings.mex not found, return false
+            }
+            return result;
+        }
+
         public void Initialize() {
             if (mOriginalRootNodes == null) {
                 mOriginalRootNodes = new TreeNode[this.treeView.Nodes.Count];
@@ -38,27 +74,79 @@ namespace MetroEXControls {
         private void filterTimer_Tick(Object sender, EventArgs e) {
             mTimer.Stop();
 
-            Cursor.Current = Cursors.WaitCursor;
+            if (SearchCheck())
+            {
+                //alternative search enabled with enter
+            }
+            else
+            {
+                Cursor.Current = Cursors.WaitCursor;
 
-            this.treeView.BeginUpdate();
-            this.treeView.Nodes.Clear();
+                this.treeView.BeginUpdate();
+                this.treeView.Nodes.Clear();
 
-            if (string.IsNullOrWhiteSpace(this.filterTextBox.Text)) {
-                mIsFiltering = false;
-                this.treeView.Nodes.AddRange(mOriginalRootNodes);
-            } else {
-                mIsFiltering = true;
-                for (var i = 0; i < mOriginalRootNodes.Length; ++i) {
-                    var rootNode = mOriginalRootNodes[i].Clone() as TreeNode;
-                    FilterTreeView(rootNode, this.filterTextBox.Text);
-                    this.treeView.Nodes.Add(rootNode);
-                    this.treeView.Nodes[i].ExpandAll();
+                if (string.IsNullOrWhiteSpace(this.filterTextBox.Text))
+                {
+                    mIsFiltering = false;
+                    this.treeView.Nodes.AddRange(mOriginalRootNodes);
+                }
+                else
+                {
+                    mIsFiltering = true;
+                    for (var i = 0; i < mOriginalRootNodes.Length; ++i)
+                    {
+                        var rootNode = mOriginalRootNodes[i].Clone() as TreeNode;
+                        FilterTreeView(rootNode, this.filterTextBox.Text);
+                        this.treeView.Nodes.Add(rootNode);
+                        this.treeView.Nodes[i].ExpandAll();
+                    }
+                }
+
+                this.treeView.EndUpdate();
+
+                Cursor.Current = Cursors.Arrow;
+            }
+        }
+
+        //search
+        private void filterTextBox_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (SearchCheck())
+            {
+                //when search with enter enabled use code
+                if (e.KeyCode == Keys.Enter)
+                {
+                    Cursor.Current = Cursors.WaitCursor;
+
+                    this.treeView.BeginUpdate();
+                    this.treeView.Nodes.Clear();
+
+                    if (string.IsNullOrWhiteSpace(this.filterTextBox.Text))
+                    {
+                        mIsFiltering = false;
+                        this.treeView.Nodes.AddRange(mOriginalRootNodes);
+                    }
+                    else
+                    {
+                        mIsFiltering = true;
+                        for (var i = 0; i < mOriginalRootNodes.Length; ++i)
+                        {
+                            var rootNode = mOriginalRootNodes[i].Clone() as TreeNode;
+                            FilterTreeView(rootNode, this.filterTextBox.Text);
+                            this.treeView.Nodes.Add(rootNode);
+                            this.treeView.Nodes[i].ExpandAll();
+                        }
+                    }
+
+                    this.treeView.EndUpdate();
+
+                    Cursor.Current = Cursors.Arrow;
                 }
             }
-
-            this.treeView.EndUpdate();
-
-            Cursor.Current = Cursors.Arrow;
+            else
+            {
+                //when search with enter disabled use original code
+            }
         }
 
         private void FilterTreeView(TreeNode node, string text) {
@@ -86,9 +174,17 @@ namespace MetroEXControls {
                 Initialize();
             }
 
-            if (mOriginalRootNodes != null && mOriginalRootNodes.Length > 0) {
-                mTimer.Stop();
-                mTimer.Start();
+            if (SearchCheck())
+            {
+                //alternative search enabled with enter
+            }
+            else
+            {
+                if (mOriginalRootNodes != null && mOriginalRootNodes.Length > 0)
+                {
+                    mTimer.Stop();
+                    mTimer.Start();
+                }
             }
         }
 

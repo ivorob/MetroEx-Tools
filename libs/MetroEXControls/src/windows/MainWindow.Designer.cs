@@ -621,25 +621,25 @@
             this.toolStripSeparator10,
             this.saveModifiedConfigBinToolStripMenuItem});
             this.ctxMenuExportConfigBin.Name = "ctxMenuExportConfigBin";
-            this.ctxMenuExportConfigBin.Size = new System.Drawing.Size(181, 76);
+            this.ctxMenuExportConfigBin.Size = new System.Drawing.Size(159, 54);
             // 
             // extractConfigBinToolStripMenuItem
             // 
             this.extractConfigBinToolStripMenuItem.Name = "extractConfigBinToolStripMenuItem";
-            this.extractConfigBinToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.extractConfigBinToolStripMenuItem.Size = new System.Drawing.Size(158, 22);
             this.extractConfigBinToolStripMenuItem.Text = "Extract...";
             this.extractConfigBinToolStripMenuItem.Click += new System.EventHandler(this.extractToolStripMenuItem_Click);
             // 
             // toolStripSeparator10
             // 
             this.toolStripSeparator10.Name = "toolStripSeparator10";
-            this.toolStripSeparator10.Size = new System.Drawing.Size(177, 6);
+            this.toolStripSeparator10.Size = new System.Drawing.Size(155, 6);
             // 
             // saveModifiedConfigBinToolStripMenuItem
             // 
             this.saveModifiedConfigBinToolStripMenuItem.Enabled = false;
             this.saveModifiedConfigBinToolStripMenuItem.Name = "saveModifiedConfigBinToolStripMenuItem";
-            this.saveModifiedConfigBinToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.saveModifiedConfigBinToolStripMenuItem.Size = new System.Drawing.Size(158, 22);
             this.saveModifiedConfigBinToolStripMenuItem.Text = "Save modified...";
             this.saveModifiedConfigBinToolStripMenuItem.Click += new System.EventHandler(this.saveModifiedToolStripMenuItem_Click);
             // 

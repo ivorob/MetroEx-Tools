@@ -56,6 +56,8 @@ public:
         SndFormat   soundFormat;
         // stuff
         bool        askEveryTime;
+        // search
+        bool        askSearch;
     } extraction;
 
 private:

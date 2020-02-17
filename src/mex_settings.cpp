@@ -120,6 +120,8 @@ void MEXSettings::InitDefaults() {
     this->extraction.soundFormat = Extraction::SndFormat::Ogg;
     //stuff
     this->extraction.askEveryTime = false;
+    //search
+    this->extraction.askSearch = false;
 }
 
 // loading
@@ -145,6 +147,9 @@ bool MEXSettings::LoadExtraction(pugi::xml_document& doc) {
 
         //stuff
         this->extraction.askEveryTime = GetBoolValue(extractionNode, "askEveryTime", false);
+
+        //search
+        this->extraction.askSearch = GetBoolValue(extractionNode, "askSearch", false);
 
         result = true;
     }
@@ -173,6 +178,9 @@ bool MEXSettings::SaveExtraction(pugi::xml_document& doc) {
 
     //stuff
     SetBoolValue(extractionNode, "askEveryTime", this->extraction.askEveryTime);
+
+    //search
+    SetBoolValue(extractionNode, "askSearch", this->extraction.askSearch);
 
     return true;
 }

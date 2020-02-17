@@ -57,6 +57,9 @@ void SettingsDlgImpl::OnFormLoaded() {
 
     // stuff
     this->chkExportAskEveryTime->Checked = s.extraction.askEveryTime;
+
+    // search
+    this->chkSearchSwitch->Checked = s.extraction.askSearch;
 }
 
 void SettingsDlgImpl::OnOKButtonClicked() {
@@ -96,6 +99,9 @@ void SettingsDlgImpl::OnOKButtonClicked() {
 
     // stuff
     s.extraction.askEveryTime = this->chkExportAskEveryTime->Checked;
+
+    // search
+    s.extraction.askSearch = this->chkSearchSwitch->Checked;
 
     s.Save();
 

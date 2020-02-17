@@ -49,6 +49,8 @@
             this.chkExportAskEveryTime = new System.Windows.Forms.CheckBox();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
             this.tabPageExport = new System.Windows.Forms.TabPage();
+            this.groupBox4 = new System.Windows.Forms.GroupBox();
+            this.chkSearchSwitch = new System.Windows.Forms.CheckBox();
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.panel1.SuspendLayout();
@@ -56,6 +58,7 @@
             this.groupBox2.SuspendLayout();
             this.groupBox3.SuspendLayout();
             this.tabPageExport.SuspendLayout();
+            this.groupBox4.SuspendLayout();
             this.tabControl1.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
             this.SuspendLayout();
@@ -89,7 +92,7 @@
             this.panel1.Controls.Add(this.label1);
             this.panel1.Controls.Add(this.btnCancel);
             this.panel1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panel1.Location = new System.Drawing.Point(0, 388);
+            this.panel1.Location = new System.Drawing.Point(0, 418);
             this.panel1.Margin = new System.Windows.Forms.Padding(0, 0, 3, 0);
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(491, 25);
@@ -298,7 +301,7 @@
             // chkExportAskEveryTime
             // 
             this.chkExportAskEveryTime.AutoSize = true;
-            this.chkExportAskEveryTime.Location = new System.Drawing.Point(15, 336);
+            this.chkExportAskEveryTime.Location = new System.Drawing.Point(243, 19);
             this.chkExportAskEveryTime.Name = "chkExportAskEveryTime";
             this.chkExportAskEveryTime.Size = new System.Drawing.Size(168, 17);
             this.chkExportAskEveryTime.TabIndex = 6;
@@ -311,24 +314,46 @@
             this.groupBox3.Controls.Add(this.radioSndAsOGG);
             this.groupBox3.Location = new System.Drawing.Point(8, 256);
             this.groupBox3.Name = "groupBox3";
-            this.groupBox3.Size = new System.Drawing.Size(467, 71);
+            this.groupBox3.Size = new System.Drawing.Size(468, 71);
             this.groupBox3.TabIndex = 5;
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "Sounds options:";
             // 
             // tabPageExport
             // 
-            this.tabPageExport.Controls.Add(this.chkExportAskEveryTime);
+            this.tabPageExport.Controls.Add(this.groupBox4);
             this.tabPageExport.Controls.Add(this.groupBox3);
             this.tabPageExport.Controls.Add(this.groupBox2);
             this.tabPageExport.Controls.Add(this.groupBox1);
             this.tabPageExport.Location = new System.Drawing.Point(4, 22);
             this.tabPageExport.Name = "tabPageExport";
             this.tabPageExport.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPageExport.Size = new System.Drawing.Size(486, 362);
+            this.tabPageExport.Size = new System.Drawing.Size(486, 392);
             this.tabPageExport.TabIndex = 0;
             this.tabPageExport.Text = "Export options";
             this.tabPageExport.UseVisualStyleBackColor = true;
+            // 
+            // groupBox4
+            // 
+            this.groupBox4.Controls.Add(this.chkSearchSwitch);
+            this.groupBox4.Controls.Add(this.chkExportAskEveryTime);
+            this.groupBox4.Location = new System.Drawing.Point(8, 333);
+            this.groupBox4.Name = "groupBox4";
+            this.groupBox4.Size = new System.Drawing.Size(468, 48);
+            this.groupBox4.TabIndex = 7;
+            this.groupBox4.TabStop = false;
+            this.groupBox4.Text = "Search:";
+            // 
+            // chkSearchSwitch
+            // 
+            this.chkSearchSwitch.AutoSize = true;
+            this.chkSearchSwitch.ForeColor = System.Drawing.Color.Olive;
+            this.chkSearchSwitch.Location = new System.Drawing.Point(8, 19);
+            this.chkSearchSwitch.Name = "chkSearchSwitch";
+            this.chkSearchSwitch.Size = new System.Drawing.Size(174, 17);
+            this.chkSearchSwitch.TabIndex = 7;
+            this.chkSearchSwitch.Text = "Enable search with (enter) only.";
+            this.chkSearchSwitch.UseVisualStyleBackColor = true;
             // 
             // tabControl1
             // 
@@ -338,7 +363,7 @@
             this.tabControl1.Margin = new System.Windows.Forms.Padding(0);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.Size = new System.Drawing.Size(494, 388);
+            this.tabControl1.Size = new System.Drawing.Size(494, 418);
             this.tabControl1.TabIndex = 1;
             // 
             // tableLayoutPanel1
@@ -354,14 +379,14 @@
             this.tableLayoutPanel1.RowCount = 2;
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 25F));
-            this.tableLayoutPanel1.Size = new System.Drawing.Size(494, 413);
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(494, 443);
             this.tableLayoutPanel1.TabIndex = 1;
             // 
             // SettingsDlg
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(494, 413);
+            this.ClientSize = new System.Drawing.Size(494, 443);
             this.Controls.Add(this.tableLayoutPanel1);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
             this.MaximizeBox = false;
@@ -379,7 +404,8 @@
             this.groupBox3.ResumeLayout(false);
             this.groupBox3.PerformLayout();
             this.tabPageExport.ResumeLayout(false);
-            this.tabPageExport.PerformLayout();
+            this.groupBox4.ResumeLayout(false);
+            this.groupBox4.PerformLayout();
             this.tabControl1.ResumeLayout(false);
             this.tableLayoutPanel1.ResumeLayout(false);
             this.ResumeLayout(false);
@@ -414,5 +440,7 @@
         protected System.Windows.Forms.TabPage tabPageExport;
         protected System.Windows.Forms.TabControl tabControl1;
         protected System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
+        protected System.Windows.Forms.GroupBox groupBox4;
+        protected System.Windows.Forms.CheckBox chkSearchSwitch;
     }
 }

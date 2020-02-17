@@ -59,6 +59,7 @@
             this.filterTextBox.Size = new System.Drawing.Size(435, 20);
             this.filterTextBox.TabIndex = 1;
             this.filterTextBox.TextChanged += new System.EventHandler(this.filterText_TextChanged);
+            this.filterTextBox.KeyDown += new System.Windows.Forms.KeyEventHandler(this.filterTextBox_KeyDown);
             // 
             // treeView
             // 
