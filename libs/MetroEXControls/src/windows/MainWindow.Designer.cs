@@ -89,6 +89,8 @@
             this.extractConfigBinToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator10 = new System.Windows.Forms.ToolStripSeparator();
             this.saveModifiedConfigBinToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator11 = new System.Windows.Forms.ToolStripSeparator();
+            this.modButton1 = new System.Windows.Forms.ToolStripButton();
             this.ctxMenuExportLocalization.SuspendLayout();
             this.ctxMenuExportBin.SuspendLayout();
             this.toolStrip1.SuspendLayout();
@@ -349,6 +351,8 @@
             this.toolBtnTexturesDatabase,
             this.toolStripSeparator4,
             this.toolStripSplitButton1,
+            this.toolStripSeparator11,
+            this.modButton1,
             this.toolStripSeparator2,
             this.toolBtnSettings,
             this.toolStripSeparator6,
@@ -643,6 +647,22 @@
             this.saveModifiedConfigBinToolStripMenuItem.Text = "Save modified...";
             this.saveModifiedConfigBinToolStripMenuItem.Click += new System.EventHandler(this.saveModifiedToolStripMenuItem_Click);
             // 
+            // toolStripSeparator11
+            // 
+            this.toolStripSeparator11.Name = "toolStripSeparator11";
+            this.toolStripSeparator11.Size = new System.Drawing.Size(6, 25);
+            // 
+            // modButton1
+            // 
+            this.modButton1.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.modButton1.ForeColor = System.Drawing.Color.Blue;
+            this.modButton1.Image = ((System.Drawing.Image)(resources.GetObject("modButton1.Image")));
+            this.modButton1.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.modButton1.Name = "modButton1";
+            this.modButton1.Size = new System.Drawing.Size(86, 22);
+            this.modButton1.Text = "Mod Manager";
+            this.modButton1.Click += new System.EventHandler(this.modButton1_Click);
+            // 
             // MainWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -740,5 +760,7 @@
         protected System.Windows.Forms.ToolStripMenuItem extractConfigBinToolStripMenuItem;
         protected System.Windows.Forms.ToolStripSeparator toolStripSeparator10;
         protected System.Windows.Forms.ToolStripMenuItem saveModifiedConfigBinToolStripMenuItem;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator11;
+        private System.Windows.Forms.ToolStripButton modButton1;
     }
 }

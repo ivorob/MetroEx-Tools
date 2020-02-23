@@ -207,5 +207,11 @@ namespace MetroEXControls {
         private void fontsEditorToolStripMenuItem_Click(object sender, EventArgs e) {
             this.OnFontsEditorClick();
         }
+		
+        private void modButton1_Click(object sender, EventArgs e)
+        {
+            src.windows.ModDlg dlg = new src.windows.ModDlg();
+            dlg.ShowDialog(this);
+        }
     }
 }
