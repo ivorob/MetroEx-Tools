@@ -6,7 +6,7 @@ public:
         mMode = MetroReflectionStream::Mode::IN;
     }
 
-    MetroReflectionBinaryReadStream(const MemStream& s, const uint8_t flags = MetroReflectionFlags::None)
+    MetroReflectionBinaryReadStream(const MemStream& s, const uint8_t flags = static_cast<uint8_t>(MetroReflectionFlags::None))
         : MetroReflectionStream()
         , mStream(s)
     {
@@ -103,7 +103,7 @@ public:
         : MetroReflectionStream()
         , mStream(&outStream) {
         mMode = MetroReflectionStream::Mode::OUT;
-        mFlags = MetroReflectionFlags::DefaultOutFlags;
+        mFlags = static_cast<uint8_t>(MetroReflectionFlags::DefaultOutFlags);
     }
 
     virtual ~MetroReflectionBinaryWriteStream() {

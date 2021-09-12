@@ -64,6 +64,7 @@ set_target_properties(xxhash PROPERTIES
 # xxhsum
 add_executable(xxhsum "${XXHASH_DIR}/xxhsum.c")
 target_link_libraries(xxhsum xxhash)
+target_include_directories (xxhash PUBLIC ${XXHASH_DIR})
 
 # Extra warning flags
 include (CheckCCompilerFlag)

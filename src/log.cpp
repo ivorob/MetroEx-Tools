@@ -1,5 +1,7 @@
 #include "mycommon.h"
+#if defined(WIN32)
 #include <Windows.h>
+#endif
 #include <sstream>
 #include <fstream>
 #include <cstdarg>
@@ -46,7 +48,7 @@ void LogPrint(LogLevel level, const CharString& message) {
 
     CharString result = s.str();
 
-#if LOG_OUTPUT_TO_DEBUG
+#if defined(LOG_OUTPUT_TO_DEBUG) && defined(WIN32)
     OutputDebugStringA(result.c_str());
 #endif
 

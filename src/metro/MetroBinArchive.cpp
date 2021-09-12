@@ -68,7 +68,7 @@ MetroBinArchive::MetroBinArchive(const CharString& name, const MemStream& stream
 //#NOTE_SK: this constructor creates a new Metro bin container from scratch
 //          using MemWriteStream as the output stream
 MetroBinArchive::MetroBinArchive(MemWriteStream& outStream) {
-    mBinFlags = MetroReflectionFlags::DefaultOutFlags;
+    mBinFlags = static_cast<uint8_t>(MetroReflectionFlags::DefaultOutFlags);
     outStream.Write(mBinFlags);
 
     if (TestBit(mBinFlags, MetroReflectionFlags::StringsTable)) {

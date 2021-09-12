@@ -393,9 +393,9 @@ template <typename T>
 constexpr T RemoveBit(const T& v, const T& bit) {
     return v & ~bit;
 }
-template <typename T>
-constexpr bool TestBit(const T& v, const T& bit) {
-    return 0 != (v & bit);
+template <typename T, typename U>
+constexpr bool TestBit(const T& v, const U& bit) {
+    return 0 != (v & static_cast<typename std::underlying_type<U>::type>(bit));
 }
 
 inline uint32_t CountBitsU32(uint32_t x) {

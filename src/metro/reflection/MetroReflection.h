@@ -1,18 +1,20 @@
 #pragma once
+#include <sstream>
+
 #include "mycommon.h"
 #include "mymath.h"
 
-struct MetroReflectionFlags {
-    static const uint8_t None           = 0;
-    static const uint8_t HasDebugInfo   = 1;
-    static const uint8_t Editor         = 2;
-    static const uint8_t StringsTable   = 4;
-    static const uint8_t Plain          = 8;
-    static const uint8_t NoSections     = 16;
-    static const uint8_t MultiChunk     = 32;
+enum class MetroReflectionFlags : uint8_t {
+    None           = 0,
+    HasDebugInfo   = 1,
+    Editor         = 2,
+    StringsTable   = 4,
+    Plain          = 8,
+    NoSections     = 16,
+    MultiChunk     = 32,
 
     // defaults
-    static const uint8_t DefaultOutFlags = StringsTable;
+    DefaultOutFlags = StringsTable
 };
 
 
@@ -166,10 +168,9 @@ public:
     // Advanced
     virtual void SerializeFloats(float* fv, const size_t numFloats);
 
-    // Generic serialization of complex types
     template <typename T>
     inline void operator >>(T& v) {
-        v.Serialize(*this);
+        *this >> v;
     }
 
     // Metro data serialization details
@@ -224,9 +225,9 @@ public:
                     if (s->IsIn()) {
                         subS = s->OpenSection(kEmptyString, true);
                     } else {
-                        static char _subs_name[16] = { 0 };
-                        sprintf_s(_subs_name, "rec_%04d", idx);
-                        subS = s->OpenSection(_subs_name, true);
+                        std::stringstream _subs_name;
+                        _subs_name << "rec_" << std::setw(4) << std::setfill('0') << idx;
+                        subS = s->OpenSection(_subs_name.str(), true);
                         ++idx;
                     }
 

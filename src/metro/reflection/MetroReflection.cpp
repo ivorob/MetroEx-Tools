@@ -4,7 +4,7 @@ MetroReflectionStream::MetroReflectionStream()
     : mMode(MetroReflectionStream::Mode::IN)
     , mUserData(kInvalidValue)
     , mSTable(nullptr)
-    , mFlags(MetroReflectionFlags::None) {
+    , mFlags(static_cast<uint8_t>(MetroReflectionFlags::None)) {
 
 }
 MetroReflectionStream::~MetroReflectionStream() {

@@ -1,0 +1,6 @@
+CMAKE_MINIMUM_REQUIRED (VERSION 3.4)
+PROJECT (MetroEx-Tools)
+
+ADD_SUBDIRECTORY (libs)
+
+ADD_SUBDIRECTORY (tools/textures_editor)
